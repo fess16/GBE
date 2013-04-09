@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding='utf-8'?>
+<!-- //TODO: создать overlay.css -->
+<?xml-stylesheet href="chrome://GBE/skin/styles/overlay.css" type="text/css"?>
+<!-- //TODO: создать lang.dtd -->
+<!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
+<overlay 
+	id="GBE-overlay"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<!-- //TODO: создать overlay.js -->
+	<script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
+
+</overlay>
