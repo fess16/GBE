@@ -37,7 +37,7 @@ var GBE =
 
   init: function()
 	{
-		//TODO: сделать обновлени списка закладок при запуске
+		//TODO: сделать обновлениеGBE списка закладок при запуске
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
 			gBrowser.addProgressListener(this);
@@ -97,19 +97,22 @@ var GBE =
   		number = 1;
   		value = params.url;
   	}
-  	// перебираем закладки
-  	for (i = 0; i < GBE.m_bookmarkList.length; i++)
+  	if (GBE.m_bookmarkList.length)
   	{
-  		// если нашли заполняем поля и выходим
-  		if (GBE.m_bookmarkList[i][number] === value)
-  		{
-  			params.name = GBE.m_bookmarkList[i][0];
-  			params.id = GBE.m_bookmarkList[i][2];
-  			params.url = GBE.m_bookmarkList[i][1];
-  			params.labels = GBE.m_bookmarkList[i][3];
-  			params.notes = GBE.m_bookmarkList[i][4];
-  			return;
-  		}
+	  	// перебираем закладки
+	  	for (i = 0; i < GBE.m_bookmarkList.length; i++)
+	  	{
+	  		// если нашли заполняем поля и выходим
+	  		if (GBE.m_bookmarkList[i][number] === value)
+	  		{
+	  			params.name = GBE.m_bookmarkList[i][0];
+	  			params.id = GBE.m_bookmarkList[i][2];
+	  			params.url = GBE.m_bookmarkList[i][1];
+	  			params.labels = GBE.m_bookmarkList[i][3];
+	  			params.notes = GBE.m_bookmarkList[i][4];
+	  			return;
+	  		}
+	  	}
   	}
   	// не нашли - в поле id устанавливаем null 
   	params.id = null;
@@ -156,19 +159,38 @@ var GBE =
 		}
 	},
 
-
-	logout : function()
+	/**
+	 * получает список закладок с сервера в формате RSS
+	 * @return {[type]}
+	 */
+	doRequestBookmarks: function()
 	{
-		fessext1.showURL("https://www.google.com/accounts/Logout");
+		try
+		{
+			GBE.m_ganswer = null;
+			GBE.m_signature = null;
+			GBE.m_bookmarkList = null;
+			GBE.m_labelsArr = null;
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", GBE.baseUrl + "lookup?output=rss&num=10000", true); 
+			//TODO: может переделать на onreadystatechange
+			xhr.onload = function() {
+	    	GBE.m_ganswer = this.responseXML.documentElement;
+	    	GBE.doBuildMenu();
+	    	document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+	  	};
+	  	xhr.onerror = function() {
+	    	GBE.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
+	  	};
+	  	xhr.send(null);
+	  }
+	  catch (e)
+		{
+			GBE.ErrorLog("doRequestBookmarks", " " + e);
+		}
 	},
 
-
-	login : function()
-	{
-		fessext1.showURL("https://accounts.google.com");
-		//TODO: при выходе обнулять меню, закладки, метки и т.д.
-	},	
-
+	
 	/**
 	 * функция сортировки строк (закладок и меток)
 	 * @param  {[type]} a
@@ -180,6 +202,16 @@ var GBE =
 				bStr = String(b);
 	
 		return aStr.toLowerCase() < bStr.toLowerCase() ? -1 : 1; 
+	},
+
+	/**
+   * Вывод отладочных сообщений в консоль
+   * @param {string} s1
+   * @param {string} s2
+   */
+  ErrorLog: function(s1, s2)
+	{
+		GBE.GBLTut_ConsoleService.logStringMessage(s1 + s2);
 	},
 
 	/**
@@ -203,20 +235,27 @@ var GBE =
 		parent.appendChild(item);
 	},
 
+	// вызываются из XUL файлов
+	logout : function()
+	{
+		fessext1.showURL("https://www.google.com/accounts/Logout");
+	},
+
+
+	login : function()
+	{
+		fessext1.showURL("https://accounts.google.com");
+		//TODO: при выходе обнулять меню, закладки, метки и т.д.
+	},	
+
 	showAboutForm: function(e)
 	{
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
-	},
-
-  /**
-   * Вывод отладочных сообщений в консоль
-   * @param {string} s1
-   * @param {string} s2
-   */
-  ErrorLog: function(s1, s2)
-	{
-		GBE.GBLTut_ConsoleService.logStringMessage(s1 + s2);
 	}
 
 
+
 };
+
+window.addEventListener("load", function() { fessext1.init() }, false);
+window.addEventListener("unload", function() { fessext1.uninit() }, false);
