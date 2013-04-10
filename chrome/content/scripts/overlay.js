@@ -52,6 +52,34 @@ var GBE =
 		}
 	},
 
+	/**
+	 * обработчик изменения адреса: меняет иконку на панели и активность кнопок в меню
+	 * @param  {[type]} aURI - текущий адрес
+	 * @return {[type]}
+	 */
+	processNewURL: function(aURI) 
+	{
+    // адрес не поменялся - ничего не делаем
+    if (aURI.spec === this.oldURL) 
+  	{
+  		return;
+  	}
+		var params = {name : "", id : null,	url : aURI.spec, labels : "", notes : ""};
+		this.getBookmark(params, true);
+
+  	//TODO: делать неактивной кнопки Редактирования и Удаления когда страницы нет в закладках 
+  	//TODO: делать неактивной кнопку Добавления - когда страница уже в закладках
+   	if (params.id)
+		{
+    	document.getElementById("GBE-button").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+		}
+		else
+		{
+			document.getElementById("GBE-button").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+		}
+    this.oldURL = aURI.spec;
+   },
+
   /**
    * поиск информации о закладке по коду (или адресу)
    * @param  {object} - params информация о закладке
