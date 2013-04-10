@@ -134,6 +134,20 @@ var GBE =
 		return false;
 	},
 
+	showURL: function(url, inSameTab = false)
+	{
+		if (inSameTab)
+		{
+			window.open(url);
+		}
+		else
+		{
+			var tBrowser = top.document.getElementById("content"),
+			tab = tBrowser.addTab(url);
+			tBrowser.selectedTab = tab;
+		}
+	},
+
   /**
    * Вывод отладочных сообщений в консоль
    * @param {string} s1
