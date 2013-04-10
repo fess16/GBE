@@ -190,7 +190,145 @@ var GBE =
 		}
 	},
 
-	
+	/**
+	 * формирует меню закладок
+	 * @return {[type]}
+	 */
+	doBuildMenu: function()
+	{
+		// получаем все метки из XML ответа сервера
+		var labels = GBE.m_ganswer.getElementsByTagName("smh:bkmk_label");
+		// получаем все закладки из XML ответа сервера
+		var bookmarks = GBE.m_ganswer.getElementsByTagName("item");
+		// контейнер в меню, в который будут добавляться закладки
+		var GBE_GBlist = document.getElementById("GBE-GBlist");
+		var allLabelsStr, i;
+
+		// сохраняем сигнатуру из ответа (необходима при работе с закладками)
+		if (GBE.m_ganswer.getElementsByTagName("smh:signature").length)
+		{
+			GBE.m_signature = GBE.m_ganswer.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
+		}
+		
+		// если закладок и меток в ответе сервера нет - ничего не делаем
+		if (!labels.length && !bookmarks.length) { return; }
+
+		// временная строка для группировки и сортировки меток
+		allLabelsStr = GBE.labelSep;
+		// группируем метки
+		for (i = 0; i < labels.length; i++) 
+		{
+			// название метки
+			var labelVal = labels[i].childNodes[0].nodeValue;
+			// если такой метки во временной строке еще нет - добавляем ее (с разделителем)
+			if (allLabelsStr.indexOf(GBE.labelSep + labelVal + GBE.labelSep) === -1)
+			{
+				allLabelsStr += (labelVal + GBE.labelSep);
+			}
+		}
+		
+		// удаляем первый и последний разделитель ("|")
+		if (allLabelsStr.length > 2)
+		{
+			allLabelsStr = allLabelsStr.substr(1, allLabelsStr.length-2);
+		}
+		
+		//GBE.m_labelsArr = null;
+		// получаем массив меток
+		GBE.m_labelsArr = allLabelsStr.split(GBE.labelSep);
+		if (GBE.m_labelsArr.length)
+		{
+			// сортируем массив меток
+			GBE.m_labelsArr.sort(GBE.sortStrings);
+			// добавляем метки в меню (в виде папок)
+			for (i = 0; i < GBE.m_labelsArr.length; i++) 
+			{
+				var tempMenupopup = document.createElement('menupopup');
+				var tempMenu = document.createElement('menu');
+				// устанавливаем атрибуты нового элемента меню
+				tempMenu.setAttribute("id", "GBE_" + GBE.m_labelsArr[i]);
+				tempMenu.setAttribute("label", GBE.m_labelsArr[i]);
+				tempMenu.setAttribute("class", "menu-iconic");
+				tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder.png");
+				tempMenu.setAttribute("container", "true");
+				// добавляем к нему вложенное меню
+				tempMenu.appendChild(tempMenupopup);
+				// добавляем его в основное меню
+				GBE_GBlist.appendChild(tempMenu);
+			}
+		}
+
+
+		// if (bookmarks.length)
+		// {
+		// GBE.m_bookmarkList = null;
+
+		// список закладок
+		GBE.m_bookmarkList = new Array(bookmarks.length);
+		// сохраняем закладки в поле m_bookmarkList
+		for (i = 0; i < bookmarks.length; i++) 
+		{
+			GBE.m_bookmarkList[i] = new Array(5);
+			GBE.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName("title")[0].childNodes[0].nodeValue;
+			GBE.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName("link")[0].childNodes[0].nodeValue;
+			GBE.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue;
+			var bookmark_labels = bookmarks[i].getElementsByTagName("smh:bkmk_label");
+			var	j;
+			// закладка с метками?
+			if (bookmark_labels.length)
+			{
+				// сохраняем метки в массив
+				GBE.m_bookmarkList[i][3] = new Array(bookmark_labels.length);
+				for (j = 0; j < bookmark_labels.length; j++)
+				{
+					GBE.m_bookmarkList[i][3][j] =  bookmark_labels[j].childNodes[0].nodeValue;
+				}
+			}
+			else
+			{
+				GBE.m_bookmarkList[i][3] = "";
+			}
+			// закладка с примечанием?
+			if (bookmarks[i].getElementsByTagName("smh:bkmk_annotation").length)
+			{
+				GBE.m_bookmarkList[i][4] = bookmarks[i].getElementsByTagName("smh:bkmk_annotation")[0].childNodes[0].nodeValue;
+			}
+			else
+			{
+				GBE.m_bookmarkList[i][4] = "";
+			}
+		}
+		// сортируем массив закладок
+		GBE.m_bookmarkList.sort(GBE.sortStrings);
+
+		// добавляем закладки в меню
+		for (i = 0; i < GBE.m_bookmarkList.length; i++) 
+		{
+			var parentContainer,
+					tempMenuitem;
+			// если у закладки есть метки
+			if (GBE.m_bookmarkList[i][3] !== "") 
+			{
+				// то добавляем ее во вложенное меню каждой метки
+				for (j = 0; j < GBE.m_bookmarkList[i][3].length; j++)
+				{
+					tempMenuitem = document.createElement('menuitem');
+					parentContainer = GBE_GBlist.getElementsByAttribute("id", "GBE_" + GBE.m_bookmarkList[i][3][j])[0].childNodes[0];
+					GBE.appendMenuItem(parentContainer, tempMenuitem, GBE.m_bookmarkList[i]);
+				}
+			}
+			else
+			{
+				// иначе - в основное меню
+				tempMenuitem = document.createElement('menuitem');
+				parentContainer = GBE_GBlist;
+				GBE.appendMenuItem(parentContainer, tempMenuitem, GBE.m_bookmarkList[i]);
+			}
+		}
+		// }
+
+	},
+
 	/**
 	 * функция сортировки строк (закладок и меток)
 	 * @param  {[type]} a
@@ -228,9 +366,9 @@ var GBE =
 		item.setAttribute("url", value[1]);
 		item.setAttribute("tooltiptext", value[1]);
 		item.setAttribute("class", "menuitem-iconic");
-		item.setAttribute("image", "chrome://fessext1/content/bookmark.png");
-		item.setAttribute("oncommand", "fessext1.bookmarkClick(event);");
-		item.setAttribute("oncontextmenu", "fessext1.onBookmarkContextMenu(event, '" + value[2] + "'); return false;");
+		item.setAttribute("image", "chrome://GBE/skin/images//bookmark.png");
+		item.setAttribute("oncommand", "//GBE.bookmarkClick(event);");
+		item.setAttribute("oncontextmenu", "//GBE.onBookmarkContextMenu(event, '" + value[2] + "'); return false;");
 
 		parent.appendChild(item);
 	},
