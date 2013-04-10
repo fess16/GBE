@@ -1,5 +1,7 @@
-content	GBE	chrome/content/
-locale	GBE en-US	chrome/locale/en-US/
-locale	GBE ru-RU	chrome/locale/ru-RU/
+content	GBE								chrome/content/
+skin		GBE classic/1.0		chrome/skin/
+
+locale	GBE en-US					chrome/locale/en-US/
+locale	GBE ru-RU					chrome/locale/ru-RU/
 
 overlay	chrome://browser/content/browser.xul	chrome://GBE/content/overlays/overlay.xul
