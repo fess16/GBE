@@ -27,6 +27,15 @@ var GBE =
   // id текущего элемента списка меню закладок (для работы контекстного меню)
   'currentContextId' : "",
 
+  init: function()
+	{
+		//TODO: сделать обновлени списка закладок при запуске
+		if (window.location == "chrome://browser/content/browser.xul")
+		{
+			gBrowser.addProgressListener(this);
+		}
+	},
+
   /**
    * поиск информации о закладке по коду (или адресу)
    * @param  {object} - params информация о закладке
@@ -74,36 +83,3 @@ var GBE =
 
 
 };
-
-		// var i,
-		// 		count = fessext1.m_bookmarkList.length;
-		// for (i = 0; i < count; i++) 
-		// {
-		// 	if (fessext1.m_bookmarkList[i][1] == cURI)
-		// 	{
-		// 		return true;
-		// 	}
-		// }
-		// return false;
-/*					
-var params = {
-				name : "",
-				id : fessext1.currentContextId.replace("fessext1_",""),
-				url : "",
-				labels : "",
-				notes : "",
-				sig : fessext1.m_signature
-			},
-			i;
-			for (i = 0; i < fessext1.m_bookmarkList.length; i++) 
-			{
-				if (fessext1.m_bookmarkList[i][2] === params.id)
-				{	
-					params.name = fessext1.m_bookmarkList[i][0];
-					// params.id = fessext1.m_bookmarkList[i][2];
-					params.url = fessext1.m_bookmarkList[i][1];
-					params.labels = fessext1.m_bookmarkList[i][3];
-					params.notes = fessext1.m_bookmarkList[i][4];
-					break;
-				}
-			}*/
