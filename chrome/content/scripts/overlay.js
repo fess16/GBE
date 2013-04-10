@@ -116,6 +116,25 @@ var GBE =
   },
 
   /**
+   * проверяет залогинен пользователь в GB или нет
+   * @return {[bool]}
+   */
+  checkLogin: function () {
+		var cookieManager = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
+				iter = cookieManager.enumerator;
+		
+		while (iter.hasMoreElements()) 
+		{
+			var cookie = iter.getNext();
+			if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
+			{
+				return true;	
+			}
+		}
+		return false;
+	},
+
+  /**
    * Вывод отладочных сообщений в консоль
    * @param {string} s1
    * @param {string} s2
