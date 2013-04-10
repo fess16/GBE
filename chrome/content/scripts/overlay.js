@@ -169,6 +169,19 @@ var GBE =
 		//TODO: при выходе обнулять меню, закладки, метки и т.д.
 	},	
 
+	/**
+	 * функция сортировки строк (закладок и меток)
+	 * @param  {[type]} a
+	 * @param  {[type]} b
+	 * @return {[type]}
+	 */
+	sortStrings: function (a, b) {
+		var aStr = String(a),
+				bStr = String(b);
+	
+		return aStr.toLowerCase() < bStr.toLowerCase() ? -1 : 1; 
+	},
+
   /**
    * Вывод отладочных сообщений в консоль
    * @param {string} s1
