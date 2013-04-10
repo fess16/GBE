@@ -36,6 +36,14 @@ var GBE =
 		}
 	},
 
+	uninit: function()
+	{
+		if (window.location == "chrome://browser/content/browser.xul")
+		{
+			gBrowser.removeProgressListener(this);
+		}
+	},
+
   /**
    * поиск информации о закладке по коду (или адресу)
    * @param  {object} - params информация о закладке
