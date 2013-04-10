@@ -182,6 +182,27 @@ var GBE =
 		return aStr.toLowerCase() < bStr.toLowerCase() ? -1 : 1; 
 	},
 
+	/**
+	 * задает атрибуты элемента меню закладок
+	 * @param  {menu} parent
+	 * @param  {menuitem} item
+	 * @param  {{}} value
+	 * @return {[type]}
+	 */
+	appendMenuItem: function(parent, item, value)
+	{
+		item.setAttribute("label", value[0]);
+		item.setAttribute("id", value[2]);
+		item.setAttribute("url", value[1]);
+		item.setAttribute("tooltiptext", value[1]);
+		item.setAttribute("class", "menuitem-iconic");
+		item.setAttribute("image", "chrome://fessext1/content/bookmark.png");
+		item.setAttribute("oncommand", "fessext1.bookmarkClick(event);");
+		item.setAttribute("oncontextmenu", "fessext1.onBookmarkContextMenu(event, '" + value[2] + "'); return false;");
+
+		parent.appendChild(item);
+	},
+
 	showAboutForm: function(e)
 	{
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
