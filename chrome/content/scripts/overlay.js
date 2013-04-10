@@ -134,19 +134,40 @@ var GBE =
 		return false;
 	},
 
+	/**
+	 * открывает заданный адрес в новой или той же вкладке
+	 * @param  {[type]} url
+	 * @param  {[type]} inSameTab = false
+	 * @return {[type]}
+	 */
 	showURL: function(url, inSameTab = false)
 	{
 		if (inSameTab)
 		{
+			// открывает в той же вкладке
 			window.open(url);
 		}
 		else
 		{
+			// в новой вкладке
 			var tBrowser = top.document.getElementById("content"),
 			tab = tBrowser.addTab(url);
 			tBrowser.selectedTab = tab;
 		}
 	},
+
+
+	logout : function()
+	{
+		fessext1.showURL("https://www.google.com/accounts/Logout");
+	},
+
+
+	login : function()
+	{
+		fessext1.showURL("https://accounts.google.com");
+		//TODO: при выходе обнулять меню, закладки, метки и т.д.
+	},	
 
   /**
    * Вывод отладочных сообщений в консоль
