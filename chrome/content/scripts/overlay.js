@@ -182,6 +182,11 @@ var GBE =
 		return aStr.toLowerCase() < bStr.toLowerCase() ? -1 : 1; 
 	},
 
+	showAboutForm: function(e)
+	{
+		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
+	},
+
   /**
    * Вывод отладочных сообщений в консоль
    * @param {string} s1
