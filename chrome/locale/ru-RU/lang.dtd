@@ -9,3 +9,8 @@
 <!ENTITY overlay.hmenuGBs.hint "Перейти к Google Bookmarks">
 <!ENTITY overlay.hmenuLgn.hint "Войти в Google Bookmarks">
 <!ENTITY overlay.hmenuLgt.hint "Выйти из Google Bookmarks">
+
+
+<!ENTITY about.label-title.about "Fess Google Bookmarks">
+<!ENTITY about.label-version.about "Версия 0.0.1 :)">
+<!ENTITY about.label-author.about "Fess">

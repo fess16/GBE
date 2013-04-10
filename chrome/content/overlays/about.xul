@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
+
+<dialog 
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  title="&about.label-title.about;"
+  buttons="accept"
+  buttonlabelaccept="Ok">
+  <groupbox>
+    <label value="&about.label-title.about;" style="font-weight: bold; font-size: 12pt; color:blue;" />
+    <separator class="thin"/>
+    <label value="&about.label-version.about;"/>
+    <separator class="thin"/>
+    <label value="&about.label-author.about;"/>
+  </groupbox>
+  <label></label>
+</dialog>

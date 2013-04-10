@@ -58,7 +58,8 @@
 					</vbox>
 					<menuseparator id="GBE-AboutSeparator"/>
 					<menuitem id="GBE-menuAbout" 
-										label="About" />
+										label="About"
+										oncommand="//GBE.showAboutForm(event);" />
 				</menupopup>
 
 			</toolbarbutton>
