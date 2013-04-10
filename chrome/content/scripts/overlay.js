@@ -27,6 +27,14 @@ var GBE =
   // id текущего элемента списка меню закладок (для работы контекстного меню)
   'currentContextId' : "",
 
+  // nsIWebProgressListener
+  QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
+
+  onLocationChange: function(aProgress, aRequest, aURI) 
+  {
+    this.processNewURL(aURI);
+  },
+
   init: function()
 	{
 		//TODO: сделать обновлени списка закладок при запуске
