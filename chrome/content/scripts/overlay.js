@@ -190,6 +190,12 @@ var GBE =
 		}
 	},
 
+	refreshBookmarks: function(e)
+	{
+		GBE.doClearBookmarkList();
+		GBE.doRequestBookmarks();
+	},
+
 	/**
 	 * удаляет все закладки из меню
 	 * @return {[type]} [description]
