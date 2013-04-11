@@ -25,7 +25,7 @@
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/add_on.png"
 												tooltiptext="&overlay.hmenuAdd.hint;" 
-												oncommand="GBE.showBookmarkDialog();" />
+												oncommand="GBE.showBookmarkDialog(false);" />
 							<menuitem id="GBE-hmenuEdit" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/edit_on.png"

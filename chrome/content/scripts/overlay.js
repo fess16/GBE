@@ -478,6 +478,36 @@ var GBE =
 		GBE.showURL(e.currentTarget.getAttribute("url"));
 	},
 
+	/**
+	 * открывает диалог добавления (редактирования) закладки
+	 * @return {[type]} [description]
+	 */
+	showBookmarkDialog: function(editBkmk = true)
+	{
+		// адрес текущей страницы
+		var cUrl = window.content.location.href;
+		// если список закладок и адрес не пустые 
+		if ((GBE.m_bookmarkList.length) && (cUrl !== ""))
+		{
+			// если у документа нет заголовка, то название закладки = адрес без протокола (например, без http://)
+			var myRe = /(?:.*?:\/\/?)(.*)(?:\/$)/ig;
+			var params = {
+					name : (window.content.document.title || myRe.exec(cUrl)[1]),
+					id : null,
+					url : cUrl,
+					labels : "",
+					notes : "",
+					sig : GBE.m_signature
+				};
+			// находим закладку по адресу (при редактировании)
+			if (editBkmk)
+			{
+				GBE.getBookmark(params, true);
+			}
+			window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","alwaysRaised,centerscreen,resizable", params, GBE);
+		}
+	},
+
 	onLoadBookmarkDialog : function()
 	{
 
