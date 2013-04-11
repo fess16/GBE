@@ -510,7 +510,18 @@ var GBE =
 
 	onLoadBookmarkDialog : function()
 	{
-
+		if (window.arguments[0] !== null ) 
+		{
+			var params = window.arguments[0];
+			document.getElementById("GBE-bookmark.dialog.name").value = params.name;
+			document.getElementById("GBE-bookmark.dialog.url").value = params.url;
+			document.getElementById("GBE-bookmark.dialog.labels").value = params.labels;
+			document.getElementById("GBE-bookmark.dialog.notes").value = params.notes;
+			if (params.id)
+			{
+				document.getElementById("GBE-bookmark.dialog.url").setAttribute("readonly", "true");
+			}
+		}
 	},
 
 	onAcceptBookmarkDialog : function()
