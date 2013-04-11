@@ -508,6 +508,10 @@ var GBE =
 		}
 	},
 
+	/**
+	 * выполняется при загрузке диалога редактирования закладок
+	 * @return {[type]} [description]
+	 */
 	onLoadBookmarkDialog : function()
 	{
 		if (window.arguments[0] !== null ) 
@@ -517,6 +521,7 @@ var GBE =
 			document.getElementById("GBE-bookmark.dialog.url").value = params.url;
 			document.getElementById("GBE-bookmark.dialog.labels").value = params.labels;
 			document.getElementById("GBE-bookmark.dialog.notes").value = params.notes;
+			// при редактировании поле адреса делаем только для чтения
 			if (params.id)
 			{
 				document.getElementById("GBE-bookmark.dialog.url").setAttribute("readonly", "true");
@@ -526,7 +531,15 @@ var GBE =
 
 	onAcceptBookmarkDialog : function()
 	{
+		//TODO: добавить проверки
 
+		var params = window.arguments[0];
+		params.name = document.getElementById("GBE-bookmark.dialog.name").value;
+		params.url = document.getElementById("GBE-bookmark.dialog.url").value;
+		params.labels = document.getElementById("GBE-bookmark.dialog.labels").value;
+		params.notes = document.getElementById("GBE-bookmark.dialog.notes").value;
+
+		window.arguments[1].doChangeBookmark(params);
 	},
 
 	doChangeBookmark: function(params)
@@ -549,7 +562,6 @@ var GBE =
   	xhr.send(request);
 
 	},
-
 
 };
 
