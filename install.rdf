@@ -9,7 +9,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="GBE@fess16.blogspot.com"
                    em:name="FESS Google Bookmark Extension"
-                   em:version="0.0.1"
+                   em:version="0.0.3"
                    em:creator="FESS"
                    em:aboutURL="chrome://GBE/content/overlays/about.xul"
                    em:description="Allows you to access and manage your Google Bookmarks."

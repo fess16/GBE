@@ -1,5 +1,12 @@
 /* 
+Version 0.0.3
++ редактирование закладок
+
 Version 0.0.2
++ формирование меню закладок
+
+Version 0.0.1
++ появилась кнопка на панели :)
 */
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 var GBE = 
@@ -337,6 +344,25 @@ var GBE =
 		GBE.needRefresh = false;
 	},
 
+	doChangeBookmark: function(params)
+	{
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", GBE.baseUrl2, true); 
+		xhr.onload = function() 
+		{
+			GBE.needRefresh = true;    
+  	};
+  	xhr.onerror = function() 
+  	{
+  		//TODO: исправить сообщение об ошибке (добавить инфу о редактируемой закладке)
+    	GBE.ErrorLog("doChangeBookmark", " An error occurred while submitting the form.");
+  	};
+  	var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURI(params.name) + 
+  						'&annotation=' + encodeURI(params.notes) + '&labels=' + encodeURI(params.labels) + 
+  						'&prev="/lookup"&sig=' + params.sig;
+  	xhr.send(request);
+	},	
+
 	/**
 	 * функция сортировки строк (закладок и меток)
 	 * @param  {[type]} a
@@ -540,27 +566,6 @@ var GBE =
 		params.notes = document.getElementById("GBE-bookmark.dialog.notes").value;
 
 		window.arguments[1].doChangeBookmark(params);
-	},
-
-	doChangeBookmark: function(params)
-	{
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", GBE.baseUrl2, true); 
-		xhr.onload = function() 
-		{
-			GBE.needRefresh = true;    
-			// GBE.refreshBookmarks();	
-  	};
-  	xhr.onerror = function() 
-  	{
-  		//TODO: исправить сообщение об ошибке (добавить инфу о редактируемой закладке)
-    	GBE.ErrorLog("doChangeBookmark", " An error occurred while submitting the form.");
-  	};
-  	var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURI(params.name) + 
-  						'&annotation=' + encodeURI(params.notes) + '&labels=' + encodeURI(params.labels) + 
-  						'&prev="/lookup"&sig=' + params.sig;
-  	xhr.send(request);
-
 	},
 
 };
