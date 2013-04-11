@@ -59,6 +59,7 @@ var GBE =
 	 */
 	processNewURL: function(aURI) 
 	{
+    // GBE.ErrorLog("processNewURL", this.oldURL);
     // адрес не поменялся - ничего не делаем
     if (aURI.spec === this.oldURL) 
   	{
@@ -71,11 +72,11 @@ var GBE =
   	//TODO: делать неактивной кнопку Добавления - когда страница уже в закладках
    	if (params.id)
 		{
-    	document.getElementById("GBE-button").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+    	document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
 		}
 		else
 		{
-			document.getElementById("GBE-button").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+			document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
 		}
     this.oldURL = aURI.spec;
    },
@@ -404,13 +405,13 @@ var GBE =
 	
 	logout : function()
 	{
-		fessext1.showURL("https://www.google.com/accounts/Logout");
+		GBE.showURL("https://www.google.com/accounts/Logout");
 	},
 
 
 	login : function()
 	{
-		fessext1.showURL("https://accounts.google.com");
+		GBE.showURL("https://accounts.google.com");
 		//TODO: при выходе обнулять меню, закладки, метки и т.д.
 	},	
 
@@ -421,12 +422,16 @@ var GBE =
 
 	onShowMenu: function()
 	{
+		// кнопки логин и логаут
 		var btnLgn = document.getElementById("GBE-hmenuLgn"), 
 				btnLgt = document.getElementById("GBE-hmenuLgt");
+		// если залогинены в GB
 		if (GBE.checkLogin())
 		{
+			// показываем кнопку логаут и прячем логин
 			btnLgn.setAttribute("hidden", true);
 			btnLgt.setAttribute("hidden", false);
+			// если необходимо - обновляем закладки
 			if(GBE.needRefresh)
 			{
 				 GBE.refreshBookmarks();
@@ -435,6 +440,7 @@ var GBE =
 		}
 		else
 		{
+			// показываем кнопку логин и прячем логаут
 			btnLgt.setAttribute("hidden", true);
 			btnLgn.setAttribute("hidden", false);
 		}
@@ -444,5 +450,5 @@ var GBE =
 
 };
 
-window.addEventListener("load", function() { fessext1.init() }, false);
-window.addEventListener("unload", function() { fessext1.uninit() }, false);
+window.addEventListener("load", function() { GBE.init() }, false);
+window.addEventListener("unload", function() { GBE.uninit() }, false);
