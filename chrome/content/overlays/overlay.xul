@@ -14,7 +14,7 @@
 												image="chrome://GBE/skin/images/Star_empty.png"
 												label="&overlay.toolbarbutton.label;"
 												tooltiptext="&overlay.toolbarbutton.hint;" >
-				<menupopup id="GBE-popup" onpopupshowing="//GBE.onShowMenu();">
+				<menupopup id="GBE-popup" onpopupshowing="GBE.onShowMenu();">
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-hmenuRefresh" 
 												class="menuitem-iconic" 
@@ -50,7 +50,7 @@
 												tooltiptext="&overlay.hmenuLgn.hint;" />
 							<menuitem id="GBE-hmenuLgt" label="Logout"
 												hidden="true"
-												oncommand="//GBE.logout();"
+												oncommand="GBE.logout();"
 												tooltiptext="&overlay.hmenuLgt.hint;" />
 					</hbox>
 					<menuseparator/>

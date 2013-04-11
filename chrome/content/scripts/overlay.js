@@ -401,6 +401,7 @@ var GBE =
 	},
 
 	// вызываются из XUL файлов
+	
 	logout : function()
 	{
 		fessext1.showURL("https://www.google.com/accounts/Logout");
@@ -416,7 +417,28 @@ var GBE =
 	showAboutForm: function(e)
 	{
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
-	}
+	},
+
+	onShowMenu: function()
+	{
+		var btnLgn = document.getElementById("GBE-hmenuLgn"), 
+				btnLgt = document.getElementById("GBE-hmenuLgt");
+		if (GBE.checkLogin())
+		{
+			btnLgn.setAttribute("hidden", true);
+			btnLgt.setAttribute("hidden", false);
+			if(GBE.needRefresh)
+			{
+				 GBE.refreshBookmarks();
+				 GBE.needRefresh = false;
+			}
+		}
+		else
+		{
+			btnLgt.setAttribute("hidden", true);
+			btnLgn.setAttribute("hidden", false);
+		}
+	},
 
 
 
