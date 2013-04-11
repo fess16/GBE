@@ -403,7 +403,7 @@ var GBE =
 		item.setAttribute("tooltiptext", value[1]);
 		item.setAttribute("class", "menuitem-iconic");
 		item.setAttribute("image", "chrome://GBE/skin/images//bookmark.png");
-		item.setAttribute("oncommand", "//GBE.bookmarkClick(event);");
+		item.setAttribute("oncommand", "GBE.bookmarkClick(event);");
 		item.setAttribute("oncontextmenu", "//GBE.onBookmarkContextMenu(event, '" + value[2] + "'); return false;");
 
 		parent.appendChild(item);
