@@ -529,6 +529,27 @@ var GBE =
 
 	},
 
+	doChangeBookmark: function(params)
+	{
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", GBE.baseUrl2, true); 
+		xhr.onload = function() 
+		{
+			GBE.needRefresh = true;    
+			// GBE.refreshBookmarks();	
+  	};
+  	xhr.onerror = function() 
+  	{
+  		//TODO: исправить сообщение об ошибке (добавить инфу о редактируемой закладке)
+    	GBE.ErrorLog("doChangeBookmark", " An error occurred while submitting the form.");
+  	};
+  	var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURI(params.name) + 
+  						'&annotation=' + encodeURI(params.notes) + '&labels=' + encodeURI(params.labels) + 
+  						'&prev="/lookup"&sig=' + params.sig;
+  	xhr.send(request);
+
+	},
+
 
 };
 
