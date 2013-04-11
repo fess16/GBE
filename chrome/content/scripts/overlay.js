@@ -410,24 +410,38 @@ var GBE =
 	},
 
 	// вызываются из XUL файлов
-	
+	/**
+	 * обработчик меню логаут
+	 * @return {[type]} [description]
+	 */
 	logout : function()
 	{
 		GBE.showURL("https://www.google.com/accounts/Logout");
+		//TODO: при выходе обнулять меню, закладки, метки и т.д.
 	},
 
-
+	/**
+	 * обработчик меню логин
+	 * @return {[type]} [description]
+	 */
 	login : function()
 	{
 		GBE.showURL("https://accounts.google.com");
-		//TODO: при выходе обнулять меню, закладки, метки и т.д.
 	},	
 
+	/**
+	 * обработчик меню Абоут
+	 * @return {[type]} [description]
+	 */
 	showAboutForm: function(e)
 	{
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
 	},
 
+	/**
+	 * отображает меню закладок
+	 * @return {[type]} [description]
+	 */
 	onShowMenu: function()
 	{
 		// кнопки логин и логаут
@@ -454,6 +468,15 @@ var GBE =
 		}
 	},
 
+	/**
+	 * открывает закладку в новой вкладке
+	 * @param  {[type]} e [description]
+	 * @return {[type]}   [description]
+	 */
+	bookmarkClick: function(e)
+	{
+		GBE.showURL(e.currentTarget.getAttribute("url"));
+	},
 
 
 };
