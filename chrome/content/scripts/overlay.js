@@ -144,28 +144,6 @@ var GBE =
 	},
 
 	/**
-	 * открывает заданный адрес в новой или той же вкладке
-	 * @param  {[type]} url
-	 * @param  {[type]} inSameTab = false
-	 * @return {[type]}
-	 */
-	showURL: function(url, inSameTab = false)
-	{
-		if (inSameTab)
-		{
-			// открывает в той же вкладке
-			window.open(url);
-		}
-		else
-		{
-			// в новой вкладке
-			var tBrowser = top.document.getElementById("content"),
-			tab = tBrowser.addTab(url);
-			tBrowser.selectedTab = tab;
-		}
-	},
-
-	/**
 	 * получает список закладок с сервера в формате RSS
 	 * @return {[type]}
 	 */
@@ -197,12 +175,6 @@ var GBE =
 		{
 			GBE.ErrorLog("doRequestBookmarks", " " + e);
 		}
-	},
-
-	refreshBookmarks: function(showMenu = true)
-	{
-		GBE.doClearBookmarkList();
-		GBE.doRequestBookmarks(showMenu);
 	},
 
 	/**
@@ -407,6 +379,34 @@ var GBE =
 		item.setAttribute("oncontextmenu", "//GBE.onBookmarkContextMenu(event, '" + value[2] + "'); return false;");
 
 		parent.appendChild(item);
+	},
+
+	/**
+	 * открывает заданный адрес в новой или той же вкладке
+	 * @param  {[type]} url
+	 * @param  {[type]} inSameTab = false
+	 * @return {[type]}
+	 */
+	showURL: function(url, inSameTab = false)
+	{
+		if (inSameTab)
+		{
+			// открывает в той же вкладке
+			window.open(url);
+		}
+		else
+		{
+			// в новой вкладке
+			var tBrowser = top.document.getElementById("content"),
+			tab = tBrowser.addTab(url);
+			tBrowser.selectedTab = tab;
+		}
+	},	
+
+	refreshBookmarks: function(showMenu = true)
+	{
+		GBE.doClearBookmarkList();
+		GBE.doRequestBookmarks(showMenu);
 	},
 
 	// вызываются из XUL файлов

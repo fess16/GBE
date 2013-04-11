@@ -20,22 +20,22 @@
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/refresh.png"
 												tooltiptext="&overlay.hmenuRefresh.hint;" 
-												oncommand="//GBE.refreshBookmarks(event);"	/>
+												oncommand="GBE.refreshBookmarks();"	/>
 							<menuitem id="GBE-hmenuAdd" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/add_on.png"
 												tooltiptext="&overlay.hmenuAdd.hint;" 
-												oncommand="//GBE.showBookmarkDialog();" />
+												oncommand="GBE.showBookmarkDialog();" />
 							<menuitem id="GBE-hmenuEdit" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/edit_on.png"
 												tooltiptext="&overlay.hmenuEdit.hint;" 
-												oncommand="//GBE.showBookmarkDialog();" />
+												oncommand="GBE.showBookmarkDialog();" />
 							<menuitem id="GBE-hmenuDel" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/delete_on.png"
 												tooltiptext="&overlay.hmenuDel.hint;"
-												oncommand="//GBE.showDeleteDlg(null);"  />
+												oncommand="GBE.showDeleteDlg(null);"  />
 <!-- 							<menuitem id="GBE-hmenuOpt" 
 					class="menuitem-iconic" 
 					image="chrome://GBE/skin/images/options.png" 
@@ -44,7 +44,7 @@
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/icon_gbm.png" 
 												tooltiptext="&overlay.hmenuGBs.hint;"
-												oncommand="//GBE.showURL(GBE.baseUrl);" />
+												oncommand="GBE.showURL(GBE.baseUrl);" />
 							<menuitem id="GBE-hmenuLgn" label="Login"
 												oncommand="GBE.login();"
 												tooltiptext="&overlay.hmenuLgn.hint;" />
