@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
+
+<dialog 
+  id="GBE-bookmark.dialog"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  title="&bookmark.form.title;"
+  buttons="accept,cancel"
+  buttonlabelaccept="&bookmark.button-save.label;"
+  buttonlabelcancel="&bookmark.button-cancel.label;" 
+  width="300px" flex="1" orient="vertical"
+  onload="GBE.onLoadBookmarkDialog();"
+  ondialogaccept="return GBE.onAcceptBookmarkDialog();" >
+  <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
+  <groupbox>
+  <!--  //TODO:  добавить автодополнение меток -->
+    <label control="GBE-bookmark.dialog.name" value="&bookmark.label-name.value;" />
+    <textbox id="GBE-bookmark.dialog.name" value="" type="autocomplite" />
+    <label control="GBE-bookmark.dialog.url" value="&bookmark.label-url.value;"/>
+    <textbox id="GBE-bookmark.dialog.url" value="" type="autocomplite" />
+    <label control="GBE-bookmark.dialog.labels" value="&bookmark.label-labels.value;"/>
+    <textbox id="GBE-bookmark.dialog.labels" value="" type="autocomplite" />
+    <label control="GBE-bookmark.dialog.notes" value="&bookmark.label-notes.value;"/>
+    <textbox  id="GBE-bookmark.dialog.notes" 
+              value="" 
+              multiline="true" />
+    <separator class="thin"/>
+  </groupbox>
+</dialog>

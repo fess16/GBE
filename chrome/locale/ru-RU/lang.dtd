@@ -14,3 +14,12 @@
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
 <!ENTITY about.label-version.about "Версия 0.0.2 :)">
 <!ENTITY about.label-author.about "Fess">
+
+
+<!ENTITY bookmark.form.title "Редактирование закладки">
+<!ENTITY bookmark.button-save.label "Сохранить">
+<!ENTITY bookmark.button-cancel.label "Отмена">
+<!ENTITY bookmark.label-name.value "Название:">
+<!ENTITY bookmark.label-url.value "Адрес (URL):">
+<!ENTITY bookmark.label-labels.value "Метки:">
+<!ENTITY bookmark.label-notes.value "Заметки:">

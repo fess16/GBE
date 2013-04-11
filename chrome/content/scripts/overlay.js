@@ -478,6 +478,16 @@ var GBE =
 		GBE.showURL(e.currentTarget.getAttribute("url"));
 	},
 
+	onLoadBookmarkDialog : function()
+	{
+
+	},
+
+	onAcceptBookmarkDialog : function()
+	{
+
+	},
+
 
 };
 
