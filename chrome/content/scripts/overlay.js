@@ -191,6 +191,27 @@ var GBE =
 	},
 
 	/**
+	 * удаляет все закладки из меню
+	 * @return {[type]} [description]
+	 */
+	doClearBookmarkList: function()
+	{
+		var GBE_GBlist = document.getElementById("GBE-GBlist");
+		try
+		{
+			while (GBE_GBlist.hasChildNodes())
+			{
+				var firstChild = GBE_GBlist.firstElementChild;
+				GBE_GBlist.removeChild(firstChild);
+			}
+		}
+		catch (e)
+		{
+			GBE.ErrorLog("doClearBookmarkList", " " + e);
+		}
+	},
+
+	/**
 	 * формирует меню закладок
 	 * @return {[type]}
 	 */
