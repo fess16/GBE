@@ -40,9 +40,12 @@ var GBE =
 
   init: function()
 	{
-		//TODO: сделать обновлениеGBE списка закладок при запуске
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
+			if(GBE.needRefresh)
+			{
+				 GBE.refreshBookmarks(false);
+			}
 			gBrowser.addProgressListener(this);
 		}
 	},
@@ -62,7 +65,6 @@ var GBE =
 	 */
 	processNewURL: function(aURI) 
 	{
-    // GBE.ErrorLog("processNewURL", this.oldURL);
     // адрес не поменялся - ничего не делаем
     if (aURI.spec === this.oldURL) 
   	{
@@ -167,7 +169,7 @@ var GBE =
 	 * получает список закладок с сервера в формате RSS
 	 * @return {[type]}
 	 */
-	doRequestBookmarks: function()
+	doRequestBookmarks: function(showMenu)
 	{
 		try
 		{
@@ -181,7 +183,10 @@ var GBE =
 			xhr.onload = function() {
 	    	GBE.m_ganswer = this.responseXML.documentElement;
 	    	GBE.doBuildMenu();
-	    	document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+	    	if (showMenu)
+	    	{
+	    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+	    	}
 	  	};
 	  	xhr.onerror = function() {
 	    	GBE.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
@@ -194,10 +199,10 @@ var GBE =
 		}
 	},
 
-	refreshBookmarks: function(e)
+	refreshBookmarks: function(showMenu = true)
 	{
 		GBE.doClearBookmarkList();
-		GBE.doRequestBookmarks();
+		GBE.doRequestBookmarks(showMenu);
 	},
 
 	/**
@@ -357,7 +362,7 @@ var GBE =
 			}
 		}
 		// }
-
+		GBE.needRefresh = false;
 	},
 
 	/**
