@@ -653,8 +653,8 @@ var GBE =
 	showContextMenu : function(event)
 	{
 		try {
-			GBE.currentContextId = event.target.getAttribute("id");
-			document.getElementById("GBE-сntxtMenu").showPopup(document.getElementById(GBE.currentContextId), 
+			GBE.currentContextId = event.target.getAttribute("id").replace("GBE_","");
+			document.getElementById("GBE-contextMenu").showPopup(document.getElementById(GBE.currentContextId), 
 																event.screenX - 2, event.screenY - 2, "context");
 		}
 		catch (e) {
@@ -662,15 +662,32 @@ var GBE =
 		}
 	},
 
-	сntxtShowHere : function(event)
+	contextShowHere : function(event)
 	{
-		var params = {name : "", id : GBE.currentContextId.replace("GBE_",""),	url : "", labels : "", notes : "", sig : GBE.m_signature};
+		var params = {name : "", id : GBE.currentContextId,	url : "", labels : "", notes : "", sig : GBE.m_signature};
 		GBE.getBookmark(params);
 		if (params.id)
 		{
 			GBE.showURL(params.url, true);
 		}
 	},
+
+	contextEditBookmark : function()
+	{
+		try
+		{
+			var params = {name : "", id : GBE.currentContextId,	url : "", labels : "", notes : "", sig : GBE.m_signature};
+			GBE.getBookmark(params);
+			if (params.id)
+			{
+				window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","alwaysRaised,centerscreen,resizable", params, GBE);
+			}
+		}
+		catch (e) {
+			GBE.ErrorLog("contextEditBookmark", " " + e);
+		}
+	},
+
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);
