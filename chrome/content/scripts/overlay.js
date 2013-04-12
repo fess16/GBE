@@ -604,6 +604,14 @@ var GBE =
 		}
 	},	
 
+	onAcceptDeleteDlg: function()
+	{
+		if(window.arguments[1] && window.arguments[0])
+		{
+			window.arguments[1].doDeleteBookmark(window.arguments[0]);
+		}
+	},
+
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);
