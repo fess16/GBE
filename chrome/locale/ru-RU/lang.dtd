@@ -23,3 +23,8 @@
 <!ENTITY bookmark.label-url.value "Адрес (URL):">
 <!ENTITY bookmark.label-labels.value "Метки:">
 <!ENTITY bookmark.label-notes.value "Заметки:">
+
+<!ENTITY delete.form.title "Удаление закладки">
+<!ENTITY delete.button-delete.label "Удаление">
+<!ENTITY delete.button-cancel.label "Отмена">
+<!ENTITY delete.label-info.value "Вы действительно хотите удалить закладку: ">
