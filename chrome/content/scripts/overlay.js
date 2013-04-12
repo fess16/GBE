@@ -596,6 +596,14 @@ var GBE =
 		window.openDialog("chrome://GBE/content/overlays/delete.xul", "","alwaysRaised,centerscreen", params, GBE);
 	},
 
+	onLoadDeleteDialog: function()
+	{
+		if (window.arguments[0] !== null ) 
+		{
+			document.getElementById("GBE-delete.dialog.title").value = window.arguments[0].name;
+		}
+	},	
+
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);
