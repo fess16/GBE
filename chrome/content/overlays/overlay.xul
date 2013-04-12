@@ -63,6 +63,25 @@
 				</menupopup>
 
 			</toolbarbutton>
+			<popupset>
+				<menupopup id="GBE-сMenu">
+					<menuitem id="GBE-сMenuShowHere" 
+						class="menuitem-iconic" 
+						image="" 
+						label="&overlay.сMenuShowHere.label;"
+						oncommand="GBE.contextShowHere(event);"/>
+					<menuitem id="GBE-сMenuEdit" 
+						class="menuitem-iconic" 
+						image="chrome://GBE/skin/images/edit_on.png" 
+						label="&overlay.сMenuEdit.label;"
+						oncommand="GBE.contextEditBookmark(event);"/>
+					<menuitem id="GBE-сMenuRemove" 
+						class="menuitem-iconic" 
+						image="chrome://GBE/skin/images/delete_on.png"
+						label="&overlay.сMenuRemove.label;"
+						oncommand="GBE.contextRemoveBookmark(event);"/>
+				</menupopup>
+			</popupset>			
 
 		</toolbaritem>
 	</toolbar>

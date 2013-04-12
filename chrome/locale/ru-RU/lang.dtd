@@ -10,6 +10,10 @@
 <!ENTITY overlay.hmenuLgn.hint "Войти в Google Bookmarks">
 <!ENTITY overlay.hmenuLgt.hint "Выйти из Google Bookmarks">
 
+<!ENTITY overlay.сMenuShowHere.label "Открыть на месте">
+<!ENTITY overlay.сMenuEdit.label "Редактировать">
+<!ENTITY verlay.сMenuRemove.label "Удалить">
+
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
 <!ENTITY about.label-version.about "Версия 0.0.4 :)">
