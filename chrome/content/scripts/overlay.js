@@ -271,6 +271,9 @@ var GBE =
 				tempMenu.setAttribute("label", GBE.m_labelsArr[i]);
 				tempMenu.setAttribute("class", "menu-iconic");
 				tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder.png");
+				/*
+				TODO: добавить атрибуты адрес и подсказку
+				 */
 				tempMenu.setAttribute("container", "true");
 				// добавляем к нему вложенное меню
 				tempMenu.appendChild(tempMenupopup);
