@@ -64,22 +64,22 @@
 
 			</toolbarbutton>
 			<popupset>
-				<menupopup id="GBE-сMenu">
-					<menuitem id="GBE-сMenuShowHere" 
+				<menupopup id="GBE-сntxtMenu">
+					<menuitem id="GBE-сntxtMenuShowHere" 
 						class="menuitem-iconic" 
 						image="" 
-						label="&overlay.сMenuShowHere.label;"
-						oncommand="GBE.contextShowHere(event);"/>
-					<menuitem id="GBE-сMenuEdit" 
+						label="&overlay.сntxtMenuShowHere.label;"
+						oncommand="GBE.сntxtShowHere(event);"/>
+					<menuitem id="GBE-сntxtMenuEdit" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/edit_on.png" 
-						label="&overlay.сMenuEdit.label;"
-						oncommand="GBE.contextEditBookmark(event);"/>
-					<menuitem id="GBE-сMenuRemove" 
+						label="&overlay.сntxtMenuEdit.label;"
+						oncommand="GBE.сntxtEditBookmark(event);"/>
+					<menuitem id="GBE-сntxtMenuRemove" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/delete_on.png"
-						label="&overlay.сMenuRemove.label;"
-						oncommand="GBE.contextRemoveBookmark(event);"/>
+						label="&overlay.сntxtMenuRemove.label;"
+						oncommand="GBE.сntxtRemoveBookmark(event);"/>
 				</menupopup>
 			</popupset>			
 

@@ -426,7 +426,7 @@ var GBE =
 		item.setAttribute("class", "menuitem-iconic");
 		item.setAttribute("image", "chrome://GBE/skin/images//bookmark.png");
 		item.setAttribute("oncommand", "GBE.bookmarkClick(event);");
-		item.setAttribute("oncontextmenu", "//GBE.onBookmarkContextMenu(event, '" + value[2] + "'); return false;");
+		item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 
 		parent.appendChild(item);
 	},
@@ -636,6 +636,17 @@ var GBE =
 		}
 	},
 
+	showContextMenu : function(event)
+	{
+		try {
+			GBE.currentContextId = event.target.getAttribute("id");
+			document.getElementById("GBE-сntxtMenu").showPopup(document.getElementById(GBE.currentContextId), 
+																event.screenX - 2, event.screenY - 2, "context");
+		}
+		catch (e) {
+			GBE.ErrorLog("onBookmarkContextMenu", " " + e);
+		}
+	}
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);
