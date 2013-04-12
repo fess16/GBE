@@ -568,6 +568,34 @@ var GBE =
 		window.arguments[1].doChangeBookmark(params);
 	},
 
+	showDeleteDlg: function(e)
+	{
+		var params = {name : "", id : null,	url : window.content.location.href, labels : "", notes : "", sig : GBE.m_signature};
+		var i, flag = true;
+		// вызов из основного меню
+		if(e === null)
+		{
+			GBE.getBookmark(params, true);
+			if (params.id)
+			{
+				flag = false;
+			}
+		}
+		// вызов из контекстного меню закладки
+		else
+		{
+			params.id = e.currentTarget.getAttribute("id").replace("GBE","");
+			params.name = e.currentTarget.getAttribute("label");
+			flag = false;
+		}
+		if(flag)
+		{
+			GBE.ErrorLog("showDeleteBkmkDlg", " Не найдена закладка.");
+			return;
+		}
+		window.openDialog("chrome://GBE/content/overlays/delete.xul", "","alwaysRaised,centerscreen", params, GBE);
+	},
+
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);
