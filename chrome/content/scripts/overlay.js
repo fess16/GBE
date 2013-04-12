@@ -672,7 +672,7 @@ var GBE =
 		}
 	},
 
-	contextEditBookmark : function()
+	contextEditBookmark : function(event)
 	{
 		try
 		{
@@ -686,6 +686,23 @@ var GBE =
 		catch (e) {
 			GBE.ErrorLog("contextEditBookmark", " " + e);
 		}
+	},
+
+	contextRemoveBookmark : function(event)
+	{
+		try
+		{
+			var params = {name : "", id : GBE.currentContextId,	url : "", labels : "", notes : "", sig : GBE.m_signature};
+			GBE.getBookmark(params);
+			if (params.id)
+			{
+				window.openDialog("chrome://GBE/content/overlays/delete.xul", "","alwaysRaised,centerscreen", params, GBE);
+			}
+		}
+		catch (e) {
+			GBE.ErrorLog("contextRemoveBookmark", " " + e);
+		}		
+
 	},
 
 };
