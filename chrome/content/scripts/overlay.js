@@ -164,7 +164,7 @@ var GBE =
 			GBE.m_labelsArr = null;
 			var xhr = new XMLHttpRequest();
 			xhr.open("GET", GBE.baseUrl + "lookup?output=rss&num=10000", true); 
-			//TODO: может переделать на onreadystatechange
+			//TODO: может переделать на onreadystatechange ?
 			xhr.onload = function() {
 	    	GBE.m_ganswer = this.responseXML.documentElement;
 	    	GBE.doBuildMenu();
@@ -350,7 +350,9 @@ var GBE =
 		xhr.open("POST", GBE.baseUrl2, true); 
 		xhr.onload = function() 
 		{
+			//TODO: может переделать на onreadystatechange ?
 			GBE.needRefresh = true;    
+			document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
   	};
   	xhr.onerror = function() 
   	{
@@ -362,6 +364,25 @@ var GBE =
   						'&prev="/lookup"&sig=' + params.sig;
   	xhr.send(request);
 	},	
+
+	doDeleteBookmark: function(params)
+	{
+			var request = GBE.baseUrl2 + "?zx=" + (new Date()).getTime() + "&dlq=" + params.id + "&sig=" + params.sig;
+			var xhr = new XMLHttpRequest();
+			xhr.open("GET", request, true); 
+			xhr.onload = function() 
+			{
+				//TODO: может переделать на onreadystatechange ?
+				GBE.needRefresh = true; 
+				document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+	  	};
+	  	xhr.onerror = function() 
+	  	{
+	  		//TODO: исправить сообщение об ошибке (добавить инфу о удаляемой закладке)
+	    	GBE.ErrorLog("doDeleteBookmark", " An error occurred while submitting the form.");
+	  	};
+	  	xhr.send(null);
+	},
 
 	/**
 	 * функция сортировки строк (закладок и меток)
