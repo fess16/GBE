@@ -439,7 +439,21 @@ var GBE =
 	 */
 	showURL: function(url, inSameTab = false)
 	{
-		if (inSameTab)
+    const kWindowMediatorContractID = "@mozilla.org/appshell/window-mediator;1";
+    const kWindowMediatorIID = Components.interfaces.nsIWindowMediator;
+    const kWindowMediator = Components.classes[kWindowMediatorContractID].getService(kWindowMediatorIID);
+    var browserWindow = kWindowMediator.getMostRecentWindow("navigator:browser");
+		if (browserWindow) {
+			if (inSameTab)
+			{
+				browserWindow.loadURI(url); 				
+			}
+			else
+			{
+				browserWindow.delayedOpenTab(url); 		
+			}
+		}
+/*		if (inSameTab)
 		{
 			// открывает в той же вкладке
 			window.open(url);
@@ -450,7 +464,7 @@ var GBE =
 			var tBrowser = top.document.getElementById("content"),
 			tab = tBrowser.addTab(url);
 			tBrowser.selectedTab = tab;
-		}
+		}*/
 	},	
 
 	refreshBookmarks: function(showMenu = true)
@@ -646,7 +660,17 @@ var GBE =
 		catch (e) {
 			GBE.ErrorLog("onBookmarkContextMenu", " " + e);
 		}
-	}
+	},
+
+	сntxtShowHere : function(event)
+	{
+		var params = {name : "", id : GBE.currentContextId.replace("GBE_",""),	url : "", labels : "", notes : "", sig : GBE.m_signature};
+		GBE.getBookmark(params);
+		if (params.id)
+		{
+			GBE.showURL(params.url, true);
+		}
+	},
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);
