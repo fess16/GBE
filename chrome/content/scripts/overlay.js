@@ -390,8 +390,7 @@ var GBE =
 	  	};
 	  	xhr.onerror = function() 
 	  	{
-	  		//TODO: исправить сообщение об ошибке (добавить инфу о удаляемой закладке)
-	    	GBE.ErrorLog("doDeleteBookmark", " An error occurred while submitting the form.");
+	    	GBE.ErrorLog("doDeleteBookmark", " An error occurred while deleting bookmark (" + params.url + ").");
 	  	};
 	  	xhr.send(null);
 	},
