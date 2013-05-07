@@ -72,6 +72,36 @@ var GBE =
 	},
 
 	/**
+	 * делает неактивной кнопки Редактирования и Удаления когда страницы нет в закладках
+	 * делает неактивной кнопку Добавления - когда страница уже в закладках
+	 * меняет иконки кнопок 
+	 * @param {[type]} id - код закладки или null
+	 */
+	setButtonIcons: function(id)
+	{
+		if (id)
+		{
+			document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+			document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
+			document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "true");
+			document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_on.png");
+			document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "false");
+			document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_on.png");
+			document.getElementById("GBE-hmenuDel").setAttribute("disabled", "false");
+		}
+		else
+		{
+			document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+			document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
+			document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "false");
+			document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
+			document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "true");
+			document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
+			document.getElementById("GBE-hmenuDel").setAttribute("disabled", "true");
+		}
+	},
+
+	/**
 	 * обработчик изменения адреса: меняет иконку на панели и активность кнопок в меню
 	 * @param  {[type]} aURI - текущий адрес
 	 * @return {[type]}
@@ -85,17 +115,7 @@ var GBE =
   	}
 		var params = {name : "", id : null,	url : aURI.spec, labels : "", notes : ""};
 		this.getBookmark(params, true);
-
-  	//TODO: делать неактивной кнопки Редактирования и Удаления когда страницы нет в закладках 
-  	//TODO: делать неактивной кнопку Добавления - когда страница уже в закладках
-   	if (params.id)
-		{
-    	document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
-		}
-		else
-		{
-			document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
-		}
+		this.setButtonIcons(params.id);
     this.oldURL = aURI.spec;
    },
 
@@ -361,10 +381,11 @@ var GBE =
 		{
 			//TODO: может переделать на onreadystatechange ?
 			GBE.needRefresh = true;  
-			if (!params.id)  
-			{
-				document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
-			}
+			GBE.setButtonIcons(!params.id);
+			// if (!params.id)  
+			// {
+			// 	document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+			// }
   	};
   	xhr.onerror = function() 
   	{
