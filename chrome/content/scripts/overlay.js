@@ -360,16 +360,19 @@ var GBE =
 		xhr.onload = function() 
 		{
 			//TODO: может переделать на onreadystatechange ?
-			GBE.needRefresh = true;    
-			document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+			GBE.needRefresh = true;  
+			if (!params.id)  
+			{
+				document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+			}
   	};
   	xhr.onerror = function() 
   	{
   		//TODO: исправить сообщение об ошибке (добавить инфу о редактируемой закладке)
     	GBE.ErrorLog("doChangeBookmark", " An error occurred while submitting the form.");
   	};
-  	var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURI(params.name) + 
-  						'&annotation=' + encodeURI(params.notes) + '&labels=' + encodeURI(params.labels) + 
+  	var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURIComponent(params.name) + 
+  						'&annotation=' + encodeURIComponent(params.notes) + '&labels=' + encodeURIComponent(params.labels) + 
   						'&prev="/lookup"&sig=' + params.sig;
   	xhr.send(request);
 	},	
