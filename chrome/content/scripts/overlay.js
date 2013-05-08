@@ -380,15 +380,10 @@ var GBE =
 			//TODO: может переделать на onreadystatechange ?
 			GBE.needRefresh = true;  
 			GBE.setButtonIcons(!params.id);
-			// if (!params.id)  
-			// {
-			// 	document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
-			// }
   	};
   	xhr.onerror = function() 
   	{
-  		//TODO: исправить сообщение об ошибке (добавить инфу о редактируемой закладке)
-    	GBE.ErrorLog("doChangeBookmark", " An error occurred while submitting the form.");
+    	GBE.ErrorLog("doChangeBookmark", " An error occurred while saving bookmark (" + params.url + ").");
   	};
   	var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURIComponent(params.name) + 
   						'&annotation=' + encodeURIComponent(params.notes) + '&labels=' + encodeURIComponent(params.labels) + 
