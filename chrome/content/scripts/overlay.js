@@ -503,7 +503,14 @@ var GBE =
 	logout : function()
 	{
 		GBE.showURL("https://www.google.com/accounts/Logout");
-		//TODO: при выходе обнулять меню, закладки, метки и т.д.
+		GBE.oldURL = null;
+		GBE.m_ganswer = null;
+		GBE.m_labelsArr = null;
+		GBE.m_bookmarkList = null;
+		GBE.needRefresh = true;
+		GBE.m_signature = "";
+		GBE.currentContextId = "";
+		GBE.doClearBookmarkList();
 	},
 
 	/**
