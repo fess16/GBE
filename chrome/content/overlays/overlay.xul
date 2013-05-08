@@ -18,7 +18,7 @@
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-hmenuRefresh" 
 												class="menuitem-iconic" 
-												image="chrome://GBE/skin/images/refresh.png"
+												image="chrome://GBE/skin/images/update.png"
 												tooltiptext="&overlay.hmenuRefresh.hint;" 
 												oncommand="GBE.refreshBookmarks();"	/>
 							<menuitem id="GBE-hmenuAdd" 
