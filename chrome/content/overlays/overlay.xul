@@ -42,7 +42,7 @@
 					tooltiptext="&overlay.hmenuOpt.hint;" /> -->
 							<menuitem id="GBE-hmenuGBs" 
 												class="menuitem-iconic" 
-												image="chrome://GBE/skin/images/icon_gbm.png" 
+												image="chrome://GBE/skin/images/star.png" 
 												tooltiptext="&overlay.hmenuGBs.hint;"
 												oncommand="GBE.showURL(GBE.baseUrl);" />
 							<menuitem id="GBE-hmenuLgn" label="Login"
