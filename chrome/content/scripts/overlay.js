@@ -134,7 +134,7 @@ var GBE =
   		number = 1;
   		value = params.url;
   	}
-  	if (GBE.m_bookmarkList.length)
+  	if ((GBE.m_bookmarkList) && (GBE.m_bookmarkList.length))
   	{
 	  	// перебираем закладки
 	  	for (i = 0; i < GBE.m_bookmarkList.length; i++)
@@ -289,9 +289,6 @@ var GBE =
 				tempMenu.setAttribute("label", GBE.m_labelsArr[i]);
 				tempMenu.setAttribute("class", "menu-iconic");
 				tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
-				/*
-				TODO: добавить атрибуты адрес и подсказку
-				 */
 				tempMenu.setAttribute("container", "true");
 				// добавляем к нему вложенное меню
 				tempMenu.appendChild(tempMenupopup);
@@ -449,7 +446,6 @@ var GBE =
 		item.setAttribute("image", "chrome://GBE/skin/images//bkmrk.png");
 		item.setAttribute("oncommand", "GBE.bookmarkClick(event);");
 		item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
-
 		parent.appendChild(item);
 	},
 
