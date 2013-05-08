@@ -288,7 +288,7 @@ var GBE =
 				tempMenu.setAttribute("id", "GBE_" + GBE.m_labelsArr[i]);
 				tempMenu.setAttribute("label", GBE.m_labelsArr[i]);
 				tempMenu.setAttribute("class", "menu-iconic");
-				tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder.png");
+				tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 				/*
 				TODO: добавить атрибуты адрес и подсказку
 				 */
@@ -451,7 +451,7 @@ var GBE =
 		item.setAttribute("url", value[1]);
 		item.setAttribute("tooltiptext", value[1]);
 		item.setAttribute("class", "menuitem-iconic");
-		item.setAttribute("image", "chrome://GBE/skin/images//bookmark.png");
+		item.setAttribute("image", "chrome://GBE/skin/images//bkmrk.png");
 		item.setAttribute("oncommand", "GBE.bookmarkClick(event);");
 		item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 
