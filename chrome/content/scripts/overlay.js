@@ -43,6 +43,8 @@ var GBE =
   // id текущего элемента списка меню закладок (для работы контекстного меню)
   'currentContextId' : "",
 
+  oldSearchValue : "",
+
   // nsIWebProgressListener
   QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
 
@@ -134,7 +136,7 @@ var GBE =
   		number = 1;
   		value = params.url;
   	}
-  	if (GBE.m_bookmarkList.length)
+  	if ((GBE.m_bookmarkList) && (GBE.m_bookmarkList.length))
   	{
 	  	// перебираем закладки
 	  	for (i = 0; i < GBE.m_bookmarkList.length; i++)
@@ -289,9 +291,6 @@ var GBE =
 				tempMenu.setAttribute("label", GBE.m_labelsArr[i]);
 				tempMenu.setAttribute("class", "menu-iconic");
 				tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
-				/*
-				TODO: добавить атрибуты адрес и подсказку
-				 */
 				tempMenu.setAttribute("container", "true");
 				// добавляем к нему вложенное меню
 				tempMenu.appendChild(tempMenupopup);
@@ -449,7 +448,6 @@ var GBE =
 		item.setAttribute("image", "chrome://GBE/skin/images//bkmrk.png");
 		item.setAttribute("oncommand", "GBE.bookmarkClick(event);");
 		item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
-
 		parent.appendChild(item);
 	},
 
@@ -619,6 +617,17 @@ var GBE =
 			{
 				document.getElementById("GBE-bookmark.dialog.url").setAttribute("readonly", "true");
 			}
+
+			var searchTextField = document.getElementById("GBE-bookmark.dialog.labels");
+			var labelsList = window.arguments[1].m_labelsArr;
+			paramsToSet = "[";
+			for (var i = 0; i < labelsList.length; i++) {
+				paramsToSet += "{\"value\" : \"" + labelsList[i] + "\"},";
+			};
+			paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
+			paramsToSet += "]";
+			//paramsToSet = paramsToSet.toLowerCase(); // important!
+			searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
 		}
 	},
 
@@ -732,6 +741,25 @@ var GBE =
 			GBE.ErrorLog("contextRemoveBookmark", " " + e);
 		}		
 
+	},
+
+	onSearchCompliteAutocomplite : function (e)
+	{
+		GBE.oldSearchValue = "";
+		var value = e.value;
+		if (value.indexOf(",") > 0)
+		{
+			GBE.oldSearchValue = value.substr(0, value.lastIndexOf(',')).trim();
+		}
+	},
+
+	onTextEnteredAutocomplite : function (e)
+	{
+		if (GBE.oldSearchValue.length)
+		{
+			e.value = GBE.oldSearchValue + ', ' + (e.value);
+			GBE.oldSearchValue = "";
+		}
 	},
 
 };

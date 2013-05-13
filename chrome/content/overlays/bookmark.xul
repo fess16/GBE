@@ -17,11 +17,15 @@
   <groupbox>
   <!--  //TODO:  добавить автодополнение меток -->
     <label control="GBE-bookmark.dialog.name" value="&bookmark.label-name.value;" />
-    <textbox id="GBE-bookmark.dialog.name" value="" type="autocomplite" />
+    <textbox id="GBE-bookmark.dialog.name" value="" />
     <label control="GBE-bookmark.dialog.url" value="&bookmark.label-url.value;"/>
-    <textbox id="GBE-bookmark.dialog.url" value="" type="autocomplite" />
+    <textbox id="GBE-bookmark.dialog.url" value="" />
     <label control="GBE-bookmark.dialog.labels" value="&bookmark.label-labels.value;"/>
-    <textbox id="GBE-bookmark.dialog.labels" value="" type="autocomplite" />
+    <textbox id="GBE-bookmark.dialog.labels"  
+      type="autocomplete" autocompletesearch="simple-autocomplete"   
+      autocompletesearchparam='[]' 
+      onsearchcomplete="GBE.onSearchCompliteAutocomplite(this);"
+      ontextentered="GBE.onTextEnteredAutocomplite(this);" /> 
     <label control="GBE-bookmark.dialog.notes" value="&bookmark.label-notes.value;"/>
     <textbox  id="GBE-bookmark.dialog.notes" 
               value="" 
