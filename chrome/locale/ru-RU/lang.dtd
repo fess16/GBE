@@ -14,6 +14,11 @@
 <!ENTITY overlay.contextMenuEdit.label "Редактировать">
 <!ENTITY overlay.contextMenuRemove.label "Удалить">
 
+<!ENTITY overlay.folderMenuEdit.label "Редактировать">
+<!ENTITY overlay.folderMenuRemove.label "Удалить">
+<!ENTITY overlay.folderMenuOpenAll.label "Открыть все">
+<!ENTITY overlay.folderMenuAddHere.label "Добавить закладку здесь">
+
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
 <!ENTITY about.label-version.about "Версия 0.0.6 :)">
