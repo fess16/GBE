@@ -67,17 +67,17 @@
 				<menupopup id="GBE-contextMenu">
 					<menuitem id="GBE-contextMenuShowHere" 
 						class="menuitem-iconic" 
-						image="" 
+						image="chrome://GBE/skin/images/page_go.png" 
 						label="&overlay.contextMenuShowHere.label;"
 						oncommand="GBE.contextShowHere(event);"/>
 					<menuitem id="GBE-contextMenuEdit" 
 						class="menuitem-iconic" 
-						image="chrome://GBE/skin/images/edit_on.png" 
+						image="chrome://GBE/skin/images/page_edit.png" 
 						label="&overlay.contextMenuEdit.label;"
 						oncommand="GBE.contextEditBookmark(event);"/>
 					<menuitem id="GBE-contextMenuRemove" 
 						class="menuitem-iconic" 
-						image="chrome://GBE/skin/images/delete_on.png"
+						image="chrome://GBE/skin/images/delete.png"
 						label="&overlay.contextMenuRemove.label;"
 						oncommand="GBE.contextRemoveBookmark(event);"/>
 				</menupopup>
@@ -87,24 +87,24 @@
 				<menupopup id="GBE-folderMenu">
 					<menuitem id="GBE-folderMenuEdit" 
 						class="menuitem-iconic" 
-						image="" 
+						image="chrome://GBE/skin/images/folder_edit.png" 
 						label="&overlay.folderMenuEdit.label;"
 						oncommand="GBE.contextShowHere(event);"/>
 					<menuitem id="GBE-folderMenuRemove" 
 						class="menuitem-iconic" 
-						image="" 
+						image="chrome://GBE/skin/images/folder_delete.png" 
 						label="&overlay.folderMenuRemove.label;"
 						oncommand=""/>
 					<menuseparator/>
 					<menuitem id="GBE-folderMenuOpenAll" 
 						class="menuitem-iconic" 
-						image=""
+						image="chrome://GBE/skin/images/folder_go.png"
 						label="&overlay.folderMenuOpenAll.label;"
 						oncommand=""/>
 					<menuseparator/>
 					<menuitem id="GBE-folderMenuAddHere" 
 						class="menuitem-iconic" 
-						image=""
+						image="chrome://GBE/skin/images/folder_add.png"
 						label="&overlay.folderMenuAddHere.label;"
 						oncommand=""/>
 				</menupopup>
