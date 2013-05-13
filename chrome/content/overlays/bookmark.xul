@@ -23,7 +23,9 @@
     <label control="GBE-bookmark.dialog.labels" value="&bookmark.label-labels.value;"/>
     <textbox id="GBE-bookmark.dialog.labels"  
       type="autocomplete" autocompletesearch="simple-autocomplete"   
-      autocompletesearchparam='[{"value":"param1"},{"value":"param2"}]' /> 
+      autocompletesearchparam='[]' 
+      onsearchcomplete="GBE.onSearchCompliteAutocomplite(this);"
+      ontextentered="GBE.onTextEnteredAutocomplite(this);" /> 
     <label control="GBE-bookmark.dialog.notes" value="&bookmark.label-notes.value;"/>
     <textbox  id="GBE-bookmark.dialog.notes" 
               value="" 

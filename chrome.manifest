@@ -6,5 +6,5 @@ locale	GBE ru-RU					chrome/locale/ru-RU/
 
 overlay	chrome://browser/content/browser.xul	chrome://GBE/content/overlays/overlay.xul
 
-component {6224daa1-71a2-4d1a-ad90-01ca1c08e323} components/simpleautocomplete.js
-contract @mozilla.org/autocomplete/search;1?name=simple-autocomplete {6224daa1-71a2-4d1a-ad90-01ca1c08e323}
+component {c35dda30-b7ce-11e2-9e96-0800200c9a66} components/simpleautocomplete.js
+contract @mozilla.org/autocomplete/search;1?name=simple-autocomplete {c35dda30-b7ce-11e2-9e96-0800200c9a66}

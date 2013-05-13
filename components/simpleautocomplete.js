@@ -4,7 +4,7 @@
 
 const Ci = Components.interfaces;
 
-const CLASS_ID = Components.ID("6224daa1-71a2-4d1a-ad90-01ca1c08e323");
+const CLASS_ID = Components.ID("c35dda30-b7ce-11e2-9e96-0800200c9a66");
 const CLASS_NAME = "Simple AutoComplete";
 const CONTRACT_ID = "@mozilla.org/autocomplete/search;1?name=simple-autocomplete";
 
@@ -157,8 +157,12 @@ SimpleAutoCompleteSearch.prototype = {
       var searchResults = nativeJSON.decode(searchParam);
       var results = [];
       var comments = [];
+
+      var searchArr = searchString.split(",");
+      mySearchString = searchArr[searchArr.length-1].trim();
       for (i=0; i<searchResults.length; i++) {
-        if (searchResults[i].value.indexOf(searchString) == 0) {
+        if (searchResults[i].value.indexOf(mySearchString) == 0) 
+        {
           results.push(searchResults[i].value);
           if (searchResults[i].comment)
             comments.push(searchResults[i].comment);
