@@ -83,6 +83,33 @@
 				</menupopup>
 			</popupset>			
 
+			<popupset>
+				<menupopup id="GBE-folderMenu">
+					<menuitem id="GBE-folderMenuEdit" 
+						class="menuitem-iconic" 
+						image="" 
+						label="&overlay.folderMenuEdit.label;"
+						oncommand="GBE.contextShowHere(event);"/>
+					<menuitem id="GBE-folderMenuRemove" 
+						class="menuitem-iconic" 
+						image="" 
+						label="&overlay.folderMenuRemove.label;"
+						oncommand=""/>
+					<menuseparator/>
+					<menuitem id="GBE-folderMenuOpenAll" 
+						class="menuitem-iconic" 
+						image=""
+						label="&overlay.folderMenuOpenAll.label;"
+						oncommand=""/>
+					<menuseparator/>
+					<menuitem id="GBE-folderMenuAddHere" 
+						class="menuitem-iconic" 
+						image=""
+						label="&overlay.folderMenuAddHere.label;"
+						oncommand=""/>
+				</menupopup>
+			</popupset>		
+
 		</toolbaritem>
 	</toolbar>
 </overlay>
