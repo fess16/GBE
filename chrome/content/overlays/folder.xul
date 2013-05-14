@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
+
+<dialog 
+  id="GBE-folder.dialog"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  title="&folder.form.title;"
+  buttons="accept,cancel"
+  buttonlabelaccept="&folder.button-save.label;"
+  buttonlabelcancel="&folder.button-cancel.label;" 
+  minheight= "100px" minwidth="300px" flex="1" orient="vertical"
+  onload="GBE.onLoadFolderkDialog();"
+  ondialogaccept="return GBE.onAcceptFolderDialog();" >
+  <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
+  <groupbox>
+    <label control="GBE-bookmark.dialog.name" value="&folder.label-name.value;" />
+    <textbox id="GBE-bookmark.dialog.name" value="" />
+    <separator class="thin"/>
+  </groupbox>
+</dialog>

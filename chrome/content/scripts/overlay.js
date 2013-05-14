@@ -830,9 +830,66 @@ var GBE =
 		{
 			this.showBookmarkDialog(false, label);
 		}
-		
+		GBE.currentFolderId = "";
 	},
 
+	showFolderDialog : function()
+	{
+		var name = document.getElementById(GBE.currentFolderId).getAttribute("label");
+		window.openDialog("chrome://GBE/content/overlays/folder.xul", "","alwaysRaised,centerscreen", name, GBE);
+		GBE.currentFolderId = "";
+	},
+
+	onLoadFolderkDialog : function()
+	{
+		if (window.arguments[0] !== null ) 
+		{
+			document.getElementById("GBE-bookmark.dialog.name").value = window.arguments[0];
+		}
+	},
+
+	onAcceptFolderDialog : function()
+	{
+		if(window.arguments[1] && window.arguments[0])
+		{
+			var gbe = window.arguments[1];
+			var oldName = window.arguments[0];
+			var name = document.getElementById("GBE-bookmark.dialog.name").value.trim();
+			// TODO add check
+			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
+	  	{
+		  	// перебираем закладки
+		  	for (i = 0; i < gbe.m_bookmarkList.length; i++)
+		  	{
+		  		var needChange = false;
+		  		var newLabels = gbe.m_bookmarkList[i][3];
+		  		if (newLabels.length)
+		  		{
+			  		for (var j = 0; j < newLabels.length; j++) {
+			  			if (newLabels[j] == oldName)
+			  			{
+			  				needChange = true;
+			  				newLabels[j] = name;
+			  			}
+			  		};
+		  		}	
+		  		if (needChange)
+		  		{
+			  		var params = {
+							name : gbe.m_bookmarkList[i][0],
+							id : gbe.m_bookmarkList[i][2],
+							url : gbe.m_bookmarkList[i][1],
+							labels : newLabels,
+							notes : gbe.m_bookmarkList[i][4],
+							sig : gbe.m_signature
+						};
+ 						gbe.doChangeBookmark(params);
+		  		}
+		  	}
+	  	}
+			// window.arguments[1].doDeleteBookmark(window.arguments[0]);
+		}
+	},
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);

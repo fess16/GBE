@@ -37,3 +37,8 @@
 <!ENTITY delete.button-delete.label "Удаление">
 <!ENTITY delete.button-cancel.label "Отмена">
 <!ENTITY delete.label-info.value "Вы действительно хотите удалить закладку: ">
+
+<!ENTITY folder.form.title "Редактирование метки">
+<!ENTITY folder.button-save.label "Сохранить">
+<!ENTITY folder.button-cancel.label "Отмена">
+<!ENTITY folder.label-name.value "Название:">
