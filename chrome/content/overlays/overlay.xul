@@ -89,7 +89,7 @@
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_edit.png" 
 						label="&overlay.folderMenuEdit.label;"
-						oncommand="GBE.contextShowHere(event);"/>
+						oncommand=""/>
 					<menuitem id="GBE-folderMenuRemove" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_delete.png" 
@@ -100,13 +100,13 @@
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_go.png"
 						label="&overlay.folderMenuOpenAll.label;"
-						oncommand="GBE.folderMenuOpenAll(event);"/>
+						oncommand="GBE.folderMenuOpenAll();"/>
 					<menuseparator/>
 					<menuitem id="GBE-folderMenuAddHere" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_add.png"
 						label="&overlay.folderMenuAddHere.label;"
-						oncommand=""/>
+						oncommand="GBE.folderMenuAddHere();"/>
 				</menupopup>
 			</popupset>		
 

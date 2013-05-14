@@ -581,7 +581,7 @@ var GBE =
 	 * открывает диалог добавления (редактирования) закладки
 	 * @return {[type]} [description]
 	 */
-	showBookmarkDialog: function(editBkmk = true)
+	showBookmarkDialog: function(editBkmk = true, addLabel = "")
 	{
 		// адрес текущей страницы
 		var cUrl = window.content.location.href;
@@ -602,6 +602,18 @@ var GBE =
 			if (editBkmk)
 			{
 				GBE.getBookmark(params, true);
+			}
+			// при добавлении дополнительной метки
+			if (addLabel.length)
+			{
+				if (params.labels.length)
+				{
+					params.labels.push(addLabel);
+				}
+				else
+				{
+					params.labels += addLabel;
+				}
 			}
 			window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","alwaysRaised,centerscreen,resizable", params, GBE);
 		}
@@ -781,7 +793,7 @@ var GBE =
 		}
 	},
 
-	folderMenuOpenAll : function(e)
+	folderMenuOpenAll : function()
 	{
 		var label = document.getElementById(GBE.currentFolderId).getAttribute("label");
 		if (label.length && GBE.m_bookmarkList && GBE.m_bookmarkList.length)
@@ -802,6 +814,23 @@ var GBE =
 	  	}
   	}
   	GBE.currentFolderId = "";
+	},
+
+	folderMenuAddHere : function()
+	{
+		var label = document.getElementById(GBE.currentFolderId).getAttribute("label");
+		var cUrl = window.content.location.href;
+		var params = {name : "", id : null,	url : cUrl, labels : "", notes : ""};
+		GBE.getBookmark(params, true);
+		if (params.id)
+		{
+			this.showBookmarkDialog(true, label);
+		}
+		else
+		{
+			this.showBookmarkDialog(false, label);
+		}
+		
 	},
 
 };
