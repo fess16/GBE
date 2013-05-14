@@ -100,7 +100,7 @@
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_go.png"
 						label="&overlay.folderMenuOpenAll.label;"
-						oncommand=""/>
+						oncommand="GBE.folderMenuOpenAll(event);"/>
 					<menuseparator/>
 					<menuitem id="GBE-folderMenuAddHere" 
 						class="menuitem-iconic" 

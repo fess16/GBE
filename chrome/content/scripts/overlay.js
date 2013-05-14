@@ -765,6 +765,30 @@ var GBE =
 		}
 	},
 
+	folderMenuOpenAll : function(e)
+	{
+		//GBE.showURL(e.currentTarget.getAttribute("url"));
+		var label = e.currentTarget.getAttribute("label");
+		if (label.length && GBE.m_bookmarkList && GBE.m_bookmarkList.length)
+  	{
+	  	// перебираем закладки
+	  	for (i = 0; i < GBE.m_bookmarkList.length; i++)
+	  	{
+	  		var labels = GBE.m_bookmarkList[i][3];
+	  		if (labels.length)
+	  		{
+		  		for (var j = 0; j < labels.length; j++) {
+		  			if (labels[j] == label)
+		  			{
+		  				GBE.showURL(GBE.m_bookmarkList[i][1]);
+		  			}
+		  		};
+	  		}	
+	  	}
+  	}
+
+	},
+
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);
