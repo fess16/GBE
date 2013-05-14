@@ -48,6 +48,8 @@ var GBE =
 
   oldSearchValue : "",
 
+  currentFolderId : "",
+
   // nsIWebProgressListener
   QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
 
@@ -295,6 +297,8 @@ var GBE =
 				tempMenu.setAttribute("class", "menu-iconic");
 				tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 				tempMenu.setAttribute("container", "true");
+				tempMenu.setAttribute("context", "GBE-folderMenu");
+				//tempMenu.setAttribute("oncontextmenu", "GBE.showFolderMenu(event); return false;");
 				// добавляем к нему вложенное меню
 				tempMenu.appendChild(tempMenupopup);
 				// добавляем его в основное меню
@@ -450,7 +454,8 @@ var GBE =
 		item.setAttribute("class", "menuitem-iconic");
 		item.setAttribute("image", "chrome://GBE/skin/images//bkmrk.png");
 		item.setAttribute("oncommand", "GBE.bookmarkClick(event);");
-		item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
+		item.setAttribute("context", "GBE-contextMenu");
+		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 		parent.appendChild(item);
 	},
 
@@ -691,12 +696,13 @@ var GBE =
 		}
 	},
 
-	showContextMenu : function(event)
+	onShowContextMenu : function(event)
 	{
 		try {
-			GBE.currentContextId = event.target.getAttribute("id").replace("GBE_","");
-			document.getElementById("GBE-contextMenu").showPopup(document.getElementById(GBE.currentContextId), 
-																event.screenX - 2, event.screenY - 2, "context");
+			// GBE.currentContextId = event.target.getAttribute("id").replace("GBE_","");
+			GBE.currentContextId = event.target.triggerNode.getAttribute("id").replace("GBE_","");
+			// document.getElementById("GBE-contextMenu").showPopup(document.getElementById(GBE.currentContextId), 
+			// 													event.screenX - 2, event.screenY - 2, "context");
 		}
 		catch (e) {
 			GBE.ErrorLog("onBookmarkContextMenu", " " + e);
@@ -765,10 +771,19 @@ var GBE =
 		}
 	},
 
+	onShowFolderMenu : function(e)
+	{
+		try {
+			GBE.currentFolderId = e.target.triggerNode.getAttribute("id");
+		}
+		catch (error) {
+			GBE.ErrorLog("showFolderMenu", " " + error);
+		}
+	},
+
 	folderMenuOpenAll : function(e)
 	{
-		//GBE.showURL(e.currentTarget.getAttribute("url"));
-		var label = e.currentTarget.getAttribute("label");
+		var label = document.getElementById(GBE.currentFolderId).getAttribute("label");
 		if (label.length && GBE.m_bookmarkList && GBE.m_bookmarkList.length)
   	{
 	  	// перебираем закладки
@@ -786,7 +801,7 @@ var GBE =
 	  		}	
 	  	}
   	}
-
+  	GBE.currentFolderId = "";
 	},
 
 };

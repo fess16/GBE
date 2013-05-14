@@ -64,7 +64,7 @@
 
 			</toolbarbutton>
 			<popupset>
-				<menupopup id="GBE-contextMenu">
+				<menupopup id="GBE-contextMenu" onpopupshowing="GBE.onShowContextMenu(event);">
 					<menuitem id="GBE-contextMenuShowHere" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/page_go.png" 
@@ -84,7 +84,7 @@
 			</popupset>			
 
 			<popupset>
-				<menupopup id="GBE-folderMenu">
+				<menupopup id="GBE-folderMenu" onpopupshowing="GBE.onShowFolderMenu(event);">
 					<menuitem id="GBE-folderMenuEdit" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_edit.png" 
