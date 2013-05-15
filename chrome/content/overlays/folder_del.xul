@@ -17,6 +17,6 @@
   <groupbox>
     <label value="&folderDelete.label-info.value;" />
     <label id="GBE-folderDelete.dialog.title" flex="1"/>
-    <checkbox label="&folderDelete.checkbox.label;" checked="false"/>
+    <checkbox id="GBE-folderDelete.dialog.deleteChildren" label="&folderDelete.checkbox.label;" checked="false"/>
   </groupbox>
 </dialog>

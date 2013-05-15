@@ -94,7 +94,7 @@
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_delete.png" 
 						label="&overlay.folderMenuRemove.label;"
-						oncommand=""/>
+						oncommand="GBE.showRemoveLabelDialog();"/>
 					<menuseparator/>
 					<menuitem id="GBE-folderMenuOpenAll" 
 						class="menuitem-iconic" 

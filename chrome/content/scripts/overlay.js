@@ -870,6 +870,7 @@ var GBE =
 			  			{
 			  				needChange = true;
 			  				newLabels[j] = name;
+			  				break;
 			  			}
 			  		};
 		  		}	
@@ -889,6 +890,72 @@ var GBE =
 	  	}
 		}
 	},
+
+	showRemoveLabelDialog : function()
+	{
+		var name = document.getElementById(GBE.currentFolderId).getAttribute("label");
+		window.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","alwaysRaised,centerscreen", name, GBE);
+		GBE.currentFolderId = "";
+	},
+
+	onLoadFolderDeleteDialog : function()
+	{
+		if (window.arguments[0] !== null ) 
+		{
+			document.getElementById("GBE-folderDelete.dialog.title").value = window.arguments[0];
+		}
+	},
+
+	onAcceptFolderDeleteDlg : function()
+	{
+		if(window.arguments[1] && window.arguments[0])
+		{
+			var name = window.arguments[0];
+			var gbe = window.arguments[1];
+			var deleteChildren = document.getElementById("GBE-folderDelete.dialog.deleteChildren").checked;
+			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
+	  	{
+	  		for (i = 0; i < gbe.m_bookmarkList.length; i++)
+		  	{
+		  		var labelPos = -1;
+		  		var newLabels = gbe.m_bookmarkList[i][3];
+		  		if (newLabels.length)
+		  		{
+			  		for (var j = 0; j < newLabels.length; j++) {
+			  			if (newLabels[j] == name)
+			  			{
+			  				labelPos = j;
+			  				break;
+			  			}
+			  		}
+			  	}	
+			  	if (labelPos >= 0)
+			  	{
+			  		var params = {
+							name : gbe.m_bookmarkList[i][0],
+							id : gbe.m_bookmarkList[i][2],
+							url : gbe.m_bookmarkList[i][1],
+							labels : newLabels,
+							notes : gbe.m_bookmarkList[i][4],
+							sig : gbe.m_signature
+						};
+			  		if ((newLabels.length == 1) && deleteChildren) 
+			  		{
+			  			gbe.doDeleteBookmark(params);
+			  		}
+			  		else
+			  		{
+			  			params.labels.splice(labelPos,1);
+			  			gbe.doChangeBookmark(params);
+			  		}
+			  	}
+		  	}
+	  	}
+		}
+	},
+
+
+
 };
 
 window.addEventListener("load", function() { GBE.init() }, false);
