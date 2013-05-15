@@ -42,3 +42,9 @@
 <!ENTITY folder.button-save.label "Сохранить">
 <!ENTITY folder.button-cancel.label "Отмена">
 <!ENTITY folder.label-name.value "Название:">
+
+<!ENTITY folderDelete.form.title "Удаление метки">
+<!ENTITY folderDelete.button-delete.label "Удалить">
+<!ENTITY folderDelete.button-cancel.label "Отмена">
+<!ENTITY folderDelete.label-info.value "Вы действительно хотите удалить метку:">
+<!ENTITY folderDelete.checkbox.label "Удалить вложенные закладки?">

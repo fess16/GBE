@@ -887,7 +887,6 @@ var GBE =
 		  		}
 		  	}
 	  	}
-			// window.arguments[1].doDeleteBookmark(window.arguments[0]);
 		}
 	},
 };
