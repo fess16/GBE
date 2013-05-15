@@ -48,13 +48,13 @@ var GBE =
   'm_signature' : "",
   // id текущего элемента списка меню закладок (для работы контекстного меню)
   'currentContextId' : "",
-
-  oldSearchValue : "",
-
-  currentFolderId : "",
+  // id текущего меню (для работы контекстного меню)
+  'currentFolderId' : "",
+  // предыдущее значение поиска при автодополнении меток
+  'oldSearchValue' : "",
 
   // nsIWebProgressListener
-  QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
+  'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
 
   onLocationChange: function(aProgress, aRequest, aURI) 
   {
@@ -83,7 +83,7 @@ var GBE =
 
 	/**
 	 * меняет иконку на панели и активность кнопок в меню
-	 * @param {[type]} id - код закладки или null
+	 * @param id - код закладки или null
 	 */
 	setButtonIcons: function(id)
 	{
@@ -111,8 +111,7 @@ var GBE =
 
 	/**
 	 * обработчик изменения адреса
-	 * @param  {[type]} aURI - текущий адрес
-	 * @return {[type]}
+	 * @param aURI - текущий адрес
 	 */
 	processNewURL: function(aURI) 
 	{
@@ -131,7 +130,6 @@ var GBE =
    * поиск информации о закладке по коду (или адресу)
    * @param  {object} - params информация о закладке
    * @param  {bool} findByURL = false - признак поиска по адресу
-   * @return {{}}
    */
   getBookmark : function(params, findByURL = false)
   {
@@ -167,7 +165,7 @@ var GBE =
 
   /**
    * проверяет залогинен пользователь в GB или нет
-   * @return {[bool]}
+   * @return {bool}
    */
   checkLogin: function () {
 		var cookieManager = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
@@ -186,7 +184,7 @@ var GBE =
 
 	/**
 	 * получает список закладок с сервера в формате RSS
-	 * @return {[type]}
+	 * @param  {bool} showMenu - показывать меню после обновления или нет
 	 */
 	doRequestBookmarks: function(showMenu)
 	{
@@ -220,7 +218,6 @@ var GBE =
 
 	/**
 	 * удаляет все закладки из меню
-	 * @return {[type]} [description]
 	 */
 	doClearBookmarkList: function()
 	{
@@ -241,7 +238,6 @@ var GBE =
 
 	/**
 	 * формирует меню закладок
-	 * @return {[type]}
 	 */
 	doBuildMenu: function()
 	{
@@ -282,7 +278,6 @@ var GBE =
 			allLabelsStr = allLabelsStr.substr(1, allLabelsStr.length-2);
 		}
 		
-		//GBE.m_labelsArr = null;
 		// получаем массив меток
 		GBE.m_labelsArr = allLabelsStr.split(GBE.labelSep);
 		if (GBE.m_labelsArr.length)
@@ -308,11 +303,6 @@ var GBE =
 				GBE_GBlist.appendChild(tempMenu);
 			}
 		}
-
-
-		// if (bookmarks.length)
-		// {
-		// GBE.m_bookmarkList = null;
 
 		// список закладок
 		GBE.m_bookmarkList = new Array(bookmarks.length);
@@ -376,20 +366,30 @@ var GBE =
 				GBE.appendMenuItem(parentContainer, tempMenuitem, GBE.m_bookmarkList[i]);
 			}
 		}
-		// }
 		GBE.needRefresh = false;
 	},
 
+	/**
+	 * отправляет запрос на добавление (изменение) закладки
+	 * @param  {object} params - параметры редактируемой закладки
+	 */
 	doChangeBookmark: function(params)
 	{
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", GBE.baseUrl2, true); 
+		// запрос отправлен удачно
 		xhr.onload = function() 
 		{
 			//TODO: может переделать на onreadystatechange ?
+			// необходимо обновить меню
 			GBE.needRefresh = true;  
-			GBE.setButtonIcons(!params.id);
+			if (window.content.location.href == params.url)
+			{
+				// меняем иконку на панели
+				GBE.setButtonIcons(!params.id);
+			}
   	};
+  	// ошибка при запросе
   	xhr.onerror = function() 
   	{
     	GBE.ErrorLog("doChangeBookmark", " An error occurred while saving bookmark (" + params.url + ").");
@@ -400,6 +400,10 @@ var GBE =
   	xhr.send(request);
 	},	
 
+	/**
+	 * отправляет запрос на удаление закладки
+	 * @param  {object} params параметры удаляемой закладки
+	 */
 	doDeleteBookmark: function(params)
 	{
 			var request = GBE.baseUrl2 + "?zx=" + (new Date()).getTime() + "&dlq=" + params.id + "&sig=" + params.sig;
@@ -409,7 +413,12 @@ var GBE =
 			{
 				//TODO: может переделать на onreadystatechange ?
 				GBE.needRefresh = true; 
-				document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+				if (window.content.location.href == params.url)
+				{
+					// меняем иконку на панели
+					GBE.setButtonIcons(null);
+					//document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+				}
 	  	};
 	  	xhr.onerror = function() 
 	  	{
@@ -420,14 +429,13 @@ var GBE =
 
 	/**
 	 * функция сортировки строк (закладок и меток)
-	 * @param  {[type]} a
-	 * @param  {[type]} b
-	 * @return {[type]}
+	 * @param  {String} a
+	 * @param  {String} b
+	 * @return {int} результат сравнения
 	 */
 	sortStrings: function (a, b) {
 		var aStr = String(a),
 				bStr = String(b);
-	
 		return aStr.toLowerCase() < bStr.toLowerCase() ? -1 : 1; 
 	},
 
@@ -445,8 +453,7 @@ var GBE =
 	 * задает атрибуты элемента меню закладок
 	 * @param  {menu} parent
 	 * @param  {menuitem} item
-	 * @param  {{}} value
-	 * @return {[type]}
+	 * @param  {array} value
 	 */
 	appendMenuItem: function(parent, item, value)
 	{
@@ -464,9 +471,8 @@ var GBE =
 
 	/**
 	 * открывает заданный адрес в новой или той же вкладке
-	 * @param  {[type]} url
-	 * @param  {[type]} inSameTab = false
-	 * @return {[type]}
+	 * @param  {[type]} url открываемый адрес
+	 * @param  {[type]} inSameTab = false флаг открытия в новой вкладке
 	 */
 	showURL: function(url, inSameTab = false)
 	{
@@ -504,10 +510,8 @@ var GBE =
 		GBE.doRequestBookmarks(showMenu);
 	},
 
-	// вызываются из XUL файлов
 	/**
 	 * обработчик меню логаут
-	 * @return {[type]} [description]
 	 */
 	logout : function()
 	{
@@ -519,12 +523,13 @@ var GBE =
 		GBE.needRefresh = true;
 		GBE.m_signature = "";
 		GBE.currentContextId = "";
+		GBE.currentFolderId = "";
+		GBE.oldSearchValue = "";
 		GBE.doClearBookmarkList();
 	},
 
 	/**
 	 * обработчик меню логин
-	 * @return {[type]} [description]
 	 */
 	login : function()
 	{
@@ -532,17 +537,15 @@ var GBE =
 	},	
 
 	/**
-	 * обработчик меню Абоут
-	 * @return {[type]} [description]
+	 * обработчик меню About
 	 */
-	showAboutForm: function(e)
+	showAboutForm: function()
 	{
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
 	},
 
 	/**
-	 * отображает меню закладок
-	 * @return {[type]} [description]
+	 * обработчик события onpopupshowing для основного меню (GBE-popup)
 	 */
 	onShowMenu: function()
 	{
@@ -572,8 +575,6 @@ var GBE =
 
 	/**
 	 * открывает закладку в новой вкладке
-	 * @param  {[type]} e [description]
-	 * @return {[type]}   [description]
 	 */
 	bookmarkClick: function(e)
 	{
@@ -582,7 +583,8 @@ var GBE =
 
 	/**
 	 * открывает диалог добавления (редактирования) закладки
-	 * @return {[type]} [description]
+	 * @param  {bool} editBkmk = true режим редактирования (true) или добавления (false) закладки
+	 * @param  {string} addLabel = "" режим добавления новой метки к закладке (через контекстное меню метки)
 	 */
 	showBookmarkDialog: function(editBkmk = true, addLabel = "")
 	{
@@ -593,6 +595,7 @@ var GBE =
 		{
 			// если у документа нет заголовка, то название закладки = адрес без протокола (например, без http://)
 			var myRe = /(?:.*?:\/\/?)(.*)(?:\/$)/ig;
+			// параметры закладки
 			var params = {
 					name : (window.content.document.title || myRe.exec(cUrl)[1]),
 					id : null,
@@ -609,10 +612,12 @@ var GBE =
 			// при добавлении дополнительной метки
 			if (addLabel.length)
 			{
+				// для закладок, у которых уже есть метки
 				if (params.labels.length)
 				{
 					params.labels.push(addLabel);
 				}
+				// для закладок без меток и новых закладок
 				else
 				{
 					params.labels += addLabel;
@@ -624,13 +629,13 @@ var GBE =
 
 	/**
 	 * выполняется при загрузке диалога редактирования закладок
-	 * @return {[type]} [description]
 	 */
 	onLoadBookmarkDialog : function()
 	{
 		if (window.arguments[0] !== null ) 
 		{
 			var params = window.arguments[0];
+			// заполняем поля диалога редактирования
 			document.getElementById("GBE-bookmark.dialog.name").value = params.name;
 			document.getElementById("GBE-bookmark.dialog.url").value = params.url;
 			document.getElementById("GBE-bookmark.dialog.labels").value = params.labels;
@@ -642,6 +647,7 @@ var GBE =
 			}
 
 			var searchTextField = document.getElementById("GBE-bookmark.dialog.labels");
+			// формируем список для автодополнения меток
 			var labelsList = window.arguments[1].m_labelsArr;
 			paramsToSet = "[";
 			for (var i = 0; i < labelsList.length; i++) {
@@ -649,35 +655,47 @@ var GBE =
 			};
 			paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
 			paramsToSet += "]";
-			//paramsToSet = paramsToSet.toLowerCase(); // important!
 			searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
 		}
 	},
 
+	/**
+	 * клик по кнопке сохранить в диалоге редактирования закладки
+	 */
 	onAcceptBookmarkDialog : function()
 	{
-		//TODO: добавить проверки
-
 		var params = window.arguments[0];
 		params.name = document.getElementById("GBE-bookmark.dialog.name").value;
 		params.url = document.getElementById("GBE-bookmark.dialog.url").value;
 		params.labels = document.getElementById("GBE-bookmark.dialog.labels").value;
 		params.notes = document.getElementById("GBE-bookmark.dialog.notes").value;
-
+		if (params.name == "") {
+			document.getElementById("GBE-bookmark.dialog.name").focus();
+			return false;
+		}
+		if (params.url == "") {
+			document.getElementById("GBE-bookmark.dialog.url").focus();
+			return false;
+		}
 		window.arguments[1].doChangeBookmark(params);
 	},
 
+	/**
+	 * открывает диалог удаления закладки
+	 * @param  {event} e 
+	 */
 	showDeleteDlg: function(e)
 	{
+		// параметры закладки
 		var params = {name : "", id : null,	url : window.content.location.href, labels : "", notes : "", sig : GBE.m_signature};
-		var i, flag = true;
+		var bookmarkNotFound = true;
 		// вызов из основного меню
 		if(e === null)
 		{
 			GBE.getBookmark(params, true);
 			if (params.id)
 			{
-				flag = false;
+				bookmarkNotFound = false;
 			}
 		}
 		// вызов из контекстного меню закладки
@@ -685,9 +703,10 @@ var GBE =
 		{
 			params.id = e.currentTarget.getAttribute("id").replace("GBE","");
 			params.name = e.currentTarget.getAttribute("label");
-			flag = false;
+			bookmarkNotFound = false;
 		}
-		if(flag)
+		// закладка не найдена - ничего не делаем
+		if(bookmarkNotFound)
 		{
 			GBE.ErrorLog("showDeleteBkmkDlg", " Не найдена закладка.");
 			return;
@@ -695,14 +714,21 @@ var GBE =
 		window.openDialog("chrome://GBE/content/overlays/delete.xul", "","alwaysRaised,centerscreen", params, GBE);
 	},
 
+	/**
+	 * при открытии диалога удаления закладки
+	 */
 	onLoadDeleteDialog: function()
 	{
 		if (window.arguments[0] !== null ) 
 		{
+			// выводим название удаляемой закладки
 			document.getElementById("GBE-delete.dialog.title").value = window.arguments[0].name;
 		}
 	},	
 
+	/**
+	 * клик по кнопке удалить в диалоге удаления закладки
+	 */
 	onAcceptDeleteDlg: function()
 	{
 		if(window.arguments[1] && window.arguments[0])
@@ -711,10 +737,14 @@ var GBE =
 		}
 	},
 
+	/**
+	 * при показе контекстного меню закладки
+	 */
 	onShowContextMenu : function(event)
 	{
 		try {
 			// GBE.currentContextId = event.target.getAttribute("id").replace("GBE_","");
+			// запоминаем код закладки
 			GBE.currentContextId = event.target.triggerNode.getAttribute("id").replace("GBE_","");
 			// document.getElementById("GBE-contextMenu").showPopup(document.getElementById(GBE.currentContextId), 
 			// 													event.screenX - 2, event.screenY - 2, "context");
@@ -724,16 +754,24 @@ var GBE =
 		}
 	},
 
+	/**
+	 * клик на пункте контекстного меню закладки "Открыть на месте"
+	 */
 	contextShowHere : function(event)
 	{
 		var params = {name : "", id : GBE.currentContextId,	url : "", labels : "", notes : "", sig : GBE.m_signature};
+		// получаем параметры закладки
 		GBE.getBookmark(params);
+		// если нашли - показываем в той же вкладке
 		if (params.id)
 		{
 			GBE.showURL(params.url, true);
 		}
 	},
 
+	/**
+	 * клик на пункте контекстного меню закладки "Редактировать"
+	 */
 	contextEditBookmark : function(event)
 	{
 		try
@@ -750,6 +788,9 @@ var GBE =
 		}
 	},
 
+	/**
+	 * клик на пункте контекстного меню закладки "Удалить"
+	 */
 	contextRemoveBookmark : function(event)
 	{
 		try
@@ -767,25 +808,40 @@ var GBE =
 
 	},
 
+	/**
+	 * завершение поиска при автокомплите меток
+	 */
 	onSearchCompliteAutocomplite : function (e)
 	{
+		// обнуляем предыдущее значение поиска
 		GBE.oldSearchValue = "";
+		// текущее значение поиска
 		var value = e.value;
+		// если в строке поиска есть запятые (у закладки несколько меток), то
 		if (value.indexOf(",") > 0)
 		{
+			// сохраняем значения до последней запятой
 			GBE.oldSearchValue = value.substr(0, value.lastIndexOf(',')).trim();
 		}
 	},
 
+	/**
+	 * при выборе значения из списка автокомплита
+	 */
 	onTextEnteredAutocomplite : function (e)
 	{
+		// если предыдущее значение поиска не пустое
 		if (GBE.oldSearchValue.length)
 		{
+			// объединяем старое значение и значение из списка
 			e.value = GBE.oldSearchValue + ', ' + (e.value);
 			GBE.oldSearchValue = "";
 		}
 	},
 
+	/**
+	 * при показе контекстного меню метки
+	 */
 	onShowFolderMenu : function(e)
 	{
 		try {
@@ -796,18 +852,23 @@ var GBE =
 		}
 	},
 
+	/**
+	 * обработчик пункта контекстного меню метки "Открыть все" - открывает все вложенные закладки в подменю
+	 */
 	folderMenuOpenAll : function()
 	{
+		// получаем название метки
 		var label = document.getElementById(GBE.currentFolderId).getAttribute("label");
 		if (label.length && GBE.m_bookmarkList && GBE.m_bookmarkList.length)
   	{
-	  	// перебираем закладки
+	  	// перебираем все закладки
 	  	for (i = 0; i < GBE.m_bookmarkList.length; i++)
 	  	{
 	  		var labels = GBE.m_bookmarkList[i][3];
 	  		if (labels.length)
 	  		{
 		  		for (var j = 0; j < labels.length; j++) {
+		  			// открываем закладки, которые содержат искомую метку
 		  			if (labels[j] == label)
 		  			{
 		  				GBE.showURL(GBE.m_bookmarkList[i][1]);
@@ -819,23 +880,33 @@ var GBE =
   	GBE.currentFolderId = "";
 	},
 
+	/**
+	 * обработчик пункта контекстного меню метки "Добавить закладку здесь"
+	 */
 	folderMenuAddHere : function()
 	{
+		// название метки
 		var label = document.getElementById(GBE.currentFolderId).getAttribute("label");
+		// текущий адрес
 		var cUrl = window.content.location.href;
 		var params = {name : "", id : null,	url : cUrl, labels : "", notes : ""};
 		GBE.getBookmark(params, true);
+		// добавляем метку к существующей закладке
 		if (params.id)
 		{
 			this.showBookmarkDialog(true, label);
 		}
 		else
+		// создаем новую закладку с заданной меткой
 		{
 			this.showBookmarkDialog(false, label);
 		}
 		GBE.currentFolderId = "";
 	},
 
+	/**
+	 * открывает диалог редактирования метки
+	 */
 	showFolderDialog : function()
 	{
 		var name = document.getElementById(GBE.currentFolderId).getAttribute("label");
@@ -843,32 +914,49 @@ var GBE =
 		GBE.currentFolderId = "";
 	},
 
+	/**
+	 * при открытии диалога редактирования метки
+	 */
 	onLoadFolderkDialog : function()
 	{
 		if (window.arguments[0] !== null ) 
 		{
-			document.getElementById("GBE-bookmark.dialog.name").value = window.arguments[0];
+			// Заполняем поле с названием метки
+			document.getElementById("GBE-folder.dialog.name").value = window.arguments[0];
 		}
 	},
 
+	/**
+	 * подтверждение изменения метки
+	 */
 	onAcceptFolderDialog : function()
 	{
 		if(window.arguments[1] && window.arguments[0])
 		{
 			var gbe = window.arguments[1];
 			var oldName = window.arguments[0];
-			var name = document.getElementById("GBE-bookmark.dialog.name").value.trim();
-			// TODO add check
+			var name = document.getElementById("GBE-folder.dialog.name").value.trim();
+			if (name == "")
+			{
+				document.getElementById("GBE-folder.dialog.name").focus();
+				return false;
+			}
+			if (name == oldName)
+			{
+				return true;
+			}
 			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
 	  	{
 		  	// перебираем закладки
 		  	for (i = 0; i < gbe.m_bookmarkList.length; i++)
 		  	{
+		  		// флаг необходимости изменить метку
 		  		var needChange = false;
 		  		var newLabels = gbe.m_bookmarkList[i][3];
 		  		if (newLabels.length)
 		  		{
 			  		for (var j = 0; j < newLabels.length; j++) {
+			  			// меняем метку у соответствующих закладок
 			  			if (newLabels[j] == oldName)
 			  			{
 			  				needChange = true;
@@ -877,6 +965,7 @@ var GBE =
 			  			}
 			  		};
 		  		}	
+		  		// отправляем запрос на изменение закладки
 		  		if (needChange)
 		  		{
 			  		var params = {
@@ -894,6 +983,9 @@ var GBE =
 		}
 	},
 
+	/**
+	 * открывает диалог удаления метки
+	 */
 	showRemoveLabelDialog : function()
 	{
 		var name = document.getElementById(GBE.currentFolderId).getAttribute("label");
@@ -901,6 +993,9 @@ var GBE =
 		GBE.currentFolderId = "";
 	},
 
+	/**
+	 * при открытии диалога удаления метки
+	 */
 	onLoadFolderDeleteDialog : function()
 	{
 		if (window.arguments[0] !== null ) 
@@ -909,15 +1004,20 @@ var GBE =
 		}
 	},
 
+	/**
+	 * подтверждение удаления метки
+	 */
 	onAcceptFolderDeleteDlg : function()
 	{
 		if(window.arguments[1] && window.arguments[0])
 		{
 			var name = window.arguments[0];
 			var gbe = window.arguments[1];
+			// флаг удаления вложенных закладок
 			var deleteChildren = document.getElementById("GBE-folderDelete.dialog.deleteChildren").checked;
 			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
 	  	{
+	  		// находим закладки с нужной меткой
 	  		for (i = 0; i < gbe.m_bookmarkList.length; i++)
 		  	{
 		  		var labelPos = -1;
@@ -927,11 +1027,13 @@ var GBE =
 			  		for (var j = 0; j < newLabels.length; j++) {
 			  			if (newLabels[j] == name)
 			  			{
+			  				// запоминаем позицию искомой метки в массиве меток найденной закладки
 			  				labelPos = j;
 			  				break;
 			  			}
 			  		}
 			  	}	
+			  	// закладка с искомой меткой
 			  	if (labelPos >= 0)
 			  	{
 			  		var params = {
@@ -942,13 +1044,17 @@ var GBE =
 							notes : gbe.m_bookmarkList[i][4],
 							sig : gbe.m_signature
 						};
+						// если у закладки это единственная метка и стоял флаг deleteChildren
 			  		if ((newLabels.length == 1) && deleteChildren) 
 			  		{
+			  			// отправляем запрос на удаление закладки
 			  			gbe.doDeleteBookmark(params);
 			  		}
 			  		else
 			  		{
+			  			// удаляем метку из массива меток найденной закладки
 			  			params.labels.splice(labelPos,1);
+			  			// отправляем запрос на изменение закладки 
 			  			gbe.doChangeBookmark(params);
 			  		}
 			  	}

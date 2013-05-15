@@ -16,7 +16,7 @@
   <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
   <groupbox>
     <label value="&folderDelete.label-info.value;" />
-    <label id="GBE-folderDelete.dialog.title" flex="1"/>
+    <label id="GBE-folderDelete.dialog.title" flex="1" class="header"/>
     <checkbox id="GBE-folderDelete.dialog.deleteChildren" label="&folderDelete.checkbox.label;" checked="false"/>
   </groupbox>
 </dialog>

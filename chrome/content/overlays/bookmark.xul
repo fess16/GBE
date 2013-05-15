@@ -10,7 +10,7 @@
   buttons="accept,cancel"
   buttonlabelaccept="&bookmark.button-save.label;"
   buttonlabelcancel="&bookmark.button-cancel.label;" 
-  width="300px" flex="1" orient="vertical"
+  minwidth="500px" flex="1" orient="vertical"
   onload="GBE.onLoadBookmarkDialog();"
   ondialogaccept="return GBE.onAcceptBookmarkDialog();" >
   <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>

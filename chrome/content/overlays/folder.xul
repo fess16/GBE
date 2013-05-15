@@ -15,8 +15,8 @@
   ondialogaccept="return GBE.onAcceptFolderDialog();" >
   <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
   <groupbox>
-    <label control="GBE-bookmark.dialog.name" value="&folder.label-name.value;" />
-    <textbox id="GBE-bookmark.dialog.name" value="" />
+    <label control="GBE-folder.dialog.name" value="&folder.label-name.value;" />
+    <textbox id="GBE-folder.dialog.name" value="" />
     <separator class="thin"/>
   </groupbox>
 </dialog>

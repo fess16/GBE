@@ -59,7 +59,7 @@
 					<menuseparator id="GBE-AboutSeparator"/>
 					<menuitem id="GBE-menuAbout" 
 										label="About"
-										oncommand="GBE.showAboutForm(event);" />
+										oncommand="GBE.showAboutForm();" />
 				</menupopup>
 
 			</toolbarbutton>
