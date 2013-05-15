@@ -15,7 +15,6 @@
   ondialogaccept="return GBE.onAcceptBookmarkDialog();" >
   <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
   <groupbox>
-  <!--  //TODO:  добавить автодополнение меток -->
     <label control="GBE-bookmark.dialog.name" value="&bookmark.label-name.value;" />
     <textbox id="GBE-bookmark.dialog.name" value="" />
     <label control="GBE-bookmark.dialog.url" value="&bookmark.label-url.value;"/>

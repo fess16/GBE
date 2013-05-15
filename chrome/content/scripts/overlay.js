@@ -48,6 +48,8 @@ var GBE =
 
   oldSearchValue : "",
 
+  currentFolderId : "",
+
   // nsIWebProgressListener
   QueryInterface: XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
 
@@ -295,6 +297,8 @@ var GBE =
 				tempMenu.setAttribute("class", "menu-iconic");
 				tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 				tempMenu.setAttribute("container", "true");
+				tempMenu.setAttribute("context", "GBE-folderMenu");
+				//tempMenu.setAttribute("oncontextmenu", "GBE.showFolderMenu(event); return false;");
 				// добавляем к нему вложенное меню
 				tempMenu.appendChild(tempMenupopup);
 				// добавляем его в основное меню
@@ -450,7 +454,8 @@ var GBE =
 		item.setAttribute("class", "menuitem-iconic");
 		item.setAttribute("image", "chrome://GBE/skin/images//bkmrk.png");
 		item.setAttribute("oncommand", "GBE.bookmarkClick(event);");
-		item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
+		item.setAttribute("context", "GBE-contextMenu");
+		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 		parent.appendChild(item);
 	},
 
@@ -576,7 +581,7 @@ var GBE =
 	 * открывает диалог добавления (редактирования) закладки
 	 * @return {[type]} [description]
 	 */
-	showBookmarkDialog: function(editBkmk = true)
+	showBookmarkDialog: function(editBkmk = true, addLabel = "")
 	{
 		// адрес текущей страницы
 		var cUrl = window.content.location.href;
@@ -597,6 +602,18 @@ var GBE =
 			if (editBkmk)
 			{
 				GBE.getBookmark(params, true);
+			}
+			// при добавлении дополнительной метки
+			if (addLabel.length)
+			{
+				if (params.labels.length)
+				{
+					params.labels.push(addLabel);
+				}
+				else
+				{
+					params.labels += addLabel;
+				}
 			}
 			window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","alwaysRaised,centerscreen,resizable", params, GBE);
 		}
@@ -691,12 +708,13 @@ var GBE =
 		}
 	},
 
-	showContextMenu : function(event)
+	onShowContextMenu : function(event)
 	{
 		try {
-			GBE.currentContextId = event.target.getAttribute("id").replace("GBE_","");
-			document.getElementById("GBE-contextMenu").showPopup(document.getElementById(GBE.currentContextId), 
-																event.screenX - 2, event.screenY - 2, "context");
+			// GBE.currentContextId = event.target.getAttribute("id").replace("GBE_","");
+			GBE.currentContextId = event.target.triggerNode.getAttribute("id").replace("GBE_","");
+			// document.getElementById("GBE-contextMenu").showPopup(document.getElementById(GBE.currentContextId), 
+			// 													event.screenX - 2, event.screenY - 2, "context");
 		}
 		catch (e) {
 			GBE.ErrorLog("onBookmarkContextMenu", " " + e);
@@ -764,6 +782,179 @@ var GBE =
 			GBE.oldSearchValue = "";
 		}
 	},
+
+	onShowFolderMenu : function(e)
+	{
+		try {
+			GBE.currentFolderId = e.target.triggerNode.getAttribute("id");
+		}
+		catch (error) {
+			GBE.ErrorLog("showFolderMenu", " " + error);
+		}
+	},
+
+	folderMenuOpenAll : function()
+	{
+		var label = document.getElementById(GBE.currentFolderId).getAttribute("label");
+		if (label.length && GBE.m_bookmarkList && GBE.m_bookmarkList.length)
+  	{
+	  	// перебираем закладки
+	  	for (i = 0; i < GBE.m_bookmarkList.length; i++)
+	  	{
+	  		var labels = GBE.m_bookmarkList[i][3];
+	  		if (labels.length)
+	  		{
+		  		for (var j = 0; j < labels.length; j++) {
+		  			if (labels[j] == label)
+		  			{
+		  				GBE.showURL(GBE.m_bookmarkList[i][1]);
+		  			}
+		  		};
+	  		}	
+	  	}
+  	}
+  	GBE.currentFolderId = "";
+	},
+
+	folderMenuAddHere : function()
+	{
+		var label = document.getElementById(GBE.currentFolderId).getAttribute("label");
+		var cUrl = window.content.location.href;
+		var params = {name : "", id : null,	url : cUrl, labels : "", notes : ""};
+		GBE.getBookmark(params, true);
+		if (params.id)
+		{
+			this.showBookmarkDialog(true, label);
+		}
+		else
+		{
+			this.showBookmarkDialog(false, label);
+		}
+		GBE.currentFolderId = "";
+	},
+
+	showFolderDialog : function()
+	{
+		var name = document.getElementById(GBE.currentFolderId).getAttribute("label");
+		window.openDialog("chrome://GBE/content/overlays/folder.xul", "","alwaysRaised,centerscreen", name, GBE);
+		GBE.currentFolderId = "";
+	},
+
+	onLoadFolderkDialog : function()
+	{
+		if (window.arguments[0] !== null ) 
+		{
+			document.getElementById("GBE-bookmark.dialog.name").value = window.arguments[0];
+		}
+	},
+
+	onAcceptFolderDialog : function()
+	{
+		if(window.arguments[1] && window.arguments[0])
+		{
+			var gbe = window.arguments[1];
+			var oldName = window.arguments[0];
+			var name = document.getElementById("GBE-bookmark.dialog.name").value.trim();
+			// TODO add check
+			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
+	  	{
+		  	// перебираем закладки
+		  	for (i = 0; i < gbe.m_bookmarkList.length; i++)
+		  	{
+		  		var needChange = false;
+		  		var newLabels = gbe.m_bookmarkList[i][3];
+		  		if (newLabels.length)
+		  		{
+			  		for (var j = 0; j < newLabels.length; j++) {
+			  			if (newLabels[j] == oldName)
+			  			{
+			  				needChange = true;
+			  				newLabels[j] = name;
+			  				break;
+			  			}
+			  		};
+		  		}	
+		  		if (needChange)
+		  		{
+			  		var params = {
+							name : gbe.m_bookmarkList[i][0],
+							id : gbe.m_bookmarkList[i][2],
+							url : gbe.m_bookmarkList[i][1],
+							labels : newLabels,
+							notes : gbe.m_bookmarkList[i][4],
+							sig : gbe.m_signature
+						};
+ 						gbe.doChangeBookmark(params);
+		  		}
+		  	}
+	  	}
+		}
+	},
+
+	showRemoveLabelDialog : function()
+	{
+		var name = document.getElementById(GBE.currentFolderId).getAttribute("label");
+		window.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","alwaysRaised,centerscreen", name, GBE);
+		GBE.currentFolderId = "";
+	},
+
+	onLoadFolderDeleteDialog : function()
+	{
+		if (window.arguments[0] !== null ) 
+		{
+			document.getElementById("GBE-folderDelete.dialog.title").value = window.arguments[0];
+		}
+	},
+
+	onAcceptFolderDeleteDlg : function()
+	{
+		if(window.arguments[1] && window.arguments[0])
+		{
+			var name = window.arguments[0];
+			var gbe = window.arguments[1];
+			var deleteChildren = document.getElementById("GBE-folderDelete.dialog.deleteChildren").checked;
+			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
+	  	{
+	  		for (i = 0; i < gbe.m_bookmarkList.length; i++)
+		  	{
+		  		var labelPos = -1;
+		  		var newLabels = gbe.m_bookmarkList[i][3];
+		  		if (newLabels.length)
+		  		{
+			  		for (var j = 0; j < newLabels.length; j++) {
+			  			if (newLabels[j] == name)
+			  			{
+			  				labelPos = j;
+			  				break;
+			  			}
+			  		}
+			  	}	
+			  	if (labelPos >= 0)
+			  	{
+			  		var params = {
+							name : gbe.m_bookmarkList[i][0],
+							id : gbe.m_bookmarkList[i][2],
+							url : gbe.m_bookmarkList[i][1],
+							labels : newLabels,
+							notes : gbe.m_bookmarkList[i][4],
+							sig : gbe.m_signature
+						};
+			  		if ((newLabels.length == 1) && deleteChildren) 
+			  		{
+			  			gbe.doDeleteBookmark(params);
+			  		}
+			  		else
+			  		{
+			  			params.labels.splice(labelPos,1);
+			  			gbe.doChangeBookmark(params);
+			  		}
+			  	}
+		  	}
+	  	}
+		}
+	},
+
+
 
 };
 

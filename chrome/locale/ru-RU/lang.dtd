@@ -14,6 +14,11 @@
 <!ENTITY overlay.contextMenuEdit.label "Редактировать">
 <!ENTITY overlay.contextMenuRemove.label "Удалить">
 
+<!ENTITY overlay.folderMenuEdit.label "Редактировать">
+<!ENTITY overlay.folderMenuRemove.label "Удалить">
+<!ENTITY overlay.folderMenuOpenAll.label "Открыть все">
+<!ENTITY overlay.folderMenuAddHere.label "Добавить закладку здесь">
+
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
 <!ENTITY about.label-version.about "Версия 0.0.6 :)">
@@ -32,3 +37,14 @@
 <!ENTITY delete.button-delete.label "Удаление">
 <!ENTITY delete.button-cancel.label "Отмена">
 <!ENTITY delete.label-info.value "Вы действительно хотите удалить закладку: ">
+
+<!ENTITY folder.form.title "Редактирование метки">
+<!ENTITY folder.button-save.label "Сохранить">
+<!ENTITY folder.button-cancel.label "Отмена">
+<!ENTITY folder.label-name.value "Название:">
+
+<!ENTITY folderDelete.form.title "Удаление метки">
+<!ENTITY folderDelete.button-delete.label "Удалить">
+<!ENTITY folderDelete.button-cancel.label "Отмена">
+<!ENTITY folderDelete.label-info.value "Вы действительно хотите удалить метку:">
+<!ENTITY folderDelete.checkbox.label "Удалить вложенные закладки?">
