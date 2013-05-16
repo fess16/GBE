@@ -734,7 +734,7 @@ var GBE =
 		if (window.arguments[0] !== null ) 
 		{
 			// выводим название удаляемой закладки
-			document.getElementById("GBE-delete.dialog.title").value = window.arguments[0].name;
+			document.getElementById("GBE-delete.dialog.title").value = window.arguments[0].name + "?";
 		}
 	},	
 
@@ -1019,7 +1019,7 @@ var GBE =
 	{
 		if (window.arguments[0] !== null ) 
 		{
-			document.getElementById("GBE-folderDelete.dialog.title").value = window.arguments[0];
+			document.getElementById("GBE-folderDelete.dialog.title").value = window.arguments[0] + "?";
 		}
 	},
 

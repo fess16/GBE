@@ -1,0 +1,50 @@
+<!ENTITY	overlay.toolbarbutton.label	"Fess Google Bookmarks">
+<!ENTITY	overlay.toolbarbutton.hint	"Fess Google Bookmarks">
+
+<!ENTITY overlay.hmenuRefresh.hint "Refresh Bookmarks">
+<!ENTITY overlay.hmenuAdd.hint "Add current page to Bookmarks">
+<!ENTITY overlay.hmenuEdit.hint "Edit Bookmark for current page">
+<!ENTITY overlay.hmenuDel.hint "Delete current page from Bookmarks">
+<!ENTITY overlay.hmenuOpt.hint "Settings">
+<!ENTITY overlay.hmenuGBs.hint "Go to Google Bookmarks">
+<!ENTITY overlay.hmenuLgn.hint "Login Google Bookmarks">
+<!ENTITY overlay.hmenuLgt.hint "Logout Google Bookmarks">
+
+<!ENTITY overlay.contextMenuShowHere.label "Open in current Tab">
+<!ENTITY overlay.contextMenuEdit.label "Edit">
+<!ENTITY overlay.contextMenuRemove.label "Delete">
+
+<!ENTITY overlay.folderMenuEdit.label "Edit">
+<!ENTITY overlay.folderMenuRemove.label "Delete">
+<!ENTITY overlay.folderMenuOpenAll.label "Open all">
+<!ENTITY overlay.folderMenuAddHere.label "Add Bookmark Here">
+
+
+<!ENTITY about.label-title.about "Fess Google Bookmarks">
+<!ENTITY about.label-version.about "Version 0.0.7 :)">
+<!ENTITY about.label-author.about "fess61@gmail.com">
+
+
+<!ENTITY bookmark.form.title "Edit Bookmark">
+<!ENTITY bookmark.button-save.label "Save">
+<!ENTITY bookmark.button-cancel.label "Cancel">
+<!ENTITY bookmark.label-name.value "Name:">
+<!ENTITY bookmark.label-url.value "Location (URL):">
+<!ENTITY bookmark.label-labels.value "Labels:">
+<!ENTITY bookmark.label-notes.value "Notes:">
+
+<!ENTITY delete.form.title "Delete Bookmark">
+<!ENTITY delete.button-delete.label "Delete">
+<!ENTITY delete.button-cancel.label "Cancel">
+<!ENTITY delete.label-info.value "Are you sure you want to delete bookmark: ">
+
+<!ENTITY folder.form.title "Edit Lanel">
+<!ENTITY folder.button-save.label "Save">
+<!ENTITY folder.button-cancel.label "Cancel">
+<!ENTITY folder.label-name.value "Name:">
+
+<!ENTITY folderDelete.form.title "Delete Label">
+<!ENTITY folderDelete.button-delete.label "Delete">
+<!ENTITY folderDelete.button-cancel.label "Cancel">
+<!ENTITY folderDelete.label-info.value "Are you sure you want to delete label:">
+<!ENTITY folderDelete.checkbox.label "Delete all children?">
