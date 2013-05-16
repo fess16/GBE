@@ -603,7 +603,8 @@ var GBE =
 		// адрес текущей страницы
 		var cUrl = window.content.location.href;
 		// если список закладок и адрес не пустые 
-		if ((GBE.m_bookmarkList.length) && (cUrl !== ""))
+		//if ((GBE.m_bookmarkList.length) && (cUrl !== ""))
+		if (cUrl !== "")
 		{
 			// если у документа нет заголовка, то название закладки = адрес без протокола (например, без http://)
 			var myRe = /(?:.*?:\/\/?)(.*)(?:\/$)/ig;
