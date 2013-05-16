@@ -157,8 +157,9 @@ SimpleAutoCompleteSearch.prototype = {
       var searchResults = nativeJSON.decode(searchParam);
       var results = [];
       var comments = [];
-
+      // делим строку поиска по запятым
       var searchArr = searchString.split(",");
+      // ищем только по последнему занчению
       mySearchString = searchArr[searchArr.length-1].trim();
       for (i=0; i<searchResults.length; i++) {
         if (searchResults[i].value.indexOf(mySearchString) == 0) 

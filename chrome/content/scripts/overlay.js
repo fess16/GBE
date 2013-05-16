@@ -53,6 +53,8 @@ var GBE =
   // предыдущее значение поиска при автодополнении меток
   'oldSearchValue' : "",
 
+  'refreshInProgress' : false,
+
   // nsIWebProgressListener
   'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
 
@@ -65,7 +67,7 @@ var GBE =
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
-			if(GBE.needRefresh)
+			if(GBE.needRefresh && GBE.checkLogin())
 			{
 				 GBE.refreshBookmarks(false);
 			}
@@ -206,6 +208,7 @@ var GBE =
 	    	}
 	  	};
 	  	xhr.onerror = function() {
+	  		GBE.refreshInProgress = false;
 	    	GBE.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
 	  	};
 	  	xhr.send(null);
@@ -256,7 +259,11 @@ var GBE =
 		}
 		
 		// если закладок и меток в ответе сервера нет - ничего не делаем
-		if (!labels.length && !bookmarks.length) { return; }
+		if (!labels.length && !bookmarks.length) 
+		{
+			GBE.refreshInProgress = false;
+		 	return; 
+		}
 
 		// временная строка для группировки и сортировки меток
 		allLabelsStr = GBE.labelSep;
@@ -367,6 +374,7 @@ var GBE =
 			}
 		}
 		GBE.needRefresh = false;
+		GBE.refreshInProgress = false;
 	},
 
 	/**
@@ -506,8 +514,12 @@ var GBE =
 
 	refreshBookmarks: function(showMenu = true)
 	{
-		GBE.doClearBookmarkList();
-		GBE.doRequestBookmarks(showMenu);
+		if (!GBE.refreshInProgress)
+		{	
+			GBE.refreshInProgress = true;
+			GBE.doClearBookmarkList();
+			GBE.doRequestBookmarks(showMenu);
+		}
 	},
 
 	/**
@@ -846,6 +858,13 @@ var GBE =
 	{
 		try {
 			GBE.currentFolderId = e.target.triggerNode.getAttribute("id");
+			for (var i = 0; i < GBE.m_labelsArr.length; i++) 
+			{
+				if (("GBE_" + GBE.m_labelsArr[i]) != GBE.currentFolderId)
+				{
+					document.getElementById("GBE_" + GBE.m_labelsArr[i]).open = false;
+				}
+			}
 		}
 		catch (error) {
 			GBE.ErrorLog("showFolderMenu", " " + error);
