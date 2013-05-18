@@ -1,4 +1,7 @@
 /* 
+Version 0.0.8
+! кнопка добавлялась только на панель навигации - исправлено
+
 Version 0.0.7
 + добавлено контекстное меню для меток (редактирование, удаление, открытие вложенных закладок, добавление закладки с выбранной меткой)
 
@@ -1089,3 +1092,72 @@ var GBE =
 
 window.addEventListener("load", function() { GBE.init() }, false);
 window.addEventListener("unload", function() { GBE.uninit() }, false);
+
+
+/*GBE.installButton = function(toolbarId, id, afterId) 
+{
+    if (!document.getElementById(id)) {
+        var toolbar = document.getElementById(toolbarId);
+ 
+        // If no afterId is given, then append the item to the toolbar
+        var before = null;
+        if (afterId) {
+            let elem = document.getElementById(afterId);
+            if (elem && elem.parentNode == toolbar)
+                before = elem.nextElementSibling;
+        }
+ 
+        toolbar.insertItem(id, before);
+        toolbar.setAttribute("currentset", toolbar.currentSet);
+        document.persist(toolbar.id, "currentset");
+ 
+        if (toolbarId == "addon-bar")
+            toolbar.collapsed = false;
+    }
+}
+ 
+if (firstRun) {
+    GBE.installButton("nav-bar", "GBE-toolbaritem");
+    // The "addon-bar" is available since Firefox 4
+    //installButton("addon-bar", "GBE-toolbaritem");
+}
+*/
+
+
+GBE.installButton = function()
+{
+	var id = "GBE-toolbaritem";
+	var toolbarId = "nav-bar";
+ 
+	var toolbar = document.getElementById(toolbarId);
+ 
+	//add the button at the end of the navigation toolbar	
+	toolbar.insertItem(id, toolbar.lastChild);
+	toolbar.setAttribute("currentset", toolbar.currentSet);
+	document.persist(toolbar.id, "currentset");
+	alert("installButton");
+ 
+	//if the navigation toolbar is hidden, 
+	//show it, so the user can see your button
+	toolbar.collapsed = false;
+}
+ 
+GBE.firstRun = function (extensions) 
+{
+    var extension = extensions.get("GBE@fess16.blogspot.com");
+ 		//alert(extension);
+    if (extension.firstRun)
+    {
+    	GBE.installButton();	
+    	//alert("firstRun2");
+    }
+}
+ 
+if (Application.extensions)
+{
+  GBE.firstRun(Application.extensions);
+}
+else
+{
+  Application.getExtensions(GBE.firstRun);
+}

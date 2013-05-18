@@ -5,7 +5,8 @@
 	id="GBE-overlay"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
-	<toolbar id="nav-bar">
+<!-- 	<toolbar id="nav-bar"> -->
+	<toolbarpalette id="BrowserToolbarPalette">
 		<toolbaritem id="GBE-toolbaritem">
 
 			<toolbarbutton 	id="GBE-toolbarbutton" 
@@ -111,5 +112,6 @@
 			</popupset>		
 
 		</toolbaritem>
-	</toolbar>
+<!-- 	</toolbar> -->
+	</toolbarpalette>
 </overlay>

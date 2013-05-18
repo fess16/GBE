@@ -1,20 +1,22 @@
-<?xml version="1.0"?>
-<RDF:RDF xmlns:em="http://www.mozilla.org/2004/em-rdf#"
-         xmlns:NC="http://home.netscape.com/NC-rdf#"
-         xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-  <RDF:Description RDF:about="rdf:#$.KrMJ2"
-                   em:id="{ec8030f7-c20a-464f-9b0e-13a3a9e97384}"
-                   em:minVersion="10.*"
-                   em:maxVersion="21.*" />
-  <RDF:Description RDF:about="urn:mozilla:install-manifest"
-                   em:id="GBE@fess16.blogspot.com"
-                   em:name="Fess Google Bookmark Extension"
-                   em:version="0.0.7"
-                   em:creator="Fess"
-                   em:aboutURL="chrome://GBE/content/overlays/about.xul"
-                   em:description="Allows you to access and manage your Google Bookmarks."
-                   em:homepageURL="http:/fess16.blogspot.com/"
-                   em:iconURL="chrome://GBE/skin/images/logo.png">
-    <em:targetApplication RDF:resource="rdf:#$.KrMJ2"/>
-  </RDF:Description>
-</RDF:RDF>
+<?xml version="1.0" encoding="UTF-8"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+    <Description about="urn:mozilla:install-manifest">
+        <em:type>2</em:type> <!-- 2 : Extension -->
+        <em:id>GBE@fess16.blogspot.com</em:id>
+        <em:version>0.0.8</em:version>
+        <em:name>Fess Google Bookmark Extension</em:name>
+        <em:description>Allows you to access and manage your Google Bookmarks.</em:description>
+        <em:creator>Fess</em:creator>
+        <em:targetApplication>
+            <Description>
+                <!-- Firefox -->
+                <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+                <em:minVersion>17.0</em:minVersion>
+                <em:maxVersion>24.0</em:maxVersion>
+            </Description>
+        </em:targetApplication>
+        <em:aboutURL>chrome://GBE/content/overlays/about.xul</em:aboutURL>
+        <em:iconURL>chrome://GBE/skin/images/logo.png</em:iconURL>
+    </Description>
+</RDF>
