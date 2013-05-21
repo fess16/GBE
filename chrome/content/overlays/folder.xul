@@ -11,8 +11,8 @@
   buttonlabelaccept="&folder.button-save.label;"
   buttonlabelcancel="&folder.button-cancel.label;" 
   minheight= "100px" minwidth="300px" flex="1" orient="vertical"
-  onload="GBE.onLoadFolderkDialog();"
-  ondialogaccept="return GBE.onAcceptFolderDialog();" >
+  onload="fGoogleBookmarksExtension.onLoadFolderkDialog();"
+  ondialogaccept="return fGoogleBookmarksExtension.onAcceptFolderDialog();" >
   <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
   <groupbox>
     <label control="GBE-folder.dialog.name" value="&folder.label-name.value;" />

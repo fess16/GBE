@@ -11,8 +11,8 @@
   buttonlabelaccept="&delete.button-delete.label;"
   buttonlabelcancel="&delete.button-cancel.label;" 
   minheight= "100px" minwidth="400px" flex="1" orient="vertical"
-  onload="GBE.onLoadDeleteDialog();"
-  ondialogaccept="return GBE.onAcceptDeleteDlg();" >
+  onload="fGoogleBookmarksExtension.onLoadDeleteDialog();"
+  ondialogaccept="return fGoogleBookmarksExtension.onAcceptDeleteDlg();" >
   <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
   <groupbox>
     <label value="&delete.label-info.value;" />

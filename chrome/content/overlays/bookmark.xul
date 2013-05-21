@@ -11,8 +11,8 @@
   buttonlabelaccept="&bookmark.button-save.label;"
   buttonlabelcancel="&bookmark.button-cancel.label;" 
   minwidth="500px" flex="1" orient="vertical"
-  onload="GBE.onLoadBookmarkDialog();"
-  ondialogaccept="return GBE.onAcceptBookmarkDialog();" >
+  onload="fGoogleBookmarksExtension.onLoadBookmarkDialog();"
+  ondialogaccept="return fGoogleBookmarksExtension.onAcceptBookmarkDialog();" >
   <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
   <groupbox>
     <label control="GBE-bookmark.dialog.name" value="&bookmark.label-name.value;" />
@@ -23,8 +23,8 @@
     <textbox id="GBE-bookmark.dialog.labels"  
       type="autocomplete" autocompletesearch="simple-autocomplete"   
       autocompletesearchparam='[]' 
-      onsearchcomplete="GBE.onSearchCompliteAutocomplite(this);"
-      ontextentered="GBE.onTextEnteredAutocomplite(this);" /> 
+      onsearchcomplete="fGoogleBookmarksExtension.onSearchCompliteAutocomplite(this);"
+      ontextentered="fGoogleBookmarksExtension.onTextEnteredAutocomplite(this);" /> 
     <label control="GBE-bookmark.dialog.notes" value="&bookmark.label-notes.value;"/>
     <textbox  id="GBE-bookmark.dialog.notes" 
               value="" 

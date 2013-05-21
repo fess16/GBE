@@ -15,28 +15,28 @@
 												image="chrome://GBE/skin/images/Star_empty.png"
 												label="&overlay.toolbarbutton.label;"
 												tooltiptext="&overlay.toolbarbutton.hint;" >
-				<menupopup id="GBE-popup" onpopupshowing="GBE.onShowMenu();">
+				<menupopup id="GBE-popup" onpopupshowing="fGoogleBookmarksExtension.onShowMenu();">
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-hmenuRefresh" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/update.png"
 												tooltiptext="&overlay.hmenuRefresh.hint;" 
-												oncommand="GBE.refreshBookmarks();"	/>
+												oncommand="fGoogleBookmarksExtension.refreshBookmarks();"	/>
 							<menuitem id="GBE-hmenuAdd" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/bkmrk_add_on.png"
 												tooltiptext="&overlay.hmenuAdd.hint;" 
-												oncommand="GBE.showBookmarkDialog(false);" />
+												oncommand="fGoogleBookmarksExtension.showBookmarkDialog(false);" />
 							<menuitem id="GBE-hmenuEdit" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/bkmrk_edit_off.png"
 												tooltiptext="&overlay.hmenuEdit.hint;" 
-												oncommand="GBE.showBookmarkDialog();" />
+												oncommand="fGoogleBookmarksExtension.showBookmarkDialog();" />
 							<menuitem id="GBE-hmenuDel" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/bkmrk_delete_off.png"
 												tooltiptext="&overlay.hmenuDel.hint;"
-												oncommand="GBE.showDeleteDlg(null);"  />
+												oncommand="fGoogleBookmarksExtension.showDeleteDlg(null);"  />
 <!-- 							<menuitem id="GBE-hmenuOpt" 
 					class="menuitem-iconic" 
 					image="chrome://GBE/skin/images/options.png" 
@@ -45,13 +45,13 @@
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/star.png" 
 												tooltiptext="&overlay.hmenuGBs.hint;"
-												oncommand="GBE.showURL(GBE.baseUrl);" />
+												oncommand="fGoogleBookmarksExtension.showURL(fGoogleBookmarksExtension.baseUrl);" />
 							<menuitem id="GBE-hmenuLgn" label="Login"
-												oncommand="GBE.login();"
+												oncommand="fGoogleBookmarksExtension.login();"
 												tooltiptext="&overlay.hmenuLgn.hint;" />
 							<menuitem id="GBE-hmenuLgt" label="Logout"
 												hidden="true"
-												oncommand="GBE.logout();"
+												oncommand="fGoogleBookmarksExtension.logout();"
 												tooltiptext="&overlay.hmenuLgt.hint;" />
 					</hbox>
 					<menuseparator/>
@@ -60,54 +60,54 @@
 					<menuseparator id="GBE-AboutSeparator"/>
 					<menuitem id="GBE-menuAbout" 
 										label="About"
-										oncommand="GBE.showAboutForm();" />
+										oncommand="fGoogleBookmarksExtension.showAboutForm();" />
 				</menupopup>
 
 			</toolbarbutton>
 			<popupset>
-				<menupopup id="GBE-contextMenu" onpopupshowing="GBE.onShowContextMenu(event);">
+				<menupopup id="GBE-contextMenu" onpopupshowing="fGoogleBookmarksExtension.onShowContextMenu(event);">
 					<menuitem id="GBE-contextMenuShowHere" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/page_go.png" 
 						label="&overlay.contextMenuShowHere.label;"
-						oncommand="GBE.contextShowHere(event);"/>
+						oncommand="fGoogleBookmarksExtension.contextShowHere(event);"/>
 					<menuitem id="GBE-contextMenuEdit" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/page_edit.png" 
 						label="&overlay.contextMenuEdit.label;"
-						oncommand="GBE.contextEditBookmark(event);"/>
+						oncommand="fGoogleBookmarksExtension.contextEditBookmark(event);"/>
 					<menuitem id="GBE-contextMenuRemove" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/delete.png"
 						label="&overlay.contextMenuRemove.label;"
-						oncommand="GBE.contextRemoveBookmark(event);"/>
+						oncommand="fGoogleBookmarksExtension.contextRemoveBookmark(event);"/>
 				</menupopup>
 			</popupset>			
 
 			<popupset>
-				<menupopup id="GBE-folderMenu" onpopupshowing="GBE.onShowFolderMenu(event);">
+				<menupopup id="GBE-folderMenu" onpopupshowing="fGoogleBookmarksExtension.onShowFolderMenu(event);">
 					<menuitem id="GBE-folderMenuEdit" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_edit.png" 
 						label="&overlay.folderMenuEdit.label;"
-						oncommand="GBE.showFolderDialog();"/>
+						oncommand="fGoogleBookmarksExtension.showFolderDialog();"/>
 					<menuitem id="GBE-folderMenuRemove" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_delete.png" 
 						label="&overlay.folderMenuRemove.label;"
-						oncommand="GBE.showRemoveLabelDialog();"/>
+						oncommand="fGoogleBookmarksExtension.showRemoveLabelDialog();"/>
 					<menuseparator/>
 					<menuitem id="GBE-folderMenuOpenAll" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_go.png"
 						label="&overlay.folderMenuOpenAll.label;"
-						oncommand="GBE.folderMenuOpenAll();"/>
+						oncommand="fGoogleBookmarksExtension.folderMenuOpenAll();"/>
 					<menuseparator/>
 					<menuitem id="GBE-folderMenuAddHere" 
 						class="menuitem-iconic" 
 						image="chrome://GBE/skin/images/folder_add.png"
 						label="&overlay.folderMenuAddHere.label;"
-						oncommand="GBE.folderMenuAddHere();"/>
+						oncommand="fGoogleBookmarksExtension.folderMenuAddHere();"/>
 				</menupopup>
 			</popupset>		
 
