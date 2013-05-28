@@ -38,7 +38,7 @@
 <!ENTITY delete.button-cancel.label "Cancel">
 <!ENTITY delete.label-info.value "Are you sure you want to delete bookmark: ">
 
-<!ENTITY folder.form.title "Edit Lanel">
+<!ENTITY folder.form.title "Edit Label">
 <!ENTITY folder.button-save.label "Save">
 <!ENTITY folder.button-cancel.label "Cancel">
 <!ENTITY folder.label-name.value "Name:">
