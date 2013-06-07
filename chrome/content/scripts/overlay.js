@@ -73,9 +73,9 @@ var fGoogleBookmarksExtension =
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
-			if(fGoogleBookmarksExtension.needRefresh && fGoogleBookmarksExtension.checkLogin())
+			if(this.needRefresh && this.checkLogin())
 			{
-				 fGoogleBookmarksExtension.refreshBookmarks(false);
+				 this.refreshBookmarks(false);
 			}
 			gBrowser.addProgressListener(this);
 		}
@@ -191,6 +191,24 @@ var fGoogleBookmarksExtension =
 	},
 
 	/**
+	 * удаляет куки авторизации в гугл аке (при ошибке получения списка закладок, для повторного логина)
+	 */
+	removeSIDCookie: function()
+	{
+		var cookieManager = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
+				iter = cookieManager.enumerator;
+		while (iter.hasMoreElements()) 
+		{
+			var cookie = iter.getNext();
+			if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
+			{
+				cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
+				return;	
+			}
+		}
+	},
+
+	/**
 	 * получает список закладок с сервера в формате RSS
 	 * @param  {bool} showMenu - показывать меню после обновления или нет
 	 */
@@ -206,14 +224,24 @@ var fGoogleBookmarksExtension =
 			xhr.open("GET", fGoogleBookmarksExtension.baseUrl + "lookup?output=rss&num=10000", true); 
 			//TODO: может переделать на onreadystatechange ?
 			xhr.onload = function() {
-	    	fGoogleBookmarksExtension.m_ganswer = this.responseXML.documentElement;
-	    	fGoogleBookmarksExtension.doBuildMenu();
-	    	if (showMenu)
+				if (this.responseXML)
+				{
+		    	fGoogleBookmarksExtension.m_ganswer = this.responseXML.documentElement;
+		    	fGoogleBookmarksExtension.doBuildMenu();
+		    	if (showMenu)
+		    	{
+		    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+		    	}
+	    	}
+	    	else
 	    	{
-	    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+	    		fGoogleBookmarksExtension.removeSIDCookie();
+	    		fGoogleBookmarksExtension.refreshInProgress = false;
+	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
 	    	}
 	  	};
 	  	xhr.onerror = function() {
+	  		fGoogleBookmarksExtension.removeSIDCookie();
 	  		fGoogleBookmarksExtension.refreshInProgress = false;
 	    	fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
 	  	};
