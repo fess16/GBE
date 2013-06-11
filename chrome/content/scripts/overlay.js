@@ -76,7 +76,7 @@ var fGoogleBookmarksExtension =
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
-			if(this.needRefresh && this.checkLogin() && document.getElementById("GBE-toolbarbutton"))
+			if(this.needRefresh && this.checkLogin() && document.getElementById("GBE-toolbarbutton") )
 			{
 				 this.refreshBookmarks(false);
 			}
@@ -100,30 +100,33 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
-			if (id)
+			if (document.getElementById("GBE-toolbarbutton"))
 			{
-				document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
-				document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
-				document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "true");
-				document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_on.png");
-				document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "false");
-				document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_on.png");
-				document.getElementById("GBE-hmenuDel").setAttribute("disabled", "false");
-			}
-			else
-			{
-				document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
-				document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
-				document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "false");
-				document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
-				document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "true");
-				document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
-				document.getElementById("GBE-hmenuDel").setAttribute("disabled", "true");
+				if (id)
+				{
+					document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+					document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
+					document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "true");
+					document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_on.png");
+					document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "false");
+					document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_on.png");
+					document.getElementById("GBE-hmenuDel").setAttribute("disabled", "false");
+				}
+				else
+				{
+					document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+					document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
+					document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "false");
+					document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
+					document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "true");
+					document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
+					document.getElementById("GBE-hmenuDel").setAttribute("disabled", "true");
+				}
 			}
 		}
 	  catch (e)
 		{
-			this.ErrorLog("GBE:setButtonIcons", " " + e);
+			this.ErrorLog("GBE:setButtonIcons", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -147,7 +150,7 @@ var fGoogleBookmarksExtension =
     }
 	  catch (e)
 		{
-			this.ErrorLog("GBE:processNewURL", " " + e);
+			this.ErrorLog("GBE:processNewURL", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
    },
 
@@ -191,7 +194,7 @@ var fGoogleBookmarksExtension =
   	}
 	  catch (e)
 		{
-			this.ErrorLog("GBE:getBookmark", " " + e);
+			this.ErrorLog("GBE:getBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
   },
 
@@ -273,7 +276,7 @@ var fGoogleBookmarksExtension =
 	  }
 	  catch (e)
 		{
-			this.ErrorLog("GBE:doRequestBookmarks", " " + e);
+			this.ErrorLog("GBE:doRequestBookmarks", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -293,7 +296,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:doClearBookmarkList", " " + e);
+			this.ErrorLog("GBE:doClearBookmarkList", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -440,7 +443,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:doBuildMenu", " " + e);
+			this.ErrorLog("GBE:doBuildMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -592,7 +595,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:refreshBookmarks", " " + e);
+			this.ErrorLog("GBE:refreshBookmarks", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -617,7 +620,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:logout", " " + e);
+			this.ErrorLog("GBE:logout", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 
 	},
@@ -678,7 +681,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:onShowMenu", " " + e);
+			this.ErrorLog("GBE:onShowMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -747,7 +750,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:showBookmarkDialog", " - " + e);
+			this.ErrorLog("GBE:showBookmarkDialog", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -841,7 +844,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:showDeleteDlg", " " + e);
+			this.ErrorLog("GBE:showDeleteDlg", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -881,7 +884,7 @@ var fGoogleBookmarksExtension =
 			// 													event.screenX - 2, event.screenY - 2, "context");
 		}
 		catch (e) {
-			this.ErrorLog("GBE:onBookmarkContextMenu", " " + e);
+			this.ErrorLog("GBE:onBookmarkContextMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -915,7 +918,7 @@ var fGoogleBookmarksExtension =
 			}
 		}
 		catch (e) {
-			this.ErrorLog("GBE:contextEditBookmark", " " + e);
+			this.ErrorLog("GBE:contextEditBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -934,7 +937,7 @@ var fGoogleBookmarksExtension =
 			}
 		}
 		catch (e) {
-			this.ErrorLog("contextRemoveBookmark", " " + e);
+			this.ErrorLog("contextRemoveBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}		
 
 	},
@@ -986,7 +989,7 @@ var fGoogleBookmarksExtension =
 			}
 		}
 		catch (error) {
-			this.ErrorLog("GBE:showFolderMenu", " " + error);
+			this.ErrorLog("GBE:showFolderMenu", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
@@ -1021,7 +1024,7 @@ var fGoogleBookmarksExtension =
 	  }
 		catch (e)
 		{
-			this.ErrorLog("GBE:folderMenuOpenAll", " " + e);
+			this.ErrorLog("GBE:folderMenuOpenAll", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -1052,7 +1055,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:folderMenuAddHere", " " + e);
+			this.ErrorLog("GBE:folderMenuAddHere", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -1069,7 +1072,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:showFolderDialog", " " + e);
+			this.ErrorLog("GBE:showFolderDialog", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -1155,7 +1158,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:showRemoveLabelDialog", " " + e);
+			this.ErrorLog("GBE:showRemoveLabelDialog", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
