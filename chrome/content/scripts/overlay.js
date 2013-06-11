@@ -76,7 +76,7 @@ var fGoogleBookmarksExtension =
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
-			if(this.needRefresh && this.checkLogin())
+			if(this.needRefresh && this.checkLogin() && document.getElementById("GBE-toolbarbutton"))
 			{
 				 this.refreshBookmarks(false);
 			}
@@ -652,8 +652,10 @@ var fGoogleBookmarksExtension =
 			if (this.checkLogin())
 			{
 				// показываем кнопку логаут и прячем логин
-				btnLgn.setAttribute("hidden", true);
-				btnLgt.setAttribute("hidden", false);
+				btnLgn.setAttribute("hidden", "true");
+				btnLgt.setAttribute("hidden", "false");
+				// document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "false");
+				// document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
 				// если необходимо - обновляем закладки
 				if(this.needRefresh)
 				{
@@ -664,8 +666,14 @@ var fGoogleBookmarksExtension =
 			else
 			{
 				// показываем кнопку логин и прячем логаут
-				btnLgt.setAttribute("hidden", true);
-				btnLgn.setAttribute("hidden", false);
+				btnLgt.setAttribute("hidden", "true");
+				btnLgn.setAttribute("hidden", "false");
+				document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "true");
+				document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
+				document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
+				document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "true");
+				document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
+				document.getElementById("GBE-hmenuDel").setAttribute("disabled", "true");
 			}
 		}
 		catch (e)
@@ -699,9 +707,16 @@ var fGoogleBookmarksExtension =
 			{
 				// если у документа нет заголовка, то название закладки = адрес без протокола (например, без http://)
 				var myRe = /(?:.*?:\/\/?)(.*)(?:\/$)/ig;
+				var trimUrlAr = myRe.exec(cUrl);
+				var trimUrl = cUrl;
+				if (trimUrlAr && trimUrlAr.length > 1)
+				{
+					trimUrl = trimUrlAr[1];
+				}
+
 				// параметры закладки
 				var params = {
-						name : (window.content.document.title || myRe.exec(cUrl)[1]),
+						name : (window.content.document.title || trimUrl),
 						id : null,
 						url : cUrl,
 						labels : "",
@@ -732,7 +747,7 @@ var fGoogleBookmarksExtension =
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:showBookmarkDialog", " " + e);
+			this.ErrorLog("GBE:showBookmarkDialog", " - " + e);
 		}
 	},
 
@@ -819,7 +834,7 @@ var fGoogleBookmarksExtension =
 			// закладка не найдена - ничего не делаем
 			if(bookmarkNotFound)
 			{
-				this.ErrorLog("showDeleteBkmkDlg", " Не найдена закладка.");
+				this.ErrorLog("GBE:showDeleteBkmkDlg", " Не найдена закладка.");
 				return;
 			}
 			window.openDialog("chrome://GBE/content/overlays/delete.xul", "","alwaysRaised,centerscreen", params, this);
