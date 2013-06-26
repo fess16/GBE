@@ -570,6 +570,34 @@ var fGoogleBookmarksExtension =
 	  	xhr.send(null);
 	},
 
+	doDeleteBookmarkJQuery: function(params)
+	{
+		jQuery.noConflict();
+		jQuery.ajax({
+			type: "get",
+      url: this.baseUrl2,
+      data: 
+      	{
+          zx: (new Date()).getTime(),
+          dlq: params.id,
+          sig: params.sig
+        },
+      timeout: 5000,
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+      	fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
+      },
+      success: function(data, textStatus) {
+				fGoogleBookmarksExtension.needRefresh = true; 
+				if (window.content.location.href == params.url)
+				{
+					// меняем иконку на панели
+					fGoogleBookmarksExtension.setButtonIcons(null);
+				}
+      }
+
+		});
+	},
+
 	/**
 	 * функция сортировки строк (закладок и меток)
 	 * @param  {String} a
@@ -932,7 +960,7 @@ var fGoogleBookmarksExtension =
 	{
 		if(window.arguments[1] && window.arguments[0])
 		{
-			window.arguments[1].doDeleteBookmark(window.arguments[0]);
+			window.arguments[1].doDeleteBookmarkJQuery(window.arguments[0]);
 		}
 	},
 
@@ -1282,7 +1310,7 @@ var fGoogleBookmarksExtension =
 			  		if ((newLabels.length == 1) && deleteChildren) 
 			  		{
 			  			// отправляем запрос на удаление закладки
-			  			gbe.doDeleteBookmark(params);
+			  			gbe.doDeleteBookmarkJQuery(params);
 			  		}
 			  		else
 			  		{
