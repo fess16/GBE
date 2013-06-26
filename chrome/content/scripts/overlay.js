@@ -1,4 +1,7 @@
 /* 
+Version 0.1.1
+Дурацкие правила мозилы
+
 Version 0.1.0 
 ! при неудаче получения списка закладок с серевера (ошибка или куки был, а на самом деле логина не было) теперь удаляется куки SID
 
@@ -82,6 +85,14 @@ var fGoogleBookmarksExtension =
 			}
 			gBrowser.addProgressListener(this);
 		}
+		//Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js");
+		Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
+
+		//copy the jQuery variable into our namespace
+		//var $ = window.$;
+
+		//then restore the global $ and jQuery objects
+		//jQuery.noConflict(true);
 	},
 
 	uninit: function()
@@ -465,6 +476,9 @@ var fGoogleBookmarksExtension =
 			{
 				// меняем иконку на панели
 				fGoogleBookmarksExtension.setButtonIcons(!params.id);
+				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.statusText);
+				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.responseText);
+				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.getAllResponseHeaders());
 			}
   	};
   	// ошибка при запросе
@@ -472,10 +486,61 @@ var fGoogleBookmarksExtension =
   	{
     	fGoogleBookmarksExtension.ErrorLog("GBE:doChangeBookmark", " An error occurred while saving bookmark (" + params.url + ").");
   	};
-  	var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURIComponent(params.name) + 
-  						'&annotation=' + encodeURIComponent(params.notes) + '&labels=' + encodeURIComponent(params.labels) + 
-  						'&prev="/lookup"&sig=' + params.sig;
+  	var curdate = new Date();
+  	// var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURIComponent(params.name) + 
+  	// 					'&annotation=' + encodeURIComponent(params.notes) + '&labels=' + encodeURIComponent(params.labels) + 
+  	// 					'&prev="/lookup"&sig=' + params.sig;
+   	var request = 'q=&bkmk=' + encodeURIComponent(params.url) + 
+   								'&prev=' + encodeURIComponent('/lookup') + 
+   								'&start=0&cd=bkmk&sig=' + params.sig + 
+   								'&day=' + curdate.getDate() + '&month=' + (curdate.getMonth()+1) + '&yr=' + curdate.getFullYear() +
+   								'&title=' + encodeURIComponent(params.name) +
+   								'&labels=' + encodeURIComponent(params.labels) +
+   								'&annotation=' + encodeURIComponent(params.notes);
+
+   	var request = 'bkmk=' + encodeURIComponent(params.url) + 
+   								'&prev=' + encodeURIComponent('/lookup') + 
+   								'&sig=' + params.sig + 
+   								//'&day=' + curdate.getDate() + '&month=' + (curdate.getMonth()+1) + '&yr=' + curdate.getFullYear() +
+   								'&title=' + encodeURIComponent(params.name) +
+   								'&labels=' + encodeURIComponent(params.labels) +
+   								'&annotation=' + encodeURIComponent(params.notes);
+  	this.ErrorLog("GBE:doChangeBookmark", " " + this.baseUrl2 + " " + request);
   	xhr.send(request);
+	},	
+
+
+
+	doChangeBookmarkJQuery: function(params)
+	{
+		jQuery.noConflict();
+		jQuery.ajax({
+      type: "post",
+      url: this.baseUrl2,
+      data: 
+      	{
+          zx: (new Date()).getTime(),
+          bkmk: params.url,
+          title: params.name,
+          labels: params.labels,
+          annotation: params.notes,
+          prev: "/lookup",
+          sig: params.sig
+        },
+      timeout: 5000,
+      error: function(XMLHttpRequest, textStatus, errorThrown) {
+        fGoogleBookmarksExtension.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
+      },
+      success: function(data, textStatus) {
+				fGoogleBookmarksExtension.needRefresh = true;  
+				if (window.content.location.href == params.url)
+				{
+					// меняем иконку на панели
+					fGoogleBookmarksExtension.setButtonIcons(!params.id);
+      	}
+      }
+    });
+
 	},	
 
 	/**
@@ -804,7 +869,7 @@ var fGoogleBookmarksExtension =
 			document.getElementById("GBE-bookmark.dialog.url").focus();
 			return false;
 		}
-		window.arguments[1].doChangeBookmark(params);
+		window.arguments[1].doChangeBookmarkJQuery(params);
 	},
 
 	/**
@@ -1138,7 +1203,7 @@ var fGoogleBookmarksExtension =
 							notes : gbe.m_bookmarkList[i][4],
 							sig : gbe.m_signature
 						};
- 						gbe.doChangeBookmark(params);
+ 						gbe.doChangeBookmarkJQuery(params);
 		  		}
 		  	}
 	  	}
@@ -1224,7 +1289,7 @@ var fGoogleBookmarksExtension =
 			  			// удаляем метку из массива меток найденной закладки
 			  			params.labels.splice(labelPos,1);
 			  			// отправляем запрос на изменение закладки 
-			  			gbe.doChangeBookmark(params);
+			  			gbe.doChangeBookmarkJQuery(params);
 			  		}
 			  	}
 		  	}
@@ -1238,6 +1303,33 @@ var fGoogleBookmarksExtension =
 
 window.addEventListener("load", function() { fGoogleBookmarksExtension.init() }, false);
 window.addEventListener("unload", function() { fGoogleBookmarksExtension.uninit() }, false);
+
+/*//wrap our code in a closure so it doesn't conflict with other add-ons
+(function(){
+	window.addEventListener("load", function jQueryLoader(evt){
+		window.removeEventListener("load", jQueryLoader, false);
+
+		//load jQuery
+		Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
+			.getService(Components.interfaces.mozIJSSubScriptLoader)
+			.loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
+
+		//copy the jQuery variable into our namespace
+		var $ = window.$;
+
+		//then restore the global $ and jQuery objects
+		jQuery.noConflict(true);
+
+		//a couple of tests to make verify
+		//alert(window.$);
+		//alert(window.jQuery);
+		//alert($);
+
+		//now do something cool with it
+		//$('#appcontent').hide();
+
+	}, false);
+})();*/
 
 fGoogleBookmarksExtension.installButton = function()
 {
