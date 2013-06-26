@@ -291,6 +291,56 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
+
+	doRequestBookmarksJQuery: function(showMenu)
+	{
+		try
+		{
+			this.m_ganswer = null;
+			this.m_signature = null;
+			this.m_bookmarkList = null;
+			this.m_labelsArr = null;
+			jQuery.noConflict();
+			jQuery.ajax({
+	      type: "GET",
+	      url: this.baseUrl + "lookup",
+	      data: 
+	      	{
+	          output: "rss",
+	          num: 10000
+	        },
+	      dataType : "XML",
+	      timeout: 5000,
+	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+	      	GoogleBookmarksExtension.removeSIDCookie();
+	  			fGoogleBookmarksExtension.refreshInProgress = false;
+	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
+	      },
+	      success: function(data, textStatus) {
+					if (data.responseXML)
+					{
+			    	fGoogleBookmarksExtension.m_ganswer = data.responseXML.documentElement;
+			    	fGoogleBookmarksExtension.doBuildMenu();
+			    	if (showMenu)
+			    	{
+			    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+			    	}
+		    	}
+		    	else
+		    	{
+		    		fGoogleBookmarksExtension.removeSIDCookie();
+		    		fGoogleBookmarksExtension.refreshInProgress = false;
+		    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
+		    	}
+	      }
+	    });
+	  }
+	  catch (e)
+		{
+			this.ErrorLog("GBE:doRequestBookmarksJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
 	/**
 	 * удаляет все закладки из меню
 	 */
@@ -513,34 +563,40 @@ var fGoogleBookmarksExtension =
 
 	doChangeBookmarkJQuery: function(params)
 	{
-		jQuery.noConflict();
-		jQuery.ajax({
-      type: "post",
-      url: this.baseUrl2,
-      data: 
-      	{
-          zx: (new Date()).getTime(),
-          bkmk: params.url,
-          title: params.name,
-          labels: params.labels,
-          annotation: params.notes,
-          prev: "/lookup",
-          sig: params.sig
-        },
-      timeout: 5000,
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-        fGoogleBookmarksExtension.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
-      },
-      success: function(data, textStatus) {
-				fGoogleBookmarksExtension.needRefresh = true;  
-				if (window.content.location.href == params.url)
-				{
-					// меняем иконку на панели
-					fGoogleBookmarksExtension.setButtonIcons(!params.id);
-      	}
-      }
-    });
-
+		try
+		{
+			jQuery.noConflict();
+			jQuery.ajax({
+	      type: "post",
+	      url: this.baseUrl2,
+	      data: 
+	      	{
+	          zx: (new Date()).getTime(),
+	          bkmk: params.url,
+	          title: params.name,
+	          labels: params.labels,
+	          annotation: params.notes,
+	          prev: "/lookup",
+	          sig: params.sig
+	        },
+	      timeout: 5000,
+	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+	        fGoogleBookmarksExtension.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
+	      },
+	      success: function(data, textStatus) {
+					fGoogleBookmarksExtension.needRefresh = true;  
+					if (window.content.location.href == params.url)
+					{
+						// меняем иконку на панели
+						fGoogleBookmarksExtension.setButtonIcons(!params.id);
+	      	}
+	      }
+	    });
+		}
+	  catch (e)
+		{
+			this.ErrorLog("GBE:doChangeBookmarkJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},	
 
 	/**
@@ -572,31 +628,69 @@ var fGoogleBookmarksExtension =
 
 	doDeleteBookmarkJQuery: function(params)
 	{
-		jQuery.noConflict();
-		jQuery.ajax({
-			type: "get",
-      url: this.baseUrl2,
-      data: 
-      	{
-          zx: (new Date()).getTime(),
-          dlq: params.id,
-          sig: params.sig
-        },
-      timeout: 5000,
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-      	fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
-      },
-      success: function(data, textStatus) {
-				fGoogleBookmarksExtension.needRefresh = true; 
-				if (window.content.location.href == params.url)
-				{
-					// меняем иконку на панели
-					fGoogleBookmarksExtension.setButtonIcons(null);
-				}
-      }
-
-		});
+		try
+		{
+			jQuery.noConflict();
+			jQuery.ajax({
+				type: "get",
+	      url: this.baseUrl2,
+	      data: 
+	      	{
+	          zx: (new Date()).getTime(),
+	          dlq: params.id,
+	          sig: params.sig
+	        },
+	      timeout: 5000,
+	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+	      	fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
+	      },
+	      success: function(data, textStatus) {
+					fGoogleBookmarksExtension.needRefresh = true; 
+					if (window.content.location.href == params.url)
+					{
+						// меняем иконку на панели
+						fGoogleBookmarksExtension.setButtonIcons(null);
+					}
+	      }
+			});
+		}
+	  catch (e)
+		{
+			this.ErrorLog("GBE:doDeleteBookmarkJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
+
+	doChangeFolderJQuery: function(oldLabel, label, signature)
+	{
+		try
+		{
+			jQuery.noConflict();
+			jQuery.ajax({
+				type: "POST",
+	      url: this.baseUrl2,
+	      data: 
+	      	{
+	      		op: "modlabel",
+	          zx: (new Date()).getTime(),
+	          labels: oldLabel + "," + label,
+	          sig: signature
+	        },
+	      timeout: 5000,
+	      error: function(XMLHttpRequest, textStatus, errorThrown) {
+	      	fGoogleBookmarksExtension.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
+	      },
+	      success: function(data, textStatus) {
+					fGoogleBookmarksExtension.needRefresh = true; 
+	      }
+			});			
+		}
+		catch (e)
+		{
+			this.ErrorLog("GBE:doChangeFolderJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+
+	},
+
 
 	/**
 	 * функция сортировки строк (закладок и меток)
@@ -1200,40 +1294,43 @@ var fGoogleBookmarksExtension =
 			{
 				return true;
 			}
+
+
 			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
 	  	{
-		  	// перебираем закладки
-		  	for (i = 0; i < gbe.m_bookmarkList.length; i++)
-		  	{
-		  		// флаг необходимости изменить метку
-		  		var needChange = false;
-		  		var newLabels = gbe.m_bookmarkList[i][3];
-		  		if (newLabels.length)
-		  		{
-			  		for (var j = 0; j < newLabels.length; j++) {
-			  			// меняем метку у соответствующих закладок
-			  			if (newLabels[j] == oldName)
-			  			{
-			  				needChange = true;
-			  				newLabels[j] = name;
-			  				break;
-			  			}
-			  		};
-		  		}	
-		  		// отправляем запрос на изменение закладки
-		  		if (needChange)
-		  		{
-			  		var params = {
-							name : gbe.m_bookmarkList[i][0],
-							id : gbe.m_bookmarkList[i][2],
-							url : gbe.m_bookmarkList[i][1],
-							labels : newLabels,
-							notes : gbe.m_bookmarkList[i][4],
-							sig : gbe.m_signature
-						};
- 						gbe.doChangeBookmarkJQuery(params);
-		  		}
-		  	}
+	  		gbe.doChangeFolderJQuery(oldName, name, gbe.m_signature);
+		  	// // перебираем закладки
+		  	// for (i = 0; i < gbe.m_bookmarkList.length; i++)
+		  	// {
+		  	// 	// флаг необходимости изменить метку
+		  	// 	var needChange = false;
+		  	// 	var newLabels = gbe.m_bookmarkList[i][3];
+		  	// 	if (newLabels.length)
+		  	// 	{
+			  // 		for (var j = 0; j < newLabels.length; j++) {
+			  // 			// меняем метку у соответствующих закладок
+			  // 			if (newLabels[j] == oldName)
+			  // 			{
+			  // 				needChange = true;
+			  // 				newLabels[j] = name;
+			  // 				break;
+			  // 			}
+			  // 		};
+		  	// 	}	
+		  	// 	// отправляем запрос на изменение закладки
+		  	// 	if (needChange)
+		  	// 	{
+			  // 		var params = {
+					// 		name : gbe.m_bookmarkList[i][0],
+					// 		id : gbe.m_bookmarkList[i][2],
+					// 		url : gbe.m_bookmarkList[i][1],
+					// 		labels : newLabels,
+					// 		notes : gbe.m_bookmarkList[i][4],
+					// 		sig : gbe.m_signature
+					// 	};
+ 				// 		gbe.doChangeBookmarkJQuery(params);
+		  	// 	}
+		  	// }
 	  	}
 		}
 	},
