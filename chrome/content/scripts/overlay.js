@@ -85,7 +85,6 @@ var fGoogleBookmarksExtension =
 			}
 			gBrowser.addProgressListener(this);
 		}
-		//Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js");
 		Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
 		//copy the jQuery variable into our namespace

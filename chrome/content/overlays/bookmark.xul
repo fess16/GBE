@@ -4,8 +4,8 @@
 <!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
 
 <dialog 
-  id="GBE-bookmark.dialog"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  id="GBE-bookmark.dialog"
   title="&bookmark.form.title;"
   buttons="accept,cancel"
   buttonlabelaccept="&bookmark.button-save.label;"
