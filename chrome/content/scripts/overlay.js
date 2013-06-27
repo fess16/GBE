@@ -79,13 +79,16 @@ var fGoogleBookmarksExtension =
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
+			Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
+				Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 			if(this.needRefresh && this.checkLogin() && document.getElementById("GBE-toolbarbutton") )
 			{
 				 this.refreshBookmarks(false);
 			}
 			gBrowser.addProgressListener(this);
+
 		}
-		Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
+		// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
 		//copy the jQuery variable into our namespace
 		//var $ = window.$;
@@ -299,6 +302,7 @@ var fGoogleBookmarksExtension =
 			this.m_signature = null;
 			this.m_bookmarkList = null;
 			this.m_labelsArr = null;
+
 			jQuery.noConflict();
 			jQuery.ajax({
 	      type: "GET",
@@ -313,12 +317,12 @@ var fGoogleBookmarksExtension =
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
 	      	GoogleBookmarksExtension.removeSIDCookie();
 	  			fGoogleBookmarksExtension.refreshInProgress = false;
-	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
+	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
 	      },
-	      success: function(data, textStatus) {
-					if (data.responseXML)
+	      success: function(responseXML, textStatus) {
+					if (responseXML)
 					{
-			    	fGoogleBookmarksExtension.m_ganswer = data.responseXML.documentElement;
+			    	fGoogleBookmarksExtension.m_ganswer = responseXML.documentElement;
 			    	fGoogleBookmarksExtension.doBuildMenu();
 			    	if (showMenu)
 			    	{
@@ -329,7 +333,7 @@ var fGoogleBookmarksExtension =
 		    	{
 		    		fGoogleBookmarksExtension.removeSIDCookie();
 		    		fGoogleBookmarksExtension.refreshInProgress = false;
-		    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
+		    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
 		    	}
 	      }
 	    });
@@ -776,7 +780,7 @@ var fGoogleBookmarksExtension =
 			{	
 				this.refreshInProgress = true;
 				this.doClearBookmarkList();
-				this.doRequestBookmarks(showMenu);
+				this.doRequestBookmarksJQuery(showMenu);
 			}
 		}
 		catch (e)
@@ -1425,35 +1429,40 @@ var fGoogleBookmarksExtension =
 
 };
 
-window.addEventListener("load", function() { fGoogleBookmarksExtension.init() }, false);
+
+// //wrap our code in a closure so it doesn't conflict with other add-ons
+// (function(){
+// 	window.addEventListener("load", function jQueryLoader(evt){
+// 		window.removeEventListener("load", jQueryLoader, false);
+
+// 		//load jQuery
+// 	Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
+// 		Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
+
+// 		//copy the jQuery variable into our namespace
+// 		//var $ = window.$;
+
+// 		//then restore the global $ and jQuery objects
+// 		//jQuery.noConflict(true);
+
+// 		//a couple of tests to make verify
+// 		//alert(window.$);
+// 		//alert(window.jQuery);
+// 		//alert($);
+
+// 		//now do something cool with it
+// 		//$('#appcontent').hide();
+
+// 	}, false);
+// })();
+
+
+window.addEventListener("load", function() { 
+	// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
+	// 	Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
+	fGoogleBookmarksExtension.init();
+}, false);
 window.addEventListener("unload", function() { fGoogleBookmarksExtension.uninit() }, false);
-
-/*//wrap our code in a closure so it doesn't conflict with other add-ons
-(function(){
-	window.addEventListener("load", function jQueryLoader(evt){
-		window.removeEventListener("load", jQueryLoader, false);
-
-		//load jQuery
-		Components.classes["@mozilla.org/moz/jssubscript-loader;1"]
-			.getService(Components.interfaces.mozIJSSubScriptLoader)
-			.loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
-
-		//copy the jQuery variable into our namespace
-		var $ = window.$;
-
-		//then restore the global $ and jQuery objects
-		jQuery.noConflict(true);
-
-		//a couple of tests to make verify
-		//alert(window.$);
-		//alert(window.jQuery);
-		//alert($);
-
-		//now do something cool with it
-		//$('#appcontent').hide();
-
-	}, false);
-})();*/
 
 fGoogleBookmarksExtension.installButton = function()
 {
