@@ -1,4 +1,7 @@
 /* 
+Version 0.1.2
+добавлена jQuery для ajax запросов (через XMLHttpRequest перестало работать редактирование закладок)
+
 Version 0.1.1
 Дурацкие правила мозилы
 
@@ -51,7 +54,7 @@ var fGoogleBookmarksExtension =
   // список всех закладок (обработанный)
   'm_bookmarkList' : null,
   // разделитель меток при сортировке
-  'labelSep'	: "/!|!/",
+  'labelSep'	: "{!|!}",
   // признак необходимости обновления меню со списком закладок
   'needRefresh'	: true,
   // предыдущее значение адреса
@@ -67,6 +70,8 @@ var fGoogleBookmarksExtension =
 
   'refreshInProgress' : false,
 
+  'nestedLabelSep' : '/',
+
   // nsIWebProgressListener
   'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
 
@@ -79,8 +84,8 @@ var fGoogleBookmarksExtension =
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
-			Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
-				Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
+			 Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
+				 Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 			if(this.needRefresh && this.checkLogin() && document.getElementById("GBE-toolbarbutton") )
 			{
 				 this.refreshBookmarks(false);
@@ -423,20 +428,60 @@ var fGoogleBookmarksExtension =
 				// добавляем метки в меню (в виде папок)
 				for (i = 0; i < this.m_labelsArr.length; i++) 
 				{
-					var tempMenupopup = document.createElement('menupopup');
-					var tempMenu = document.createElement('menu');
-					// устанавливаем атрибуты нового элемента меню
-					tempMenu.setAttribute("id", "GBE_" + this.m_labelsArr[i]);
-					tempMenu.setAttribute("label", this.m_labelsArr[i]);
-					tempMenu.setAttribute("class", "menu-iconic");
-					tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
-					tempMenu.setAttribute("container", "true");
-					tempMenu.setAttribute("context", "GBE-folderMenu");
-					//tempMenu.setAttribute("oncontextmenu", "GBE.showFolderMenu(event); return false;");
-					// добавляем к нему вложенное меню
-					tempMenu.appendChild(tempMenupopup);
-					// добавляем его в основное меню
-					GBE_GBlist.appendChild(tempMenu);
+					var arr_nested_label = this.m_labelsArr[i].split(this.nestedLabelSep);
+					if (arr_nested_label.length == 1)
+					{
+						var tempMenupopup = document.createElement('menupopup');
+						var tempMenu = document.createElement('menu');
+						// устанавливаем атрибуты нового элемента меню
+						tempMenu.setAttribute("id", "GBE_" + this.m_labelsArr[i]);
+						tempMenu.setAttribute("label", this.m_labelsArr[i]);
+						tempMenu.setAttribute("class", "menu-iconic");
+						tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
+						tempMenu.setAttribute("container", "true");
+						tempMenu.setAttribute("context", "GBE-folderMenu");
+						//tempMenu.setAttribute("oncontextmenu", "GBE.showFolderMenu(event); return false;");
+						// добавляем к нему вложенное меню
+						tempMenu.appendChild(tempMenupopup);
+						// добавляем его в основное меню
+						GBE_GBlist.appendChild(tempMenu);
+					}
+					else
+					{
+						var fullName = arr_nested_label[0];
+						var tempMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
+						if (tempMenu == null)
+						{
+							var tempMenu = document.createElement('menu');
+							tempMenu.setAttribute("id", "GBE_" + fullName);
+							tempMenu.setAttribute("label", fullName);
+							tempMenu.setAttribute("class", "menu-iconic");
+							tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
+							tempMenu.setAttribute("container", "true");
+							tempMenu.setAttribute("context", "GBE-folderMenu");
+							tempMenu.appendChild(document.createElement('menupopup'));
+							GBE_GBlist.appendChild(tempMenu);
+						}
+						
+						for (var j = 1; j < arr_nested_label.length; j++)
+						{
+							var parentContainer = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0].childNodes[0];
+							fullName += this.nestedLabelSep + arr_nested_label[j];
+							var tempSubMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
+							if (tempSubMenu == null)
+							{
+								tempSubMenu = document.createElement('menu');
+								tempSubMenu.setAttribute("id", "GBE_" + fullName);
+								tempSubMenu.setAttribute("label", arr_nested_label[j]);
+								tempSubMenu.setAttribute("class", "menu-iconic");
+								tempSubMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
+								tempSubMenu.setAttribute("container", "true");
+								tempSubMenu.setAttribute("context", "GBE-folderMenu");
+								tempSubMenu.appendChild(document.createElement('menupopup'));
+								parentContainer.appendChild(tempSubMenu);
+							}							
+						}
+					}
 				}
 			}
 
