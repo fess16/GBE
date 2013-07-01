@@ -1,58 +1,9 @@
 /*
 https://addons.mozilla.org/ru/firefox/addon/fess-google-bookmark-extens/
 
-GBE:doChangeBookmark http://www.google.com/bookmarks/mark 
-zx=1372228297067&
-bkmk=http%3A//10.115.161.2/&
-title=10.115.161.211111&
-annotation=qqqqq&
-labels=_test1&
-prev="/lookup"&
-sig=bzjtAEFZjjJ2EwUPrgnyvg
-
-q=&
-bkmk=http%3A%2F%2F10.115.161.2%2F&
-prev=%2Flookup&
-start=0&
-cd=bkmk&
-sig=bzjtAEFZjjJ2EwUPrgnyvg&
-day=26&month=6&yr=2013&
-title=10.115.161.2&
-labels=_test1&
-annotation=qqqqq
-
-
-
-https://www.google.com/bookmarks/mark?hl=ru
-
-q=&
-bkmk=http%3A%2F%2F10.115.161.2%2F&
-prev=%2Flookup&
-start=0&
-cd=bkmk&
-sig=bzjtAEFZjjJ2EwUPrgnyvg&
-day=26&
-month=6&
-yr=2013&
-title=10.115.161.2&
-labels=_test1&
-annotation=qaqa
-
-
-https://www.google.com/bookmarks/mark 
-q=&
-bkmk=http%3A%2F%2F10.115.161.2%2F&
-prev=%2Flookup&
-start=0&
-cd=bkmk&
-sig=bzjtAEFZjjJ2EwUPrgnyvg&
-day=26&
-month=6&
-yr=2013&
-title=10.115.161.2&
-labels=&
-annotation=
-
-
+//TODO:	+окно настройки разделителя вложенных меток
+//TODO:	исправить работу контекстного меню метки (на вложенных)	
+//TODO: 
+//TODO: 
 
  */

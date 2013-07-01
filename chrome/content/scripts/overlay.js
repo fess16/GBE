@@ -431,20 +431,9 @@ var fGoogleBookmarksExtension =
 					var arr_nested_label = this.m_labelsArr[i].split(this.nestedLabelSep);
 					if (arr_nested_label.length == 1)
 					{
-						var tempMenupopup = document.createElement('menupopup');
-						var tempMenu = document.createElement('menu');
-						// устанавливаем атрибуты нового элемента меню
-						tempMenu.setAttribute("id", "GBE_" + this.m_labelsArr[i]);
-						tempMenu.setAttribute("label", this.m_labelsArr[i]);
-						tempMenu.setAttribute("class", "menu-iconic");
-						tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
-						tempMenu.setAttribute("container", "true");
-						tempMenu.setAttribute("context", "GBE-folderMenu");
-						//tempMenu.setAttribute("oncontextmenu", "GBE.showFolderMenu(event); return false;");
-						// добавляем к нему вложенное меню
-						tempMenu.appendChild(tempMenupopup);
-						// добавляем его в основное меню
-						GBE_GBlist.appendChild(tempMenu);
+						// var tempMenu = document.createElement('menu');
+						// this.appendLabelItem(GBE_GBlist, tempMenu, this.m_labelsArr[i], this.m_labelsArr[i]);
+						this.appendLabelItem(GBE_GBlist, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
 					}
 					else
 					{
@@ -452,15 +441,9 @@ var fGoogleBookmarksExtension =
 						var tempMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
 						if (tempMenu == null)
 						{
-							var tempMenu = document.createElement('menu');
-							tempMenu.setAttribute("id", "GBE_" + fullName);
-							tempMenu.setAttribute("label", fullName);
-							tempMenu.setAttribute("class", "menu-iconic");
-							tempMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
-							tempMenu.setAttribute("container", "true");
-							tempMenu.setAttribute("context", "GBE-folderMenu");
-							tempMenu.appendChild(document.createElement('menupopup'));
-							GBE_GBlist.appendChild(tempMenu);
+							// var tempMenu = document.createElement('menu');
+							// this.appendLabelItem(GBE_GBlist, tempMenu, fullName, fullName);
+							this.appendLabelItem(GBE_GBlist, document.createElement('menu'), fullName, fullName);
 						}
 						
 						for (var j = 1; j < arr_nested_label.length; j++)
@@ -470,15 +453,8 @@ var fGoogleBookmarksExtension =
 							var tempSubMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
 							if (tempSubMenu == null)
 							{
-								tempSubMenu = document.createElement('menu');
-								tempSubMenu.setAttribute("id", "GBE_" + fullName);
-								tempSubMenu.setAttribute("label", arr_nested_label[j]);
-								tempSubMenu.setAttribute("class", "menu-iconic");
-								tempSubMenu.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
-								tempSubMenu.setAttribute("container", "true");
-								tempSubMenu.setAttribute("context", "GBE-folderMenu");
-								tempSubMenu.appendChild(document.createElement('menupopup'));
-								parentContainer.appendChild(tempSubMenu);
+								// this.appendLabelItem(parentContainer, tempSubMenu, fullName, arr_nested_label[j]);
+								this.appendLabelItem(parentContainer, document.createElement('menu'), fullName, arr_nested_label[j]);
 							}							
 						}
 					}
@@ -779,6 +755,19 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("oncommand", "fGoogleBookmarksExtension.bookmarkClick(event);");
 		item.setAttribute("context", "GBE-contextMenu");
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
+		parent.appendChild(item);
+	},
+
+	appendLabelItem: function(parent, item, id, label)
+	{
+		item = document.createElement('menu');
+		item.setAttribute("id", "GBE_" + id);
+		item.setAttribute("label", label);
+		item.setAttribute("class", "menu-iconic");
+		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
+		item.setAttribute("container", "true");
+		item.setAttribute("context", "GBE-folderMenu");
+		item.appendChild(document.createElement('menupopup'));
 		parent.appendChild(item);
 	},
 
