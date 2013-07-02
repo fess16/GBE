@@ -48,3 +48,8 @@
 <!ENTITY folderDelete.button-cancel.label "Cancel">
 <!ENTITY folderDelete.label-info.value "Are you sure you want to delete label:">
 <!ENTITY folderDelete.checkbox.label "Delete all children?">
+
+<!ENTITY prefWindow.form.title "Fess Google Bookmark Extension Options">
+<!ENTITY prefWindow.pane.title "Preferences">
+<!ENTITY prefWindow.nestedLabelSep.label "Nested Labels Separator:">
+<!ENTITY prefWindow.showFavicons.label "Show Favicons:">

@@ -37,10 +37,11 @@
 												image="chrome://GBE/skin/images/bkmrk_delete_off.png"
 												tooltiptext="&overlay.hmenuDel.hint;"
 												oncommand="fGoogleBookmarksExtension.showDeleteDlg(null);"  />
-<!-- 							<menuitem id="GBE-hmenuOpt" 
-					class="menuitem-iconic" 
-					image="chrome://GBE/skin/images/options.png" 
-					tooltiptext="&overlay.hmenuOpt.hint;" /> -->
+							<menuitem id="GBE-hmenuOpt" 
+												class="menuitem-iconic" 
+												image="chrome://GBE/skin/images/setting_tools.png" 
+												tooltiptext="&overlay.hmenuOpt.hint;" 
+												oncommand="fGoogleBookmarksExtension.showPrefWindow();"/>
 							<menuitem id="GBE-hmenuGBs" 
 												class="menuitem-iconic" 
 												image="chrome://GBE/skin/images/star.png" 

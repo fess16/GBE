@@ -48,3 +48,8 @@
 <!ENTITY folderDelete.button-cancel.label "Отмена">
 <!ENTITY folderDelete.label-info.value "Вы действительно хотите удалить метку:">
 <!ENTITY folderDelete.checkbox.label "Удалить вложенные закладки?">
+
+<!ENTITY prefWindow.form.title "Настройки Fess Google Bookmark Extension">
+<!ENTITY prefWindow.pane.title "Настройки">
+<!ENTITY prefWindow.nestedLabelSep.label "Разделитель вложенных меток:">
+<!ENTITY prefWindow.showFavicons.label "Показывать иконки сайтов:">

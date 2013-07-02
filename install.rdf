@@ -8,6 +8,7 @@
         <em:name>Fess Google Bookmark Extension</em:name>
         <em:description>Allows you to access and manage your Google Bookmarks.</em:description>
         <em:creator>Fess</em:creator>
+        <em:optionsURL>chrome://GBE/content/overlays/options.xul</em:optionsURL>
         <em:targetApplication>
             <Description>
                 <!-- Firefox -->

@@ -82,6 +82,7 @@ var fGoogleBookmarksExtension =
 
   init: function()
 	{
+		this.nestedLabelSep = this.getNestedLabelSep();
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
 			 Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
@@ -864,6 +865,48 @@ var fGoogleBookmarksExtension =
 	{
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
 	},
+
+	showPrefWindow: function()
+	{
+		window.openDialog("chrome://GBE/content/overlays/options.xul", "","centerscreen", this);
+	},
+
+	onAcceptPrefwindow: function(event)
+	{
+		var gbe = window.arguments[0];
+
+		try {
+			if (document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value == "" || 
+					document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value.length != 1)
+					{
+						this.ErrorLog("GBE:onAcceptPrefwindow", "Seperator error! ");
+						return false;
+					}			
+			var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);	
+			
+			prefs.setCharPref("fessGBE.nestedLabelSep", document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value);
+			gbe.needRefresh = true;
+			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
+		}
+		catch (ex) {
+			this.ErrorLog("GBE:onLoadPrefwindow", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+		return true;
+	},
+
+	getNestedLabelSep: function() {
+		var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);	
+		var sep;
+		
+		if (prefs.getPrefType("fessGBE.nestedLabelSep") == prefs.PREF_STRING)
+			sep = prefs.getCharPref("fessGBE.nestedLabelSep");
+		else {
+			prefs.setCharPref("fessGBE.nestedLabelSep", "/");
+			sep = "/";
+		}
+		return sep;
+	},
+
 
 	/**
 	 * обработчик события onpopupshowing для основного меню (GBE-popup)
