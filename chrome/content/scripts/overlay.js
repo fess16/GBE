@@ -1272,7 +1272,7 @@ var fGoogleBookmarksExtension =
 		try
 		{
 			// получаем название метки
-			var label = document.getElementById(this.currentFolderId).getAttribute("label");
+			var label = document.getElementById(this.currentFolderId).getAttribute("fullName");
 			if (label.length && this.m_bookmarkList && this.m_bookmarkList.length)
 	  	{
 		  	// перебираем все закладки
@@ -1283,7 +1283,7 @@ var fGoogleBookmarksExtension =
 		  		{
 			  		for (var j = 0; j < labels.length; j++) {
 			  			// открываем закладки, которые содержат искомую метку
-			  			if (labels[j] == label)
+			  			if (labels[j].indexOf(label) == 0)
 			  			{
 			  				this.showURL(this.m_bookmarkList[i][1]);
 			  			}
@@ -1307,7 +1307,7 @@ var fGoogleBookmarksExtension =
 		try
 		{	
 			// название метки
-			var label = document.getElementById(this.currentFolderId).getAttribute("label");
+			var label = document.getElementById(this.currentFolderId).getAttribute("fullName");
 			// текущий адрес
 			var cUrl = window.content.location.href;
 			var params = {name : "", id : null,	url : cUrl, labels : "", notes : ""};
