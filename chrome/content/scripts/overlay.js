@@ -455,7 +455,10 @@ var fGoogleBookmarksExtension =
 							if (tempSubMenu == null)
 							{
 								// this.appendLabelItem(parentContainer, tempSubMenu, fullName, arr_nested_label[j]);
-								this.appendLabelItem(parentContainer, document.createElement('menu'), fullName, arr_nested_label[j]);
+								this.appendLabelItem(
+									parentContainer, document.createElement('menu'), 
+									fullName, arr_nested_label[j], fullName)
+								;
 							}							
 						}
 					}
@@ -759,11 +762,12 @@ var fGoogleBookmarksExtension =
 		parent.appendChild(item);
 	},
 
-	appendLabelItem: function(parent, item, id, label)
+	appendLabelItem: function(parent, item, id, label, fullName = "")
 	{
 		item = document.createElement('menu');
 		item.setAttribute("id", "GBE_" + id);
 		item.setAttribute("label", label);
+		item.setAttribute("fullName", ((fullName == "") ? label : fullName));
 		item.setAttribute("class", "menu-iconic");
 		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 		item.setAttribute("container", "true");
@@ -1333,8 +1337,10 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
-			var name = document.getElementById(this.currentFolderId).getAttribute("label");
-			window.openDialog("chrome://GBE/content/overlays/folder.xul", "","alwaysRaised,centerscreen", name, this);
+			var params = {
+				name : document.getElementById(this.currentFolderId).getAttribute("fullName")
+			};
+			window.openDialog("chrome://GBE/content/overlays/folder.xul", "","alwaysRaised,centerscreen", params, this);
 			this.currentFolderId = "";
 		}
 		catch (e)
@@ -1351,7 +1357,7 @@ var fGoogleBookmarksExtension =
 		if (window.arguments[0] !== null ) 
 		{
 			// Заполняем поле с названием метки
-			document.getElementById("GBE-folder.dialog.name").value = window.arguments[0];
+			document.getElementById("GBE-folder.dialog.name").value = window.arguments[0].name;
 		}
 	},
 
@@ -1363,55 +1369,41 @@ var fGoogleBookmarksExtension =
 		if(window.arguments[1] && window.arguments[0])
 		{
 			var gbe = window.arguments[1];
-			var oldName = window.arguments[0];
+			var oldName = window.arguments[0].name;
 			var name = document.getElementById("GBE-folder.dialog.name").value.trim();
-			if (name == "")
-			{
-				document.getElementById("GBE-folder.dialog.name").focus();
-				return false;
-			}
+			var nested_labels = name.split(gbe.nestedLabelSep);
+			// for (var i = 0; i < nested_labels.length; i++)
+			// {
+			// 	if (nested_labels[i] == "")
+				if (name == "")					
+				{
+					document.getElementById("GBE-folder.dialog.name").focus();
+					return false;
+				}
+			// }
 			if (name == oldName)
 			{
 				return true;
 			}
 
-
 			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
-	  	{
-	  		gbe.doChangeFolderJQuery(oldName, name, gbe.m_signature);
-		  	// // перебираем закладки
-		  	// for (i = 0; i < gbe.m_bookmarkList.length; i++)
-		  	// {
-		  	// 	// флаг необходимости изменить метку
-		  	// 	var needChange = false;
-		  	// 	var newLabels = gbe.m_bookmarkList[i][3];
-		  	// 	if (newLabels.length)
-		  	// 	{
-			  // 		for (var j = 0; j < newLabels.length; j++) {
-			  // 			// меняем метку у соответствующих закладок
-			  // 			if (newLabels[j] == oldName)
-			  // 			{
-			  // 				needChange = true;
-			  // 				newLabels[j] = name;
-			  // 				break;
-			  // 			}
-			  // 		};
-		  	// 	}	
-		  	// 	// отправляем запрос на изменение закладки
-		  	// 	if (needChange)
-		  	// 	{
-			  // 		var params = {
-					// 		name : gbe.m_bookmarkList[i][0],
-					// 		id : gbe.m_bookmarkList[i][2],
-					// 		url : gbe.m_bookmarkList[i][1],
-					// 		labels : newLabels,
-					// 		notes : gbe.m_bookmarkList[i][4],
-					// 		sig : gbe.m_signature
-					// 	};
- 				// 		gbe.doChangeBookmarkJQuery(params);
-		  	// 	}
-		  	// }
-	  	}
+	  		{
+	  			var old_nested_labels = oldName.split(gbe.nestedLabelSep);
+				if (old_nested_labels.length == 1)
+		  		{
+		  			gbe.doChangeFolderJQuery(oldName, name, gbe.m_signature);
+		  		}
+		  		else
+		  		{
+					var labelsList = window.arguments[1].m_labelsArr;
+					for (var i = 0; i < labelsList.length; i++) {
+						if (labelsList[i].indexOf(oldName) == 0)
+						{
+							gbe.doChangeFolderJQuery(labelsList[i], labelsList[i].replace(oldName, name), gbe.m_signature);
+						}
+					};
+		  		}
+	  		}
 		}
 	},
 
