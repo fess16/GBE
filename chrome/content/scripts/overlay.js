@@ -695,28 +695,61 @@ var fGoogleBookmarksExtension =
 			jQuery.noConflict();
 			jQuery.ajax({
 				type: "POST",
-	      url: this.baseUrl2,
-	      data: 
-	      	{
-	      		op: "modlabel",
-	          zx: (new Date()).getTime(),
-	          labels: oldLabel + "," + label,
-	          sig: signature
-	        },
-	      timeout: 5000,
-	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	      	fGoogleBookmarksExtension.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
-	      },
-	      success: function(data, textStatus) {
+    		url: this.baseUrl2,
+    		data: 
+      	{
+      		op: "modlabel",
+          zx: (new Date()).getTime(),
+          labels: oldLabel + "," + label,
+          sig: signature
+        },
+      	timeout: 5000,
+      	error: function(XMLHttpRequest, textStatus, errorThrown) 
+      	{
+      		fGoogleBookmarksExtension.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
+      	},
+      	success: function(data, textStatus) 
+      	{
 					fGoogleBookmarksExtension.needRefresh = true; 
-	      }
+      	}
 			});			
 		}
 		catch (e)
 		{
 			this.ErrorLog("GBE:doChangeFolderJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
+	},
 
+	doDeleteFolderJQuery: function(label, signature)
+	{
+		try
+		{
+			jQuery.noConflict();
+			jQuery.ajax({
+				type: "GET",
+				url: this.baseUrl2,
+    		data: 
+      	{
+      		op: "modlabel",
+          zx: (new Date()).getTime(),
+          labels: label,
+          sig: signature
+        },
+      	timeout: 5000,
+      	error: function(XMLHttpRequest, textStatus, errorThrown) 
+      	{
+      		fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteFolderJQuery", " An error occurred while deleting label (" + label + ").");
+      	},
+      	success: function(data, textStatus) 
+      	{
+					fGoogleBookmarksExtension.needRefresh = true; 
+      	}
+			});			
+		}
+		catch (e)
+		{
+			this.ErrorLog("GBE:doChangeFolderJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
 
 
@@ -1414,7 +1447,7 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
-			var name = document.getElementById(this.currentFolderId).getAttribute("label");
+			var name = document.getElementById(this.currentFolderId).getAttribute("fullName");
 			window.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","alwaysRaised,centerscreen", name, this);
 			this.currentFolderId = "";
 		}
@@ -1448,7 +1481,39 @@ var fGoogleBookmarksExtension =
 			var deleteChildren = document.getElementById("GBE-folderDelete.dialog.deleteChildren").checked;
 			if (name && gbe.m_bookmarkList && gbe.m_bookmarkList.length)
 	  	{
-	  		// находим закладки с нужной меткой
+	  		if (!deleteChildren)
+	  		{
+	  			gbe.doDeleteFolderJQuery(name, gbe.m_signature);
+	  		}
+	  		else
+	  		{
+	  			for (i = 0; i < gbe.m_bookmarkList.length; i++)
+	  			{
+	  				var labelPos = -1;
+	  				var newLabels = gbe.m_bookmarkList[i][3];
+	  				if (newLabels.length)
+			  		{
+				  		for (var j = 0; j < newLabels.length; j++) {
+				  			// if (newLabels[j] == name)
+				  			if (newLabels[j].indexOf(name) == 0)
+				  			{ 
+				  				// запоминаем позицию искомой метки в массиве меток найденной закладки
+				  				labelPos = j;
+				  				break;
+				  			}
+				  		}
+				  	}	
+				  	if (labelPos >= 0)
+				  	{
+				  		var params = {
+								id : gbe.m_bookmarkList[i][2],
+								sig : gbe.m_signature
+							};
+							gbe.doDeleteBookmarkJQuery(params);
+						}
+	  			}
+	  		}
+/*	  		// находим закладки с нужной меткой
 	  		for (i = 0; i < gbe.m_bookmarkList.length; i++)
 		  	{
 		  		var labelPos = -1;
@@ -1489,7 +1554,7 @@ var fGoogleBookmarksExtension =
 			  			gbe.doChangeBookmarkJQuery(params);
 			  		}
 			  	}
-		  	}
+		  	}*/
 	  	}
 		}
 	},
