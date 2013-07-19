@@ -788,7 +788,8 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("url", value[1]);
 		item.setAttribute("tooltiptext", value[1]);
 		item.setAttribute("class", "menuitem-iconic");
-		item.setAttribute("image", "chrome://GBE/skin/images//bkmrk.png");
+		//item.setAttribute("image", "chrome://GBE/skin/images//bkmrk.png");
+		this.getFavicon(value[1], item);
 		item.setAttribute("oncommand", "fGoogleBookmarksExtension.bookmarkClick(event);");
 		item.setAttribute("context", "GBE-contextMenu");
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
@@ -894,6 +895,40 @@ var fGoogleBookmarksExtension =
 	{
 		this.showURL("https://accounts.google.com");
 	},	
+
+	/**
+	 * устанавливает favicon для закладок
+	 * @param  {строка} url  адрес закладки
+	 * @param  {[type]} item ссылка на закладку (элемент меню)
+	 */
+	getFavicon: function(url, item)
+	{
+		try
+		{
+			var pageUrl = NetUtil.newURI(url);
+	    var FaviconService = Components.classes["@mozilla.org/browser/favicon-service;1"]
+	      .getService(Components.interfaces.nsIFaviconService);
+	    FaviconService.getFaviconURLForPage(pageUrl,
+	      {
+	        onComplete: function(uri, faviconData, mimeType, privateFlag)
+	        {
+	          if (uri !== null)
+	          {
+	          	item.setAttribute("image", uri.spec);
+	          }
+	          else
+	          {
+							item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");          
+						}
+	        }
+	      }
+	    );
+  	}
+  	catch (e)
+  	{
+  		this.ErrorLog("GBE:getFavicon", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+  	}
+	},
 
 	/**
 	 * обработчик меню About
