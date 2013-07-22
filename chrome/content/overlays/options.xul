@@ -13,17 +13,23 @@
  
 <prefpane id="fessGBE-prefs-pane" label="&prefWindow.pane.title;">
   <preferences>
-    <preference id="pref_nestedLabelSep" name="fessGBE.nestedLabelSep" type="string"/>
-<!--     <preference id="pref_showFavicons" name="fessGBE.showFavicons" type="string"/> -->
+    <preference id="pref_nestedLabelSep" name="extensions.fessGBE.nestedLabelSep" type="string"/>
+    <preference id="pref_showFavicons" name="extensions.fessGBE.showFavicons" type="bool"/>
   </preferences>
  
   <hbox orient="horizontal" flex="1">
     <label control="symbol" value="&prefWindow.nestedLabelSep.label;"/>
-    <textbox preference="pref_nestedLabelSep" id="fessGBE-prefs-nestedLabelSep-Ctrl" width="20px" maxlength="1"/>
+    <textbox 
+      preference="pref_nestedLabelSep" 
+      id="fessGBE-prefs-nestedLabelSep-Ctrl" 
+      width="20px" maxlength="1"/>
   </hbox>
-<!--   <hbox orient="horizontal" flex="1">
-	<checkbox id="fessGBE-prefs-showFavicons-Ctrl" preference="pref_showFavicons" label="&prefWindow.showFavicons.label;" checked="true"/>
-</hbox>   -->
+  <hbox orient="horizontal" flex="1">
+    <checkbox 
+      preference="pref_showFavicons" 
+      id="fessGBE-prefs-showFavicons-Ctrl" 
+      label="&prefWindow.showFavicons.label;"/>
+  </hbox>   
 </prefpane>
  
 </prefwindow>

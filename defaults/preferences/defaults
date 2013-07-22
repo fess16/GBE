@@ -1,1 +1,2 @@
-pref("fessGBE.nestedLabelSep", "/");
+pref("extensions.fessGBE.nestedLabelSep", "/");
+pref("extensions.fessGBE.showFavicons", false);

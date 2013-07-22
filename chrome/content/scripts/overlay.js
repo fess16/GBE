@@ -71,6 +71,8 @@ var fGoogleBookmarksExtension =
   'refreshInProgress' : false,
 
   'nestedLabelSep' : '/',
+  'showFavicons' : true,
+  'prefs' : null,
 
   // nsIWebProgressListener
   'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
@@ -82,7 +84,11 @@ var fGoogleBookmarksExtension =
 
   init: function()
 	{
-		this.nestedLabelSep = this.getNestedLabelSep();
+		// this.nestedLabelSep = this.getPrefsValues();
+		this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
+     .getService(Components.interfaces.nsIPrefService)
+     .getBranch("extensions.fessGBE.");
+		this.getPrefsValues();
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
 			 Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
@@ -788,8 +794,7 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("url", value[1]);
 		item.setAttribute("tooltiptext", value[1]);
 		item.setAttribute("class", "menuitem-iconic");
-		//item.setAttribute("image", "chrome://GBE/skin/images//bkmrk.png");
-		this.getFavicon(value[1], item);
+		this.setFavicon(value[1], item);
 		item.setAttribute("oncommand", "fGoogleBookmarksExtension.bookmarkClick(event);");
 		item.setAttribute("context", "GBE-contextMenu");
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
@@ -901,10 +906,15 @@ var fGoogleBookmarksExtension =
 	 * @param  {строка} url  адрес закладки
 	 * @param  {[type]} item ссылка на закладку (элемент меню)
 	 */
-	getFavicon: function(url, item)
+	setFavicon: function(url, item)
 	{
 		try
 		{
+			if (!this.showFavicons)
+			{
+				item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");  
+				return;
+			}
 			var pageUrl = NetUtil.newURI(url);
 	    var FaviconService = Components.classes["@mozilla.org/browser/favicon-service;1"]
 	      .getService(Components.interfaces.nsIFaviconService);
@@ -954,11 +964,13 @@ var fGoogleBookmarksExtension =
 						this.ErrorLog("GBE:onAcceptPrefwindow", "Seperator error! ");
 						return false;
 					}			
-			var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);	
 			
-			prefs.setCharPref("fessGBE.nestedLabelSep", document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value);
+			gbe.prefs.setCharPref("nestedLabelSep", document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value);
+			gbe.prefs.setBoolPref("showFavicons", document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked);
+
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
+			gbe.showFavicons = document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked;
 		}
 		catch (ex) {
 			this.ErrorLog("GBE:onLoadPrefwindow", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
@@ -966,17 +978,31 @@ var fGoogleBookmarksExtension =
 		return true;
 	},
 
-	getNestedLabelSep: function() {
-		var prefs = Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch);	
-		var sep;
-		
-		if (prefs.getPrefType("fessGBE.nestedLabelSep") == prefs.PREF_STRING)
-			sep = prefs.getCharPref("fessGBE.nestedLabelSep");
-		else {
-			prefs.setCharPref("fessGBE.nestedLabelSep", "/");
-			sep = "/";
+
+	/**
+	 * читает занчения свойств
+	 */
+	getPrefsValues: function() {
+		if (this.prefs.getPrefType("nestedLabelSep") == this.prefs.PREF_STRING)
+		{
+			this.nestedLabelSep = this.prefs.getCharPref("nestedLabelSep");
 		}
-		return sep;
+		else 
+		{
+			this.prefs.setCharPref("nestedLabelSep", "/");
+			this.nestedLabelSep = "/";
+		}
+
+		if (this.prefs.getPrefType("showFavicons") == this.prefs.PREF_BOOL)
+		{
+			this.showFavicons = this.prefs.getBoolPref("showFavicons");
+		}
+		else 
+		{
+			this.prefs.setBoolPref("showFavicons", false);
+			this.showFavicons = false;
+		}
+
 	},
 
 
