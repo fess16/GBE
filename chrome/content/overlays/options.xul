@@ -15,6 +15,7 @@
   <preferences>
     <preference id="pref_nestedLabelSep" name="extensions.fessGBE.nestedLabelSep" type="string"/>
     <preference id="pref_showFavicons" name="extensions.fessGBE.showFavicons" type="bool"/>
+    <preference id="pref_reverseBkmrkLeftClick" name="extensions.fessGBE.reverseBkmrkLeftClick" type="bool"/>
   </preferences>
  
   <hbox orient="horizontal" flex="1">
@@ -29,7 +30,14 @@
       preference="pref_showFavicons" 
       id="fessGBE-prefs-showFavicons-Ctrl" 
       label="&prefWindow.showFavicons.label;"/>
+  </hbox>     
+  <hbox orient="horizontal" flex="1">
+    <checkbox 
+      preference="pref_reverseBkmrkLeftClick" 
+      id="fessGBE-prefs-reverseBkmrkLeftClick-Ctrl" 
+      label="&prefWindow.reverseBkmrkLeftClick.label;"/>
   </hbox>   
+
 </prefpane>
  
 </prefwindow>

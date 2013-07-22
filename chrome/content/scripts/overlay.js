@@ -70,9 +70,12 @@ var fGoogleBookmarksExtension =
 
   'refreshInProgress' : false,
 
+  /* ------Свойства------*/
   'nestedLabelSep' : '/',
   'showFavicons' : true,
+  'reverseBkmrkLeftClick' : false,
   'prefs' : null,
+ 	/* --------------------*/
 
   // nsIWebProgressListener
   'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
@@ -91,7 +94,7 @@ var fGoogleBookmarksExtension =
 		this.getPrefsValues();
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
-			 Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
+			Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
 				 Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 			if(this.needRefresh && this.checkLogin() && document.getElementById("GBE-toolbarbutton") )
 			{
@@ -854,6 +857,21 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
+			// меняем первый пункт меню закладки 
+			if (this.reverseBkmrkLeftClick)
+			{
+				document.getElementById("GBE-contextMenuShowHere").setAttribute(
+					"label", 
+					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.OpenBookmarkInNewTab")
+				);
+			}
+			else
+			{
+				document.getElementById("GBE-contextMenuShowHere").setAttribute(
+					"label", 
+					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.OpenBookmarkHere")
+				);
+			}
 			if (!this.refreshInProgress)
 			{	
 				this.refreshInProgress = true;
@@ -967,12 +985,15 @@ var fGoogleBookmarksExtension =
 			
 			gbe.prefs.setCharPref("nestedLabelSep", document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value);
 			gbe.prefs.setBoolPref("showFavicons", document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked);
+			gbe.prefs.setBoolPref("reverseBkmrkLeftClick", document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked);
+
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
 			gbe.showFavicons = document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked;
+			gbe.reverseBkmrkLeftClick = document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked;
 		}
-		catch (ex) {
+		catch (e) {
 			this.ErrorLog("GBE:onLoadPrefwindow", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 		return true;
@@ -999,8 +1020,18 @@ var fGoogleBookmarksExtension =
 		}
 		else 
 		{
-			this.prefs.setBoolPref("showFavicons", false);
-			this.showFavicons = false;
+			this.prefs.setBoolPref("showFavicons", true);
+			this.showFavicons = true;
+		}
+
+		if (this.prefs.getPrefType("reverseBkmrkLeftClick") == this.prefs.PREF_BOOL)
+		{
+			this.reverseBkmrkLeftClick = this.prefs.getBoolPref("reverseBkmrkLeftClick");
+		}
+		else 
+		{
+			this.prefs.setBoolPref("reverseBkmrkLeftClick", false);
+			this.reverseBkmrkLeftClick = false;
 		}
 
 	},
@@ -1055,7 +1086,7 @@ var fGoogleBookmarksExtension =
 	 */
 	bookmarkClick: function(e)
 	{
-		this.showURL(e.currentTarget.getAttribute("url"));
+		this.showURL(e.currentTarget.getAttribute("url"), this.reverseBkmrkLeftClick);
 	},
 
 	/**
@@ -1264,7 +1295,7 @@ var fGoogleBookmarksExtension =
 		// если нашли - показываем в той же вкладке
 		if (params.id)
 		{
-			this.showURL(params.url, true);
+			this.showURL(params.url, !this.reverseBkmrkLeftClick);
 		}
 	},
 

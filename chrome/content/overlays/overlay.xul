@@ -5,7 +5,9 @@
 	id="GBE-overlay"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 	<script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
-<!-- 	<toolbar id="nav-bar"> -->
+	<stringbundleset id="stringbundleset">
+		<stringbundle id="fGoogleBookmarksExtension.strings" src="chrome://GBE/locale/fessGBE.properties"/>
+	</stringbundleset>
 	<toolbarpalette id="BrowserToolbarPalette">
 		<toolbaritem id="GBE-toolbaritem">
 

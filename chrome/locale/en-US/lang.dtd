@@ -52,4 +52,5 @@
 <!ENTITY prefWindow.form.title "Fess Google Bookmark Extension Options">
 <!ENTITY prefWindow.pane.title "Preferences">
 <!ENTITY prefWindow.nestedLabelSep.label "Nested Labels Separator:">
-<!ENTITY prefWindow.showFavicons.label "Show Favicons:">
+<!ENTITY prefWindow.showFavicons.label "Show Favicons">
+<!ENTITY prefWindow.reverseBkmrkLeftClick.label "Open bookmarks in same tab">
