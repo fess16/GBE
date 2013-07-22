@@ -52,5 +52,5 @@
 <!ENTITY prefWindow.form.title "Настройки Fess Google Bookmark Extension">
 <!ENTITY prefWindow.pane.title "Настройки">
 <!ENTITY prefWindow.nestedLabelSep.label "Разделитель вложенных меток:">
-<!ENTITY prefWindow.showFavicons.label "Показывать иконки сайтов:">
-<!ENTITY prefWindow.reverseBkmrkLeftClick.label "Открывать закладки в той же вкладке:">
+<!ENTITY prefWindow.showFavicons.label "Показывать иконки сайтов (посещенных)">
+<!ENTITY prefWindow.reverseBkmrkLeftClick.label "Открывать закладки в той же вкладке">

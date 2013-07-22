@@ -1,6 +1,9 @@
 /* 
 Version 0.1.2
-добавлена jQuery для ajax запросов (через XMLHttpRequest перестало работать редактирование закладок)
+! jQuery для ajax запросов (через XMLHttpRequest перестало работать редактирование закладок)
++ добавлена работа с вложенными метками
++ добавлена возможность показа иконок для закладок (из кэша)
++ добавлена возможность смены действия левого клика по закладке (открывать на месте или в новой вкладке)
 
 Version 0.1.1
 Дурацкие правила мозилы
@@ -87,10 +90,6 @@ var fGoogleBookmarksExtension =
 
   init: function()
 	{
-		// this.nestedLabelSep = this.getPrefsValues();
-		this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
-     .getService(Components.interfaces.nsIPrefService)
-     .getBranch("extensions.fessGBE.");
 		this.getPrefsValues();
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
@@ -1001,9 +1000,13 @@ var fGoogleBookmarksExtension =
 
 
 	/**
-	 * читает занчения свойств
+	 * читает значения свойств
 	 */
-	getPrefsValues: function() {
+	getPrefsValues: function() 
+	{
+		this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
+     .getService(Components.interfaces.nsIPrefService)
+     .getBranch("extensions.fessGBE.");
 		if (this.prefs.getPrefType("nestedLabelSep") == this.prefs.PREF_STRING)
 		{
 			this.nestedLabelSep = this.prefs.getCharPref("nestedLabelSep");
