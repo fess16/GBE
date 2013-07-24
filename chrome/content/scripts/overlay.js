@@ -1,4 +1,7 @@
 /* 
+Version 0.1.3
+! пропустил "f" в fGoogleBookmarksExtension.removeSIDCookie();
+
 Version 0.1.2
 ! jQuery для ajax запросов (через XMLHttpRequest перестало работать редактирование закладок)
 + добавлена работа с вложенными метками
@@ -329,7 +332,7 @@ var fGoogleBookmarksExtension =
 	      dataType : "XML",
 	      timeout: 5000,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	      	GoogleBookmarksExtension.removeSIDCookie();
+	      	fGoogleBookmarksExtension.removeSIDCookie();
 	  			fGoogleBookmarksExtension.refreshInProgress = false;
 	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
 	      },
