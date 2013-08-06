@@ -21,7 +21,7 @@
 
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
-<!ENTITY about.label-version.about "Версия 0.1.3 :)">
+<!ENTITY about.label-version.about "Версия 0.1.4 :)">
 <!ENTITY about.label-author.about "fess61@gmail.com">
 
 
@@ -54,3 +54,4 @@
 <!ENTITY prefWindow.nestedLabelSep.label "Разделитель вложенных меток:">
 <!ENTITY prefWindow.showFavicons.label "Показывать иконки сайтов (посещенных)">
 <!ENTITY prefWindow.reverseBkmrkLeftClick.label "Открывать закладки в той же вкладке">
+<!ENTITY prefWindow.sortByDate.label "Сортировать по дате добавления">

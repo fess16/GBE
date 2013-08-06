@@ -54,3 +54,4 @@
 <!ENTITY prefWindow.nestedLabelSep.label "Nested Labels Separator:">
 <!ENTITY prefWindow.showFavicons.label "Show Favicons (visited)">
 <!ENTITY prefWindow.reverseBkmrkLeftClick.label "Open bookmarks in same tab">
+<!ENTITY prefWindow.sortByDate.label "Sort by date">

@@ -16,6 +16,7 @@
     <preference id="pref_nestedLabelSep" name="extensions.fessGBE.nestedLabelSep" type="string"/>
     <preference id="pref_showFavicons" name="extensions.fessGBE.showFavicons" type="bool"/>
     <preference id="pref_reverseBkmrkLeftClick" name="extensions.fessGBE.reverseBkmrkLeftClick" type="bool"/>
+    <preference id="pref_sortByDate" name="extensions.fessGBE.sortByDate" type="bool"/> 
   </preferences>
  
   <hbox orient="horizontal" flex="1">
@@ -37,6 +38,12 @@
       id="fessGBE-prefs-reverseBkmrkLeftClick-Ctrl" 
       label="&prefWindow.reverseBkmrkLeftClick.label;"/>
   </hbox>   
+  <hbox orient="horizontal" flex="1">
+    <checkbox 
+      preference="pref_sortByDate" 
+      id="fessGBE-prefs-sortByDate-Ctrl" 
+      label="&prefWindow.sortByDate.label;"/>
+  </hbox> 
 
 </prefpane>
  

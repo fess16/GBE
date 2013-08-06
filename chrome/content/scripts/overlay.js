@@ -80,6 +80,7 @@ var fGoogleBookmarksExtension =
   'nestedLabelSep' : '/',
   'showFavicons' : true,
   'reverseBkmrkLeftClick' : false,
+  'sortByDate' : false,  
   'prefs' : null,
  	/* --------------------*/
 
@@ -436,7 +437,7 @@ var fGoogleBookmarksExtension =
 			if (this.m_labelsArr.length)
 			{
 				// сортируем массив меток
-				this.m_labelsArr.sort(this.sortStrings);
+				this.m_labelsArr.sort(this.compareByName);
 				// добавляем метки в меню (в виде папок)
 				for (i = 0; i < this.m_labelsArr.length; i++) 
 				{
@@ -481,10 +482,12 @@ var fGoogleBookmarksExtension =
 			// сохраняем закладки в поле m_bookmarkList
 			for (i = 0; i < bookmarks.length; i++) 
 			{
-				this.m_bookmarkList[i] = new Array(5);
+				this.m_bookmarkList[i] = new Array(6);
 				this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName("title")[0].childNodes[0].nodeValue;
 				this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName("link")[0].childNodes[0].nodeValue;
 				this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue;
+				this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName("pubDate")[0].childNodes[0].nodeValue;
+
 				var bookmark_labels = bookmarks[i].getElementsByTagName("smh:bkmk_label");
 				var	j;
 				// закладка с метками?
@@ -512,7 +515,8 @@ var fGoogleBookmarksExtension =
 				}
 			}
 			// сортируем массив закладок
-			this.m_bookmarkList.sort(this.sortStrings);
+			this.m_bookmarkList.sort(this.sortByDate ? this.compareByDate : this.compareByName);
+
 
 			// добавляем закладки в меню
 			for (i = 0; i < this.m_bookmarkList.length; i++) 
@@ -765,15 +769,27 @@ var fGoogleBookmarksExtension =
 
 
 	/**
-	 * функция сортировки строк (закладок и меток)
+	 * функция сравнения закладок и меток по имени
 	 * @param  {String} a
 	 * @param  {String} b
 	 * @return {int} результат сравнения
 	 */
-	sortStrings: function (a, b) {
-		var aStr = String(a),
-				bStr = String(b);
-		return aStr.toLowerCase() < bStr.toLowerCase() ? -1 : 1; 
+	compareByName: function (a, b) {
+		return String(a).toLowerCase() < String(b).toLowerCase() ? -1 : 1; 
+	},
+
+	/**
+	 * функция сравнения закладок и меток по дате добавления
+	 * @param  {String} a
+	 * @param  {String} b
+	 * @return {int} результат сравнения
+	 */
+	compareByDate: function (a, b) {		
+		if (a instanceof Array && b instanceof Array) {
+			return new Date(a[5]) < new Date(b[5]) ? 1 : -1;
+		}else{
+			return this.compareByName(a, b);
+		}
 	},
 
 	/**
@@ -988,12 +1004,15 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setCharPref("nestedLabelSep", document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value);
 			gbe.prefs.setBoolPref("showFavicons", document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked);
 			gbe.prefs.setBoolPref("reverseBkmrkLeftClick", document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked);
+			gbe.prefs.setBoolPref("sortByDate", document.getElementById("fessGBE-prefs-sortByDate-Ctrl").checked);			
 
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
 			gbe.showFavicons = document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked;
 			gbe.reverseBkmrkLeftClick = document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked;
+			gbe.sortByDate = document.getElementById("fessGBE-prefs-sortByDate-Ctrl").checked;
+
 		}
 		catch (e) {
 			this.ErrorLog("GBE:onLoadPrefwindow", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
@@ -1039,6 +1058,16 @@ var fGoogleBookmarksExtension =
 			this.prefs.setBoolPref("reverseBkmrkLeftClick", false);
 			this.reverseBkmrkLeftClick = false;
 		}
+		if (this.prefs.getPrefType("sortByDate") == this.prefs.PREF_BOOL)
+		{
+			this.sortByDate = this.prefs.getBoolPref("sortByDate");
+		}
+		else 
+		{
+			this.prefs.setBoolPref("sortByDate", false);
+			this.sortByDate = false;
+		}
+
 
 	},
 
