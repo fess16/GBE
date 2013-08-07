@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://browser/skin/preferences/preferences.css"?>
  
 <!DOCTYPE prefwindow SYSTEM "chrome://GBE/locale/lang.dtd">
 
@@ -17,33 +18,47 @@
     <preference id="pref_showFavicons" name="extensions.fessGBE.showFavicons" type="bool"/>
     <preference id="pref_reverseBkmrkLeftClick" name="extensions.fessGBE.reverseBkmrkLeftClick" type="bool"/>
     <preference id="pref_sortByDate" name="extensions.fessGBE.sortByDate" type="bool"/> 
+    <preference id="pref_sortType" name="extensions.fessGBE.sortType" type="string"/>
+    <preference id="pref_sortOrder" name="extensions.fessGBE.sortOrder" type="string"/>
   </preferences>
  
-  <hbox orient="horizontal" flex="1">
-    <label control="symbol" value="&prefWindow.nestedLabelSep.label;"/>
+  <hbox align="center" flex="1">
+    <label control="fessGBE-prefs-nestedLabelSep-Ctrl" value="&prefWindow.nestedLabelSep.label;"/>
     <textbox 
       preference="pref_nestedLabelSep" 
       id="fessGBE-prefs-nestedLabelSep-Ctrl" 
       width="20px" maxlength="1"/>
   </hbox>
-  <hbox orient="horizontal" flex="1">
+  <hbox align="center" flex="1">
     <checkbox 
       preference="pref_showFavicons" 
       id="fessGBE-prefs-showFavicons-Ctrl" 
       label="&prefWindow.showFavicons.label;"/>
   </hbox>     
-  <hbox orient="horizontal" flex="1">
+  <hbox align="center" flex="1">
     <checkbox 
       preference="pref_reverseBkmrkLeftClick" 
       id="fessGBE-prefs-reverseBkmrkLeftClick-Ctrl" 
       label="&prefWindow.reverseBkmrkLeftClick.label;"/>
   </hbox>   
-  <hbox orient="horizontal" flex="1">
-    <checkbox 
-      preference="pref_sortByDate" 
-      id="fessGBE-prefs-sortByDate-Ctrl" 
-      label="&prefWindow.sortByDate.label;"/>
+
+  <separator class="thin"/>
+  <hbox align="center" flex="1">
+    <label control="fessGBE-prefs-sortType-Ctrl" value="&prefWindow.sortBy.label;"/>
+    <menulist id="fessGBE-prefs-sortType-Ctrl" preference="pref_sortType">
+      <menupopup>
+        <menuitem value="name" label="&prefWindow.sortType.value1;"/>
+        <menuitem value="timestamp" label="&prefWindow.sortType.value2;"/>
+      </menupopup>
+    </menulist>
+      <menulist id="fessGBE-prefs-sortOrder-Ctrl" preference="pref_sortOrder">
+        <menupopup>
+          <menuitem value="asc" label="&prefWindow.sortOrder.value1;"/>
+          <menuitem value="desc" label="&prefWindow.sortOrder.value2;"/>
+        </menupopup>
+      </menulist>  
   </hbox> 
+ 
 
 </prefpane>
  

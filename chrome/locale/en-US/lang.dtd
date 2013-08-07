@@ -21,7 +21,7 @@
 
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
-<!ENTITY about.label-version.about "Version 0.1.3 :)">
+<!ENTITY about.label-version.about "Version 0.1.4 :)">
 <!ENTITY about.label-author.about "fess61@gmail.com">
 
 
@@ -54,4 +54,8 @@
 <!ENTITY prefWindow.nestedLabelSep.label "Nested Labels Separator:">
 <!ENTITY prefWindow.showFavicons.label "Show Favicons (visited)">
 <!ENTITY prefWindow.reverseBkmrkLeftClick.label "Open bookmarks in same tab">
-<!ENTITY prefWindow.sortByDate.label "Sort by date">
+<!ENTITY prefWindow.sortBy.label "Sort by:">
+<!ENTITY prefWindow.sortType.value1 "name">
+<!ENTITY prefWindow.sortType.value2 "timestamp">
+<!ENTITY prefWindow.sortOrder.value1 "ascending">
+<!ENTITY prefWindow.sortOrder.value2 "descending">

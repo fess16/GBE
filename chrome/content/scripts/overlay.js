@@ -1,4 +1,8 @@
 /* 
+Version 0.1.4
++ добавлена возможность выбора типа (по названию, по дате добавления) и направления сортировки 
+	Спасибо Pavel Pavlov ;)
+
 Version 0.1.3
 ! пропустил "f" в fGoogleBookmarksExtension.removeSIDCookie();
 
@@ -80,7 +84,8 @@ var fGoogleBookmarksExtension =
   'nestedLabelSep' : '/',
   'showFavicons' : true,
   'reverseBkmrkLeftClick' : false,
-  'sortByDate' : false,  
+  'sortType' : "name",
+  'sortOrder' : "asc",
   'prefs' : null,
  	/* --------------------*/
 
@@ -412,6 +417,8 @@ var fGoogleBookmarksExtension =
 
 			// временная строка для группировки и сортировки меток
 			allLabelsStr = this.labelSep;
+
+			var lbs = [];
 			// группируем метки
 			for (i = 0; i < labels.length; i++) 
 			{
@@ -421,61 +428,11 @@ var fGoogleBookmarksExtension =
 				if (allLabelsStr.indexOf(this.labelSep + labelVal + this.labelSep) === -1)
 				{
 					allLabelsStr += (labelVal + this.labelSep);
+					lbs.push({"title" : labelVal, "timestamp" : null});
 				}
 			}
-			
-			//this.ErrorLog("GBE:doBuildMenu", " " + allLabelsStr);
-			// удаляем первый и последний разделитель ("|")
-			if (allLabelsStr.length > 5)
-			{
-				allLabelsStr = allLabelsStr.substr(5, allLabelsStr.length-10);
-			}
-			
-			//this.ErrorLog("GBE:doBuildMenu", " " + allLabelsStr);
-			// получаем массив меток
-			this.m_labelsArr = allLabelsStr.split(this.labelSep);
-			if (this.m_labelsArr.length)
-			{
-				// сортируем массив меток
-				this.m_labelsArr.sort(this.compareByName);
-				// добавляем метки в меню (в виде папок)
-				for (i = 0; i < this.m_labelsArr.length; i++) 
-				{
-					var arr_nested_label = this.m_labelsArr[i].split(this.nestedLabelSep);
-					if (arr_nested_label.length == 1)
-					{
-						// var tempMenu = document.createElement('menu');
-						// this.appendLabelItem(GBE_GBlist, tempMenu, this.m_labelsArr[i], this.m_labelsArr[i]);
-						this.appendLabelItem(GBE_GBlist, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
-					}
-					else
-					{
-						var fullName = arr_nested_label[0];
-						var tempMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
-						if (tempMenu == null)
-						{
-							// var tempMenu = document.createElement('menu');
-							// this.appendLabelItem(GBE_GBlist, tempMenu, fullName, fullName);
-							this.appendLabelItem(GBE_GBlist, document.createElement('menu'), fullName, fullName);
-						}
-						
-						for (var j = 1; j < arr_nested_label.length; j++)
-						{
-							var parentContainer = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0].childNodes[0];
-							fullName += this.nestedLabelSep + arr_nested_label[j];
-							var tempSubMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
-							if (tempSubMenu == null)
-							{
-								// this.appendLabelItem(parentContainer, tempSubMenu, fullName, arr_nested_label[j]);
-								this.appendLabelItem(
-									parentContainer, document.createElement('menu'), 
-									fullName, arr_nested_label[j], fullName)
-								;
-							}							
-						}
-					}
-				}
-			}
+
+			jQuery.noConflict();
 
 			// список закладок
 			this.m_bookmarkList = new Array(bookmarks.length);
@@ -498,6 +455,14 @@ var fGoogleBookmarksExtension =
 					for (j = 0; j < bookmark_labels.length; j++)
 					{
 						this.m_bookmarkList[i][3][j] =  bookmark_labels[j].childNodes[0].nodeValue;
+						var lbl = jQuery.grep(lbs, function(e){ return e.title == bookmark_labels[j].childNodes[0].nodeValue });
+						if (lbl.length)
+						{
+							if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i][5])
+							{
+								lbl[0].timestamp = this.m_bookmarkList[i][5]
+							}
+						}
 					}
 				}
 				else
@@ -515,8 +480,57 @@ var fGoogleBookmarksExtension =
 				}
 			}
 			// сортируем массив закладок
-			this.m_bookmarkList.sort(this.sortByDate ? this.compareByDate : this.compareByName);
+			this.m_bookmarkList.sort((this.sortType == "timestamp")? this.compareByDate : this.compareByName);	
+			// сортируем массив меток
+			lbs.sort((this.sortType == "timestamp") ? this.compareByDate : this.compareByName);	
 
+			allLabelsStr = this.labelSep;
+			lbs.forEach(function(element, index) {
+			  allLabelsStr += element.title + fGoogleBookmarksExtension.labelSep;
+			  //fGoogleBookmarksExtension.ErrorLog("","" + element.title + " " + element.timestamp);
+			});
+			if (allLabelsStr.length > 5)
+			{
+				allLabelsStr = allLabelsStr.substr(5, allLabelsStr.length-10);
+			}
+
+			// получаем массив меток
+			this.m_labelsArr = allLabelsStr.split(this.labelSep);
+			if (this.m_labelsArr.length)
+			{
+				// добавляем метки в меню (в виде папок)
+				for (i = 0; i < this.m_labelsArr.length; i++) 
+				{
+					var arr_nested_label = this.m_labelsArr[i].split(this.nestedLabelSep);
+					if (arr_nested_label.length == 1)
+					{
+						this.appendLabelItem(GBE_GBlist, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
+					}
+					else
+					{
+						var fullName = arr_nested_label[0];
+						var tempMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
+						if (tempMenu == null)
+						{
+							this.appendLabelItem(GBE_GBlist, document.createElement('menu'), fullName, fullName);
+						}
+						
+						for (var j = 1; j < arr_nested_label.length; j++)
+						{
+							var parentContainer = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0].childNodes[0];
+							fullName += this.nestedLabelSep + arr_nested_label[j];
+							var tempSubMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
+							if (tempSubMenu == null)
+							{
+								this.appendLabelItem(
+									parentContainer, document.createElement('menu'), 
+									fullName, arr_nested_label[j], fullName)
+								;
+							}							
+						}
+					}
+				}
+			}
 
 			// добавляем закладки в меню
 			for (i = 0; i < this.m_bookmarkList.length; i++) 
@@ -770,25 +784,58 @@ var fGoogleBookmarksExtension =
 
 	/**
 	 * функция сравнения закладок и меток по имени
-	 * @param  {String} a
-	 * @param  {String} b
 	 * @return {int} результат сравнения
 	 */
 	compareByName: function (a, b) {
-		return String(a).toLowerCase() < String(b).toLowerCase() ? -1 : 1; 
+		if (a instanceof Array && b instanceof Array) 
+		{
+			if (fGoogleBookmarksExtension.sortOrder == "asc") 
+			{
+				return String(a[0]).toLowerCase() < String(b[0]).toLowerCase() ? -1 : 1;
+			}
+			else
+			{
+				return String(a[0]).toLowerCase() < String(b[0]).toLowerCase() ? 1 : -1;
+			}
+		}
+		if (a instanceof Object && b instanceof Object) 
+		{
+			if (fGoogleBookmarksExtension.sortOrder == "asc") 
+			{
+				return String(a.title).toLowerCase() < String(b.title).toLowerCase() ? -1 : 1;
+			}
+			else
+			{
+				return String(a.title).toLowerCase() < String(b.title).toLowerCase() ? 1 : -1;
+			}			
+		}
 	},
 
 	/**
 	 * функция сравнения закладок и меток по дате добавления
-	 * @param  {String} a
-	 * @param  {String} b
-	 * @return {int} результат сравнения
 	 */
 	compareByDate: function (a, b) {		
-		if (a instanceof Array && b instanceof Array) {
-			return new Date(a[5]) < new Date(b[5]) ? 1 : -1;
-		}else{
-			return this.compareByName(a, b);
+		if (a instanceof Array && b instanceof Array) 
+		{
+			if (fGoogleBookmarksExtension.sortOrder == "asc") 
+			{
+				return new Date(a[5]) < new Date(b[5]) ? -1 : 1;
+			}
+			else
+			{
+				return new Date(a[5]) < new Date(b[5]) ? 1 : -1;
+			}
+		}
+		if (a instanceof Object && b instanceof Object) 
+		{
+			if (fGoogleBookmarksExtension.sortOrder == "asc") 
+			{
+				return new Date(a.timestamp) < new Date(b.timestamp) ? -1 : 1;
+			}
+			else
+			{
+				return new Date(a.timestamp) < new Date(b.timestamp) ? 1 : -1;
+			}
 		}
 	},
 
@@ -1004,14 +1051,15 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setCharPref("nestedLabelSep", document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value);
 			gbe.prefs.setBoolPref("showFavicons", document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked);
 			gbe.prefs.setBoolPref("reverseBkmrkLeftClick", document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked);
-			gbe.prefs.setBoolPref("sortByDate", document.getElementById("fessGBE-prefs-sortByDate-Ctrl").checked);			
-
+			gbe.prefs.setCharPref("sortType", document.getElementById("fessGBE-prefs-sortType-Ctrl").value);
+			gbe.prefs.setCharPref("sortOrder", document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value);
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
 			gbe.showFavicons = document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked;
 			gbe.reverseBkmrkLeftClick = document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked;
-			gbe.sortByDate = document.getElementById("fessGBE-prefs-sortByDate-Ctrl").checked;
+			gbe.sortType = document.getElementById("fessGBE-prefs-sortType-Ctrl").value;
+			gbe.sortOrder = document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value;
 
 		}
 		catch (e) {
@@ -1058,15 +1106,26 @@ var fGoogleBookmarksExtension =
 			this.prefs.setBoolPref("reverseBkmrkLeftClick", false);
 			this.reverseBkmrkLeftClick = false;
 		}
-		if (this.prefs.getPrefType("sortByDate") == this.prefs.PREF_BOOL)
+
+		if (this.prefs.getPrefType("sortType") == this.prefs.PREF_STRING)
 		{
-			this.sortByDate = this.prefs.getBoolPref("sortByDate");
+			this.sortType = this.prefs.getCharPref("sortType");
 		}
 		else 
 		{
-			this.prefs.setBoolPref("sortByDate", false);
-			this.sortByDate = false;
+			this.prefs.setCharPref("sortType", "name");
+			this.sortType = "name";
 		}
+
+		if (this.prefs.getPrefType("sortOrder") == this.prefs.PREF_STRING)
+		{
+			this.sortOrder = this.prefs.getCharPref("sortOrder");
+		}
+		else 
+		{
+			this.prefs.setCharPref("sortOrder", "asc");
+			this.sortOrder = "asc";
+		}		
 
 
 	},

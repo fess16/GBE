@@ -4,3 +4,7 @@
 	max-width: 24px;
 	width: 24px;
 }
+
+#fessGBE-prefs-sortType-Ctrl listboxbody {
+  overflow-y: scroll;
+}

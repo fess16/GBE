@@ -54,4 +54,8 @@
 <!ENTITY prefWindow.nestedLabelSep.label "Разделитель вложенных меток:">
 <!ENTITY prefWindow.showFavicons.label "Показывать иконки сайтов (посещенных)">
 <!ENTITY prefWindow.reverseBkmrkLeftClick.label "Открывать закладки в той же вкладке">
-<!ENTITY prefWindow.sortByDate.label "Сортировать по дате добавления">
+<!ENTITY prefWindow.sortBy.label "Сортировка по:">
+<!ENTITY prefWindow.sortType.value1 "названию">
+<!ENTITY prefWindow.sortType.value2 "дате">
+<!ENTITY prefWindow.sortOrder.value1 "по возрастанию">
+<!ENTITY prefWindow.sortOrder.value2 "по убыванию">
