@@ -504,7 +504,11 @@ var fGoogleBookmarksExtension =
 					var arr_nested_label = this.m_labelsArr[i].split(this.nestedLabelSep);
 					if (arr_nested_label.length == 1)
 					{
-						this.appendLabelItem(GBE_GBlist, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
+						//var testLabel = GBE_GBlist.getElementsByAttribute('id',"GBE_" + this.m_labelsArr[i])[0];
+						if (GBE_GBlist.getElementsByAttribute('id',"GBE_" + this.m_labelsArr[i])[0] == null)
+						{
+							this.appendLabelItem(GBE_GBlist, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
+						}
 					}
 					else
 					{
