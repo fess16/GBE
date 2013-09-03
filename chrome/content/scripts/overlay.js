@@ -483,11 +483,10 @@ var fGoogleBookmarksExtension =
 			this.m_bookmarkList.sort((this.sortType == "timestamp")? this.compareByDate : this.compareByName);	
 			// сортируем массив меток
 			lbs.sort((this.sortType == "timestamp") ? this.compareByDate : this.compareByName);	
-
 			allLabelsStr = this.labelSep;
 			lbs.forEach(function(element, index) {
 			  allLabelsStr += element.title + fGoogleBookmarksExtension.labelSep;
-			  //fGoogleBookmarksExtension.ErrorLog("","" + element.title + " " + element.timestamp);
+			  //fGoogleBookmarksExtension.ErrorLog("lbs.forEach","" + element.title + " " + element.timestamp);
 			});
 			if (allLabelsStr.length > 5)
 			{
@@ -501,6 +500,10 @@ var fGoogleBookmarksExtension =
 				// добавляем метки в меню (в виде папок)
 				for (i = 0; i < this.m_labelsArr.length; i++) 
 				{
+					if (this.m_labelsArr[i] == "") 
+					{
+						continue;
+					}
 					var arr_nested_label = this.m_labelsArr[i].split(this.nestedLabelSep);
 					if (arr_nested_label.length == 1)
 					{
