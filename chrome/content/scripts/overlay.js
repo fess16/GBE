@@ -1,4 +1,7 @@
 /* 
+Version 0.1.5
+! исправлено добавление пустых меток, когда ни у одной закладки меток нет
+
 Version 0.1.4
 + добавлена возможность выбора типа (по названию, по дате добавления) и направления сортировки 
 	Спасибо Pavel Pavlov ;)
@@ -483,19 +486,20 @@ var fGoogleBookmarksExtension =
 			this.m_bookmarkList.sort((this.sortType == "timestamp")? this.compareByDate : this.compareByName);	
 			// сортируем массив меток
 			lbs.sort((this.sortType == "timestamp") ? this.compareByDate : this.compareByName);	
-			allLabelsStr = this.labelSep;
+			allLabelsStr = "";//this.labelSep;
 			lbs.forEach(function(element, index) {
 			  allLabelsStr += element.title + fGoogleBookmarksExtension.labelSep;
 			  //fGoogleBookmarksExtension.ErrorLog("lbs.forEach","" + element.title + " " + element.timestamp);
 			});
-			if (allLabelsStr.length > 5)
+			if (allLabelsStr.length > 0)
 			{
-				allLabelsStr = allLabelsStr.substr(5, allLabelsStr.length-10);
+				allLabelsStr = allLabelsStr.substr(0, allLabelsStr.length-5);
 			}
 
 			// получаем массив меток
 			this.m_labelsArr = allLabelsStr.split(this.labelSep);
-			if (this.m_labelsArr.length)
+
+			if (this.m_labelsArr.length && allLabelsStr !== "")
 			{
 				// добавляем метки в меню (в виде папок)
 				for (i = 0; i < this.m_labelsArr.length; i++) 
@@ -1273,13 +1277,16 @@ var fGoogleBookmarksExtension =
 			var searchTextField = document.getElementById("GBE-bookmark.dialog.labels");
 			// формируем список для автодополнения меток
 			var labelsList = window.arguments[1].m_labelsArr;
-			paramsToSet = "[";
-			for (var i = 0; i < labelsList.length; i++) {
-				paramsToSet += "{\"value\" : \"" + labelsList[i] + "\"},";
-			};
-			paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
-			paramsToSet += "]";
-			searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
+			if (labelsList !== null)
+			{
+				paramsToSet = "[";
+				for (var i = 0; i < labelsList.length; i++) {
+					paramsToSet += "{\"value\" : \"" + labelsList[i] + "\"},";
+				};
+				paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
+				paramsToSet += "]";
+				searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
+			}
 		}
 	},
 
