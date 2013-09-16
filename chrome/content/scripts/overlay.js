@@ -1,6 +1,7 @@
 /* 
 Version 0.1.5
 ! исправлено добавление пустых меток, когда ни у одной закладки меток нет
++ при клике средней кнопкой (колесиком) по закладке выполняется действие открытия из контекстного меню (в зависимости от настроек)
 
 Version 0.1.4
 + добавлена возможность выбора типа (по названию, по дате добавления) и направления сортировки 
@@ -874,7 +875,7 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("tooltiptext", value[1]);
 		item.setAttribute("class", "menuitem-iconic");
 		this.setFavicon(value[1], item);
-		item.setAttribute("oncommand", "fGoogleBookmarksExtension.bookmarkClick(event);");
+		item.setAttribute("onclick", "fGoogleBookmarksExtension.bookmarkClick(event);");
 		item.setAttribute("context", "GBE-contextMenu");
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 		parent.appendChild(item);
@@ -1191,7 +1192,15 @@ var fGoogleBookmarksExtension =
 	 */
 	bookmarkClick: function(e)
 	{
-		this.showURL(e.currentTarget.getAttribute("url"), this.reverseBkmrkLeftClick);
+		switch (e.button) 
+		{
+			case 0 :
+				this.showURL(e.currentTarget.getAttribute("url"), this.reverseBkmrkLeftClick);
+				break;
+			case 1 :
+				this.showURL(e.currentTarget.getAttribute("url"), !this.reverseBkmrkLeftClick);
+				break;
+		}
 	},
 
 	/**
