@@ -13,7 +13,16 @@
     <separator class="thin"/>
     <label value="&about.label-version.about;"/>
     <separator class="thin"/>
-    <label value="&about.label-author.about;"/>
+    <label href="mailto:&about.label-author.about;" class="text-link" value="&about.label-author.about;"/>
+  </groupbox>
+  <groupbox>
+    <caption label="&about.label-donation.title;" />
+    <label value="Yandex.Money" style="lefr-margin: 20px;" />
+    <label class="text-link" value="41001790396469"
+      onclick="var win = Components.classes['@mozilla.org/appshell/window-mediator;1']
+        .getService(Components.interfaces.nsIWindowMediator)
+        .getMostRecentWindow('navigator:browser');
+      win.gBrowser.selectedTab = win.gBrowser.addTab('http://fess16.blogspot.com/p/yandexmoney-donation.html');"/>
   </groupbox>
   <label></label>
 </dialog>
