@@ -160,9 +160,9 @@ SimpleAutoCompleteSearch.prototype = {
       // делим строку поиска по запятым
       var searchArr = searchString.split(",");
       // ищем только по последнему занчению
-      mySearchString = searchArr[searchArr.length-1].trim();
+      mySearchString = new RegExp(searchArr[searchArr.length-1].trim(), "i");
       for (i=0; i<searchResults.length; i++) {
-        if (searchResults[i].value.indexOf(mySearchString) == 0) 
+        if (searchResults[i].value.search(mySearchString) != -1) 
         {
           results.push(searchResults[i].value);
           if (searchResults[i].comment)
