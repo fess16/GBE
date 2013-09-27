@@ -154,7 +154,7 @@ SimpleAutoCompleteSearch.prototype = {
     // are moved into temporary arrays and passed to the AutoCompleteResult
     if (searchParam.length > 0) {
       var nativeJSON = Components.classes["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-      var searchResults= nativeJSON.decode(searchParam);
+      var searchResults = nativeJSON.decode(searchParam);
       var results = [];
       var comments = [];
       // делим строку поиска по запятым
