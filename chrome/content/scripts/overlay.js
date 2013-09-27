@@ -94,6 +94,7 @@ var fGoogleBookmarksExtension =
   'reverseBkmrkLeftClick' : false,
   'sortType' : "name",
   'sortOrder' : "asc",
+  'suggestLabel' : true,
   'prefs' : null,
  	/* --------------------*/
 
@@ -1240,6 +1241,32 @@ var fGoogleBookmarksExtension =
 						notes : "",
 						sig : this.m_signature
 					};
+
+				var labelsList = this.m_labelsArr;
+
+				if (this.suggestLabel && window.content.document.title && labelsList !== null)
+				{
+					var words = window.content.document.title.split(" ");
+					var uniqueWords = [];
+					var label = "";
+					jQuery.noConflict();
+					jQuery.each(words, function(i, el){
+				    if(jQuery.inArray(el, uniqueWords) === -1) 
+				    {
+				    	uniqueWords.push(el);
+						  var SearchString = new RegExp("(^|" + fGoogleBookmarksExtension.nestedLabelSep + ")" + el, "i");
+				      for (i=0; i<labelsList.length; i++) {
+				        if (labelsList[i].search(SearchString) != -1) 
+				        {
+				          label += labelsList[i] + ", ";
+				        }
+				      }
+				    }
+					});
+					params.labels = label;
+				}
+
+
 				// находим закладку по адресу (при редактировании)
 				if (editBkmk)
 				{
