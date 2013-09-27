@@ -154,19 +154,19 @@ SimpleAutoCompleteSearch.prototype = {
     // are moved into temporary arrays and passed to the AutoCompleteResult
     if (searchParam.length > 0) {
       var nativeJSON = Components.classes["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-      var searchResults = nativeJSON.decode(searchParam);
+      var searchResults= nativeJSON.decode(searchParam);
       var results = [];
       var comments = [];
       // делим строку поиска по запятым
       var searchArr = searchString.split(",");
-      // ищем только по последнему занчению
-      mySearchString = new RegExp(searchArr[searchArr.length-1].trim(), "i");
-      for (i=0; i<searchResults.length; i++) {
-        if (searchResults[i].value.search(mySearchString) != -1) 
+      // ищем только по последнему значению
+      mySearchString = new RegExp("(^|" + searchResults.delimiter + ")" + searchArr[searchArr.length-1].trim(), "i");
+      for (i=0; i<searchResults.labels.length; i++) {
+        if (searchResults.labels[i].value.search(mySearchString) != -1) 
         {
-          results.push(searchResults[i].value);
-          if (searchResults[i].comment)
-            comments.push(searchResults[i].comment);
+          results.push(searchResults.labels[i].value);
+          if (searchResults.labels[i].comment)
+            comments.push(searchResults.labels[i].comment);
           else
             comments.push(null);
         }

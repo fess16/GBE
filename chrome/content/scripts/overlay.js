@@ -1,6 +1,6 @@
 /* 
 Version 0.1.6b
-!автодополнение меток ищет совпадение не только с начала строки и без учета регистра
+!автодополнение меток ищет совпадения без учета регистра с начала строки/после разделителя меток
 
 Version 0.1.5
 ! исправлено добавление пустых меток, когда ни у одной закладки меток нет
@@ -1292,12 +1292,12 @@ var fGoogleBookmarksExtension =
 			var labelsList = window.arguments[1].m_labelsArr;
 			if (labelsList !== null)
 			{
-				paramsToSet = "[";
+				paramsToSet = "{\"delimiter\" : \""+window.arguments[1].nestedLabelSep + "\", \"labels\" : [";
 				for (var i = 0; i < labelsList.length; i++) {
 					paramsToSet += "{\"value\" : \"" + labelsList[i] + "\"},";
 				};
 				paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
-				paramsToSet += "]";
+				paramsToSet += "]}";
 				searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
 			}
 		}
