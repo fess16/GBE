@@ -89,11 +89,17 @@ var fGoogleBookmarksExtension =
   'refreshInProgress' : false,
 
   /* ------Свойства------*/
+  // разделитель вложенных меток
   'nestedLabelSep' : '/',
+  // флаг показа иконок для закладок
   'showFavicons' : true,
+  // флаг переключения действия левого клика по закладке
   'reverseBkmrkLeftClick' : false,
+  // тип сортировки 
   'sortType' : "name",
+  // направление сортировки
   'sortOrder' : "asc",
+  // флаг автоподстановки меток для новых закладок
   'suggestLabel' : true,
   'prefs' : null,
  	/* --------------------*/
@@ -1070,6 +1076,8 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setBoolPref("reverseBkmrkLeftClick", document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked);
 			gbe.prefs.setCharPref("sortType", document.getElementById("fessGBE-prefs-sortType-Ctrl").value);
 			gbe.prefs.setCharPref("sortOrder", document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value);
+			gbe.prefs.setBoolPref("suggestLabel", document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").checked);
+
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
@@ -1077,6 +1085,7 @@ var fGoogleBookmarksExtension =
 			gbe.reverseBkmrkLeftClick = document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked;
 			gbe.sortType = document.getElementById("fessGBE-prefs-sortType-Ctrl").value;
 			gbe.sortOrder = document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value;
+			gbe.suggestLabel = document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").value;
 
 		}
 		catch (e) {
@@ -1143,6 +1152,16 @@ var fGoogleBookmarksExtension =
 			this.prefs.setCharPref("sortOrder", "asc");
 			this.sortOrder = "asc";
 		}		
+
+		if (this.prefs.getPrefType("suggestLabel") == this.prefs.PREF_BOOL)
+		{
+			this.suggestLabel = this.prefs.getBoolPref("suggestLabel");
+		}
+		else
+		{
+			this.prefs.setBoolPref("suggestLabel", false);
+			this.suggestLabel = false;
+		}
 
 
 	},
@@ -1244,26 +1263,53 @@ var fGoogleBookmarksExtension =
 
 				var labelsList = this.m_labelsArr;
 
+				// автозаполнение меток на основании заголовка страницы
 				if (this.suggestLabel && window.content.document.title && labelsList !== null)
 				{
+					// все слова из заголовка
 					var words = window.content.document.title.split(" ");
+					// для хранения уникальных слов
 					var uniqueWords = [];
-					var label = "";
+					var labels = [];
 					jQuery.noConflict();
+					// проходим по всем словам
 					jQuery.each(words, function(i, el){
-				    if(jQuery.inArray(el, uniqueWords) === -1) 
+						// пропускаем повторяющиеся и слова из одного символа
+				    if(jQuery.inArray(el, uniqueWords) === -1 && el.length > 1) 
 				    {
 				    	uniqueWords.push(el);
-						  var SearchString = new RegExp("(^|" + fGoogleBookmarksExtension.nestedLabelSep + ")" + el, "i");
-				      for (i=0; i<labelsList.length; i++) {
-				        if (labelsList[i].search(SearchString) != -1) 
+				    	// регулярка для поиска
+				    	// ищем с начала строки/после nestedLabelSep до конца строки/nestedLabelSep 
+						  var SearchString = new RegExp("(^|" + fGoogleBookmarksExtension.nestedLabelSep + ")" 
+						  																		+ el 
+						  																		+ "($|" + fGoogleBookmarksExtension.nestedLabelSep + ")", "i");
+						  // просматриваем массив меток
+				      for (i=0; i<labelsList.length; i++) 
+				      {
+				      	// результат поиска
+				      	var position = labelsList[i].search(SearchString);
+				      	// нашли совпадение
+				        if (position != -1) 
 				        {
-				          label += labelsList[i] + ", ";
+				          // ограничиваем уровень вложенности метки
+				          // например: ищем chrome, есть закладка Browsers/Chrome/test
+				          // newLabel будет Browsers/Chrome/
+				          var newLabel = labelsList[i].substring(0,position + el.length+1);
+				          // если последний символ равен разделителю вложенных меток - удаляем его
+				          if (newLabel.charAt(newLabel.length - 1) == fGoogleBookmarksExtension.nestedLabelSep)
+				          {
+				          	newLabel = newLabel.substr(0, newLabel.length-1);
+				          }
+				          // если такой метки еще не было, добавляем ее в массив
+				          if (jQuery.inArray(newLabel, labels) === -1)
+				          {
+				          	labels.push(newLabel);
+				          }
 				        }
 				      }
 				    }
 					});
-					params.labels = label;
+					params.labels = labels;
 				}
 
 
