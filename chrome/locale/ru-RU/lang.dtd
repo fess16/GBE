@@ -60,3 +60,4 @@
 <!ENTITY prefWindow.sortType.value2 "дате">
 <!ENTITY prefWindow.sortOrder.value1 "по возрастанию">
 <!ENTITY prefWindow.sortOrder.value2 "по убыванию">
+<!ENTITY prefWindow.suggestLabel.label "Автоматически предлагать метку">

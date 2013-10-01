@@ -15,6 +15,7 @@
 <prefpane id="fessGBE-prefs-pane" label="&prefWindow.pane.title;">
   <preferences>
     <preference id="pref_nestedLabelSep" name="extensions.fessGBE.nestedLabelSep" type="string"/>
+    <preference id="pref_suggestLabel" name="extensions.fessGBE.suggestLabel" type="bool"/>
     <preference id="pref_showFavicons" name="extensions.fessGBE.showFavicons" type="bool"/>
     <preference id="pref_reverseBkmrkLeftClick" name="extensions.fessGBE.reverseBkmrkLeftClick" type="bool"/>
     <preference id="pref_sortByDate" name="extensions.fessGBE.sortByDate" type="bool"/> 
@@ -28,6 +29,12 @@
       preference="pref_nestedLabelSep" 
       id="fessGBE-prefs-nestedLabelSep-Ctrl" 
       width="20px" maxlength="1"/>
+  </hbox>
+  <hbox align="center" flex="1">
+    <checkbox
+      preference="pref_suggestLabel"
+      id="fessGBE-prefs-suggestLabel-Ctrl"
+      label="&prefWindow.suggestLabel.label;"/>
   </hbox>
   <hbox align="center" flex="1">
     <checkbox 
