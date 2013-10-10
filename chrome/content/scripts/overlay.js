@@ -1,6 +1,8 @@
 /* 
 Version 0.1.6b
++автозаполнение меток на основании заголовка страницы (для новых меток)
 !автодополнение меток ищет совпадения без учета регистра с начала строки/после разделителя меток
+!исправлена ошибка формирования списка закладок, когда у закладки не заполнено поле адреса
 
 Version 0.1.5
 ! исправлено добавление пустых меток, когда ни у одной закладки меток нет
@@ -456,7 +458,14 @@ var fGoogleBookmarksExtension =
 			{
 				this.m_bookmarkList[i] = new Array(6);
 				this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName("title")[0].childNodes[0].nodeValue;
-				this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName("link")[0].childNodes[0].nodeValue;
+				if (bookmarks[i].getElementsByTagName("link")[0].hasChildNodes()) {
+    			this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName("link")[0].childNodes[0].nodeValue;
+				}
+				else
+				{
+					this.m_bookmarkList[i][1] = "";
+					this.ErrorLog("doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL!!!");
+				}
 				this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue;
 				this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName("pubDate")[0].childNodes[0].nodeValue;
 
@@ -1016,7 +1025,7 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
-			if (!this.showFavicons)
+			if (!this.showFavicons || url.length == 0)
 			{
 				item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");  
 				return;
