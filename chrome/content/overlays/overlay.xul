@@ -17,7 +17,7 @@
 												image="chrome://GBE/skin/images/Star_empty.png"
 												label="&overlay.toolbarbutton.label;"
 												tooltiptext="&overlay.toolbarbutton.hint;" >
-				<menupopup id="GBE-popup" onpopupshowing="fGoogleBookmarksExtension.onShowMenu();">
+				<menupopup id="GBE-popup" onpopupshowing="fGoogleBookmarksExtension.onShowMenu();" ignorekeys="true">
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-hmenuRefresh" 
 												class="menuitem-iconic" 
@@ -58,7 +58,20 @@
 												tooltiptext="&overlay.hmenuLgt.hint;" />
 					</hbox>
 					<menuseparator/>
+					<hbox id="GBE-filterHBox" align="center">					
+							<label id="GBE-filterTextbox-label" control="GBE-filterTextbox" value="&overlay.textboxLabel;"/>
+					    <textbox 
+					      id="GBE-filterTextbox" 
+					      flex="1"
+					      type="search" 
+					      editable="true"
+					      oncommand="fGoogleBookmarksExtension.filterBookmarks(this);"
+					      />
+					</hbox>
+					<menuseparator/>
 					<vbox id="GBE-GBlist">
+					</vbox>
+					<vbox id="GBE-searchResultList">
 					</vbox>
 					<menuseparator id="GBE-AboutSeparator"/>
 					<menuitem id="GBE-menuAbout" 

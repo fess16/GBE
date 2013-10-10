@@ -19,6 +19,7 @@
 <!ENTITY overlay.folderMenuOpenAll.label "Open all">
 <!ENTITY overlay.folderMenuAddHere.label "Add Bookmark Here">
 
+<!ENTITY overlay.textboxLabel "Filter:">
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
 <!ENTITY about.label-version.about "Version 0.1.6b :)">

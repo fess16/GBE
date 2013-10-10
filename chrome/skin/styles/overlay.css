@@ -8,3 +8,7 @@
 #fessGBE-prefs-sortType-Ctrl listboxbody {
   overflow-y: scroll;
 }
+
+#GBE-filterTextbox-label {
+	margin-left: 30px;
+}

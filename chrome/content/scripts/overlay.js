@@ -404,6 +404,23 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
+	doClearList: function(listId)
+	{
+		var list = document.getElementById(listId);
+		try
+		{
+			while (list.hasChildNodes())
+			{
+				var firstChild = list.firstElementChild;
+				list.removeChild(firstChild);
+			}
+		}
+		catch (e)
+		{
+			this.ErrorLog("GBE:doClearList", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
 	/**
 	 * формирует меню закладок
 	 */
@@ -915,6 +932,16 @@ var fGoogleBookmarksExtension =
 		parent.appendChild(item);
 	},
 
+	appendSearchMenuItem: function(parent, item, label, url)
+	{
+		item.setAttribute("label", label);
+		item.setAttribute("url", url);
+		item.setAttribute("class", "menuitem-iconic");
+		// item.setAttribute("onclick", "fGoogleBookmarksExtension.bookmarkClick(event);");
+		// item.setAttribute("context", "GBE-contextMenu");
+		parent.appendChild(item);
+	},
+
 	/**
 	 * открывает заданный адрес в новой или той же вкладке
 	 * @param  {[type]} url открываемый адрес
@@ -972,7 +999,8 @@ var fGoogleBookmarksExtension =
 			if (!this.refreshInProgress)
 			{	
 				this.refreshInProgress = true;
-				this.doClearBookmarkList();
+				// this.doClearBookmarkList();
+				this.doClearList("GBE-GBlist");
 				this.doRequestBookmarksJQuery(showMenu);
 			}
 		}
@@ -999,7 +1027,8 @@ var fGoogleBookmarksExtension =
 			this.currentContextId = "";
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
-			this.doClearBookmarkList();
+			// this.doClearBookmarkList();
+			this.doClearList("GBE-GBlist");
 		}
 		catch (e)
 		{
@@ -1808,54 +1837,39 @@ var fGoogleBookmarksExtension =
 						}
 	  			}
 	  		}
-/*	  		// находим закладки с нужной меткой
-	  		for (i = 0; i < gbe.m_bookmarkList.length; i++)
-		  	{
-		  		var labelPos = -1;
-		  		var newLabels = gbe.m_bookmarkList[i][3];
-		  		if (newLabels.length)
-		  		{
-			  		for (var j = 0; j < newLabels.length; j++) {
-			  			if (newLabels[j] == name)
-			  			{
-			  				// запоминаем позицию искомой метки в массиве меток найденной закладки
-			  				labelPos = j;
-			  				break;
-			  			}
-			  		}
-			  	}	
-			  	// закладка с искомой меткой
-			  	if (labelPos >= 0)
-			  	{
-			  		var params = {
-							name : gbe.m_bookmarkList[i][0],
-							id : gbe.m_bookmarkList[i][2],
-							url : gbe.m_bookmarkList[i][1],
-							labels : newLabels,
-							notes : gbe.m_bookmarkList[i][4],
-							sig : gbe.m_signature
-						};
-						// если у закладки это единственная метка и стоял флаг deleteChildren
-			  		if ((newLabels.length == 1) && deleteChildren) 
-			  		{
-			  			// отправляем запрос на удаление закладки
-			  			gbe.doDeleteBookmarkJQuery(params);
-			  		}
-			  		else
-			  		{
-			  			// удаляем метку из массива меток найденной закладки
-			  			params.labels.splice(labelPos,1);
-			  			// отправляем запрос на изменение закладки 
-			  			gbe.doChangeBookmarkJQuery(params);
-			  		}
-			  	}
-		  	}*/
 	  	}
 		}
 	},
 
-
-
+	filterBookmarks: function(searchValue)
+	{
+		var GBE_GBlist = document.getElementById("GBE-GBlist");
+		var GBE_searchResultList = document.getElementById("GBE-searchResultList");
+		var search = searchValue.value;
+		GBE_searchResultList.setAttribute("hidden", true);
+		this.doClearList("GBE-searchResultList");
+		if (search.length == 0)
+		{
+			GBE_GBlist.setAttribute("hidden", false);
+		}
+		else
+		{
+			GBE_GBlist.setAttribute("hidden", true);
+			GBE_searchResultList.setAttribute("hidden", false);
+			var tempMenuitem;
+			if (this.m_bookmarkList && this.m_bookmarkList.length)
+			{
+				for (var i = 0; i < this.m_bookmarkList.length; i++)
+				{
+					if (this.m_bookmarkList[i][0].toLowerCase().indexOf(search) !== -1)
+					{
+						tempMenuitem = document.createElement('menuitem');
+						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this.m_bookmarkList[i][0], this.m_bookmarkList[i][1]);
+					}
+				}
+			}
+		}
+	},
 };
 
 
