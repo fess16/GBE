@@ -1,5 +1,6 @@
 /* 
 Version 0.1.6b
++ фильтр закладок
 +автозаполнение меток на основании заголовка страницы (для новых меток)
 !автодополнение меток ищет совпадения без учета регистра с начала строки/после разделителя меток
 !исправлена ошибка формирования списка закладок, когда у закладки не заполнено поле адреса
@@ -89,6 +90,10 @@ var fGoogleBookmarksExtension =
   'oldSearchValue' : "",
 
   'refreshInProgress' : false,
+  // массив отфильтрованных закладок
+  'tempFilterArray' : [],
+  // предыдущее значение фильтра
+  'oldFilterValue' : "",
 
   /* ------Свойства------*/
   // разделитель вложенных меток
@@ -289,51 +294,9 @@ var fGoogleBookmarksExtension =
 	},
 
 	/**
-	 * получает список закладок с сервера в формате RSS
+	 * получает список закладок с сервера в формате XML
 	 * @param  {bool} showMenu - показывать меню после обновления или нет
 	 */
-	doRequestBookmarks: function(showMenu)
-	{
-		try
-		{
-			this.m_ganswer = null;
-			this.m_signature = null;
-			this.m_bookmarkList = null;
-			this.m_labelsArr = null;
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", this.baseUrl + "lookup?output=rss&num=10000", true); 
-			//TODO: может переделать на onreadystatechange ?
-			xhr.onload = function() {
-				if (this.responseXML)
-				{
-		    	fGoogleBookmarksExtension.m_ganswer = this.responseXML.documentElement;
-		    	fGoogleBookmarksExtension.doBuildMenu();
-		    	if (showMenu)
-		    	{
-		    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
-		    	}
-	    	}
-	    	else
-	    	{
-	    		fGoogleBookmarksExtension.removeSIDCookie();
-	    		fGoogleBookmarksExtension.refreshInProgress = false;
-	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
-	    	}
-	  	};
-	  	xhr.onerror = function() {
-	  		fGoogleBookmarksExtension.removeSIDCookie();
-	  		fGoogleBookmarksExtension.refreshInProgress = false;
-	    	fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
-	  	};
-	  	xhr.send(null);
-	  }
-	  catch (e)
-		{
-			this.ErrorLog("GBE:doRequestBookmarks", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-		}
-	},
-
-
 	doRequestBookmarksJQuery: function(showMenu)
 	{
 		try
@@ -385,25 +348,8 @@ var fGoogleBookmarksExtension =
 	},
 
 	/**
-	 * удаляет все закладки из меню
+	 * удаляет все закладки из указанного меню
 	 */
-	doClearBookmarkList: function()
-	{
-		var GBE_GBlist = document.getElementById("GBE-GBlist");
-		try
-		{
-			while (GBE_GBlist.hasChildNodes())
-			{
-				var firstChild = GBE_GBlist.firstElementChild;
-				GBE_GBlist.removeChild(firstChild);
-			}
-		}
-		catch (e)
-		{
-			this.ErrorLog("GBE:doClearBookmarkList", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-		}
-	},
-
 	doClearList: function(listId)
 	{
 		var list = document.getElementById(listId);
@@ -473,19 +419,27 @@ var fGoogleBookmarksExtension =
 			for (i = 0; i < bookmarks.length; i++) 
 			{
 				this.m_bookmarkList[i] = new Array(6);
-				this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName("title")[0].childNodes[0].nodeValue;
-				if (bookmarks[i].getElementsByTagName("link")[0].hasChildNodes()) {
-    			this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName("link")[0].childNodes[0].nodeValue;
-				}
-				else
+				try
 				{
-					this.m_bookmarkList[i][1] = "";
-					this.ErrorLog("doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL!!!");
-				}
-				this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue;
-				this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName("pubDate")[0].childNodes[0].nodeValue;
+					this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName("title")[0].childNodes[0].nodeValue;
+					if (bookmarks[i].getElementsByTagName("link")[0].hasChildNodes()) {
+	    			this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName("link")[0].childNodes[0].nodeValue;
+					}
+					else
+					{
+						this.m_bookmarkList[i][1] = "";
+						this.ErrorLog("doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL!!!");
+					}
+					this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue;
+					this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName("pubDate")[0].childNodes[0].nodeValue;
 
-				var bookmark_labels = bookmarks[i].getElementsByTagName("smh:bkmk_label");
+					var bookmark_labels = bookmarks[i].getElementsByTagName("smh:bkmk_label");
+				}
+				catch(e1)
+				{
+					this.ErrorLog("doBuildMenu", "Last processing bookmark - " + this.m_bookmarkList[i][0]);
+					throw e1;
+				}
 				var	j;
 				// закладка с метками?
 				if (bookmark_labels.length)
@@ -617,55 +571,6 @@ var fGoogleBookmarksExtension =
 	 * отправляет запрос на добавление (изменение) закладки
 	 * @param  {object} params - параметры редактируемой закладки
 	 */
-	doChangeBookmark: function(params)
-	{
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", this.baseUrl2, true); 
-		// запрос отправлен удачно
-		xhr.onload = function() 
-		{
-			//TODO: может переделать на onreadystatechange ?
-			// необходимо обновить меню
-			fGoogleBookmarksExtension.needRefresh = true;  
-			if (window.content.location.href == params.url)
-			{
-				// меняем иконку на панели
-				fGoogleBookmarksExtension.setButtonIcons(!params.id);
-				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.statusText);
-				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.responseText);
-				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.getAllResponseHeaders());
-			}
-  	};
-  	// ошибка при запросе
-  	xhr.onerror = function() 
-  	{
-    	fGoogleBookmarksExtension.ErrorLog("GBE:doChangeBookmark", " An error occurred while saving bookmark (" + params.url + ").");
-  	};
-  	var curdate = new Date();
-  	// var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURIComponent(params.name) + 
-  	// 					'&annotation=' + encodeURIComponent(params.notes) + '&labels=' + encodeURIComponent(params.labels) + 
-  	// 					'&prev="/lookup"&sig=' + params.sig;
-   	var request = 'q=&bkmk=' + encodeURIComponent(params.url) + 
-   								'&prev=' + encodeURIComponent('/lookup') + 
-   								'&start=0&cd=bkmk&sig=' + params.sig + 
-   								'&day=' + curdate.getDate() + '&month=' + (curdate.getMonth()+1) + '&yr=' + curdate.getFullYear() +
-   								'&title=' + encodeURIComponent(params.name) +
-   								'&labels=' + encodeURIComponent(params.labels) +
-   								'&annotation=' + encodeURIComponent(params.notes);
-
-   	var request = 'bkmk=' + encodeURIComponent(params.url) + 
-   								'&prev=' + encodeURIComponent('/lookup') + 
-   								'&sig=' + params.sig + 
-   								//'&day=' + curdate.getDate() + '&month=' + (curdate.getMonth()+1) + '&yr=' + curdate.getFullYear() +
-   								'&title=' + encodeURIComponent(params.name) +
-   								'&labels=' + encodeURIComponent(params.labels) +
-   								'&annotation=' + encodeURIComponent(params.notes);
-  	this.ErrorLog("GBE:doChangeBookmark", " " + this.baseUrl2 + " " + request);
-  	xhr.send(request);
-	},	
-
-
-
 	doChangeBookmarkJQuery: function(params)
 	{
 		try
@@ -708,29 +613,6 @@ var fGoogleBookmarksExtension =
 	 * отправляет запрос на удаление закладки
 	 * @param  {object} params параметры удаляемой закладки
 	 */
-	doDeleteBookmark: function(params)
-	{
-			var request = this.baseUrl2 + "?zx=" + (new Date()).getTime() + "&dlq=" + params.id + "&sig=" + params.sig;
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", request, true); 
-			xhr.onload = function() 
-			{
-				//TODO: может переделать на onreadystatechange ?
-				fGoogleBookmarksExtension.needRefresh = true; 
-				if (window.content.location.href == params.url)
-				{
-					// меняем иконку на панели
-					fGoogleBookmarksExtension.setButtonIcons(null);
-					//document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
-				}
-	  	};
-	  	xhr.onerror = function() 
-	  	{
-	    	fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteBookmark", " An error occurred while deleting bookmark (" + params.url + ").");
-	  	};
-	  	xhr.send(null);
-	},
-
 	doDeleteBookmarkJQuery: function(params)
 	{
 		try
@@ -936,8 +818,8 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("label", label);
 		item.setAttribute("url", url);
 		item.setAttribute("class", "menuitem-iconic");
-		// item.setAttribute("onclick", "fGoogleBookmarksExtension.bookmarkClick(event);");
-		// item.setAttribute("context", "GBE-contextMenu");
+		this.setFavicon(url, item);
+		item.setAttribute("onclick", "fGoogleBookmarksExtension.bookmarkClick(event);");
 		parent.appendChild(item);
 	},
 
@@ -998,7 +880,6 @@ var fGoogleBookmarksExtension =
 			if (!this.refreshInProgress)
 			{	
 				this.refreshInProgress = true;
-				// this.doClearBookmarkList();
 				this.doClearList("GBE-GBlist");
 				this.doRequestBookmarksJQuery(showMenu);
 			}
@@ -1026,7 +907,6 @@ var fGoogleBookmarksExtension =
 			this.currentContextId = "";
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
-			// this.doClearBookmarkList();
 			this.doClearList("GBE-GBlist");
 		}
 		catch (e)
@@ -1246,6 +1126,17 @@ var fGoogleBookmarksExtension =
 		{
 			this.ErrorLog("GBE:onShowMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
+	},
+
+	// при скрытии меню
+	onHideMenu: function()
+	{
+		// делаем видимым основной список закладок
+		document.getElementById("GBE-GBlist").setAttribute("hidden", false);
+		// скрываем списко отфильтрованных закладок
+		document.getElementById("GBE-searchResultList").setAttribute("hidden", true);
+		// обнуляем значение фильтра
+		document.getElementById("GBE-filterTextbox").value = "";
 	},
 
 	/**
@@ -1840,63 +1731,69 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
+	/*
+	показывает отфильтрованные закладки
+	 */
 	filterBookmarks: function(searchValue)
 	{
 		var GBE_GBlist = document.getElementById("GBE-GBlist");
 		var GBE_searchResultList = document.getElementById("GBE-searchResultList");
 		var search = searchValue.value;
+		// копия массива предыдущих отфильтрованных закладок
+		var tempArray = this.tempFilterArray.slice();
 		GBE_searchResultList.setAttribute("hidden", true);
 		this.doClearList("GBE-searchResultList");
+		// фильтр пустой
 		if (search.length == 0)
 		{
+			// показываем основной список (все закладки и метки)
 			GBE_GBlist.setAttribute("hidden", false);
 		}
 		else
 		{
+			// прячем основной список
 			GBE_GBlist.setAttribute("hidden", true);
+			// показываем список отфильтрованных закладок
 			GBE_searchResultList.setAttribute("hidden", false);
 			var tempMenuitem;
+
 			if (this.m_bookmarkList && this.m_bookmarkList.length)
 			{
-				for (var i = 0; i < this.m_bookmarkList.length; i++)
+				this.tempFilterArray.length = 0;
+				// если новое значение фильтра входит в предыдущее,
+				if(this.oldFilterValue !== "" && search.indexOf(this.oldFilterValue) == 0)
 				{
-					if (this.m_bookmarkList[i][0].toLowerCase().indexOf(search) !== -1)
+					// то ищем только среди ранее отфильтрованных закладок
+					for(var i = 0; i < tempArray.length; i++)
 					{
-						tempMenuitem = document.createElement('menuitem');
-						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this.m_bookmarkList[i][0], this.m_bookmarkList[i][1]);
+						if (tempArray[i][0].toLowerCase().indexOf(search) !== -1)
+						{
+							tempMenuitem = document.createElement('menuitem');
+							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i][0], tempArray[i][1]);
+							// и формируем this.tempFilterArray заново
+							this.tempFilterArray.push([tempArray[i][0], tempArray[i][1]]);
+						}
+					}
+				}
+				else
+				{
+					// иначе - поиск по всем закладкам
+					for (var i = 0; i < this.m_bookmarkList.length; i++)
+					{
+						if (this.m_bookmarkList[i][0].toLowerCase().indexOf(search) !== -1)
+						{
+							tempMenuitem = document.createElement('menuitem');
+							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this.m_bookmarkList[i][0], this.m_bookmarkList[i][1]);
+							this.tempFilterArray.push([this.m_bookmarkList[i][0], this.m_bookmarkList[i][1]]);
+						}
 					}
 				}
 			}
 		}
+		this.oldFilterValue = search;
+		tempArray.length = 0;
 	},
 };
-
-
-// //wrap our code in a closure so it doesn't conflict with other add-ons
-// (function(){
-// 	window.addEventListener("load", function jQueryLoader(evt){
-// 		window.removeEventListener("load", jQueryLoader, false);
-
-// 		//load jQuery
-// 	Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
-// 		Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
-
-// 		//copy the jQuery variable into our namespace
-// 		//var $ = window.$;
-
-// 		//then restore the global $ and jQuery objects
-// 		//jQuery.noConflict(true);
-
-// 		//a couple of tests to make verify
-// 		//alert(window.$);
-// 		//alert(window.jQuery);
-// 		//alert($);
-
-// 		//now do something cool with it
-// 		//$('#appcontent').hide();
-
-// 	}, false);
-// })();
 
 
 window.addEventListener("load", function() { 

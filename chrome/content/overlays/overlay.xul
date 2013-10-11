@@ -17,7 +17,10 @@
 												image="chrome://GBE/skin/images/Star_empty.png"
 												label="&overlay.toolbarbutton.label;"
 												tooltiptext="&overlay.toolbarbutton.hint;" >
-				<menupopup id="GBE-popup" onpopupshowing="fGoogleBookmarksExtension.onShowMenu();" ignorekeys="true">
+				<menupopup 	id="GBE-popup" 
+										onpopupshowing="fGoogleBookmarksExtension.onShowMenu();" 
+										onpopuphidden="fGoogleBookmarksExtension.onHideMenu();"
+										ignorekeys="true">
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-hmenuRefresh" 
 												class="menuitem-iconic" 
@@ -65,6 +68,7 @@
 					      flex="1"
 					      type="search" 
 					      editable="true"
+					      timeout="100"
 					      oncommand="fGoogleBookmarksExtension.filterBookmarks(this);"
 					      />
 					</hbox>
