@@ -409,10 +409,9 @@ var fGoogleBookmarksExtension =
 		var list = document.getElementById(listId);
 		try
 		{
-			while (list.hasChildNodes())
+			while(list.firstChild)
 			{
-				var firstChild = list.firstElementChild;
-				list.removeChild(firstChild);
+				list.removeChild(list.firstChild);
 			}
 		}
 		catch (e)
