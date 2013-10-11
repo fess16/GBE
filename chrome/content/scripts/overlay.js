@@ -793,7 +793,7 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("tooltiptext", value[1]);
 		item.setAttribute("class", "menuitem-iconic");
 		this.setFavicon(value[1], item);
-		item.setAttribute("onclick", "fGoogleBookmarksExtension.bookmarkClick(event);");
+		item.addEventListener("click",fGoogleBookmarksExtension.bookmarkClick, false);
 		item.setAttribute("context", "GBE-contextMenu");
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 		parent.appendChild(item);
@@ -819,7 +819,7 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("url", url);
 		item.setAttribute("class", "menuitem-iconic");
 		this.setFavicon(url, item);
-		item.setAttribute("onclick", "fGoogleBookmarksExtension.bookmarkClick(event);");
+		item.addEventListener("click",fGoogleBookmarksExtension.bookmarkClick, false);
 		parent.appendChild(item);
 	},
 
@@ -1147,10 +1147,10 @@ var fGoogleBookmarksExtension =
 		switch (e.button) 
 		{
 			case 0 :
-				this.showURL(e.currentTarget.getAttribute("url"), this.reverseBkmrkLeftClick);
+				fGoogleBookmarksExtension.showURL(e.currentTarget.getAttribute("url"), fGoogleBookmarksExtension.reverseBkmrkLeftClick);
 				break;
 			case 1 :
-				this.showURL(e.currentTarget.getAttribute("url"), !this.reverseBkmrkLeftClick);
+				fGoogleBookmarksExtension.showURL(e.currentTarget.getAttribute("url"), !fGoogleBookmarksExtension.reverseBkmrkLeftClick);
 				break;
 		}
 	},
