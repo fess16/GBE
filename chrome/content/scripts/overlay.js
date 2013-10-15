@@ -57,6 +57,9 @@ Version 0.0.1
 + появилась кнопка на панели :)
 */
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://gre/modules/FileUtils.jsm");
+
 var fGoogleBookmarksExtension = 
 {
 	// адрес для получения списка закладок
@@ -148,6 +151,24 @@ var fGoogleBookmarksExtension =
 		{
 			gBrowser.removeProgressListener(this);
 		}
+	},
+
+	getLocalDirectory : function() 
+	{
+	  let directoryService =
+	    Cc["@mozilla.org/file/directory_service;1"].
+	      getService(Ci.nsIProperties);
+	  // this is a reference to the profile dir (ProfD) now.
+	  let localDir = directoryService.get("ProfD", Ci.nsIFile);
+
+	  localDir.append("fessGBE");
+
+	  if (!localDir.exists() || !localDir.isDirectory()) {
+	    // read and write permissions to owner and group, read-only for others.
+	    localDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0777);
+	  }
+
+	  return localDir;
 	},
 
 	/**
@@ -381,6 +402,7 @@ var fGoogleBookmarksExtension =
 			var GBE_GBlist = document.getElementById("GBE-GBlist");
 			var allLabelsStr, i;
 
+
 			// сохраняем сигнатуру из ответа (необходима при работе с закладками)
 			if (this.m_ganswer.getElementsByTagName("smh:signature").length)
 			{
@@ -534,6 +556,20 @@ var fGoogleBookmarksExtension =
 				}
 			}
 
+			var localDir = this.getLocalDirectory();
+
+
+			let file = FileUtils.getFile("ProfD", [localDir.leafName,"fessgbe.sqlite"]);
+			let mDBConn = Services.storage.openDatabase(file); // Will also create the file if it does not exist
+			if (mDBConn.tableExists("gbookmarks"))
+			{
+				mDBConn.executeSimpleSQL("DROP TABLE gbookmarks");
+			}
+			mDBConn.executeSimpleSQL("CREATE TABLE gbookmarks (ftitle TEXT, flink TEXT)");
+
+			let stmt = mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink) VALUES(:ftitle, :flink)");
+			let params = stmt.newBindingParamsArray();
+
 			// добавляем закладки в меню
 			for (i = 0; i < this.m_bookmarkList.length; i++) 
 			{
@@ -557,9 +593,32 @@ var fGoogleBookmarksExtension =
 					parentContainer = GBE_GBlist;
 					this.appendMenuItem(parentContainer, tempMenuitem, this.m_bookmarkList[i]);
 				}
+				let bp1 = params.newBindingParams();
+  			bp1.bindByName("ftitle", this.m_bookmarkList[i][0]);
+  			bp1.bindByName("flink", this.m_bookmarkList[i][1]);
+  			params.addParams(bp1);
 			}
 			this.needRefresh = false;
 			this.refreshInProgress = false;
+
+			stmt.bindParameters(params);
+			stmt.executeAsync(
+			{
+			  handleResult: function(aResultSet) {
+			    fGoogleBookmarksExtension.ErrorLog("handleResult","");
+			  },
+
+			  handleError: function(aError) {
+			    fGoogleBookmarksExtension.ErrorLog("Error: " + aError.message);
+			  },
+
+			  handleCompletion: function(aReason) {
+			    if (aReason != Components.interfaces.mozIStorageStatementCallback.REASON_FINISHED)
+			      fGoogleBookmarksExtension.ErrorLog("Query canceled or aborted!");
+			  }
+			});
+			
+
 		}
 		catch (e)
 		{

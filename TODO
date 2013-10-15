@@ -1,7 +1,8 @@
 /*
 https://addons.mozilla.org/ru/firefox/addon/fess-google-bookmark-extens/
 
-//TODO: 
+//TODO: добавить опцию переключения показа примечаний - список закладок по RSS или XML
+
 <textbox 
 	id="urlbar" 
 	flex="1" 
@@ -27,4 +28,31 @@ https://addons.mozilla.org/ru/firefox/addon/fess-google-bookmark-extens/
 	 clickSelectsAll="true" 
 	 completedefaultindex="true" 
 	 timeout="50">
+
+// Actually do the search
+    this._request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].
+                    createInstance(Ci.nsIXMLHttpRequest);
+    var submission = engine.getSubmission(searchString,
+                                          SEARCH_RESPONSE_SUGGESTION_JSON);
+    this._suggestURI = submission.uri;
+    var method = (submission.postData ? "POST" : "GET");
+    this._request.open(method, this._suggestURI.spec, true);
+    this._request.channel.notificationCallbacks = new AuthPromptOverride();
+    if (this._request.channel instanceof Ci.nsIPrivateBrowsingChannel) {
+      this._request.channel.setPrivate(privacyMode);
+    }
+
+    var self = this;
+    function onReadyStateChange() {
+      self.onReadyStateChange();
+    }
+    this._request.onreadystatechange = onReadyStateChange;
+    this._request.send(submission.postData);
+
+    if (this._includeFormHistory) {
+      this._sentSuggestRequest = true;
+      this._startHistorySearch(searchString, searchParam);
+    } 
+
+	 
  */
