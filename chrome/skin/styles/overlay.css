@@ -12,3 +12,11 @@
 #GBE-filterTextbox-label {
 	margin-left: 30px;
 }
+
+.ac-result-type-google_bookmark,
+.autocomplete-treebody::-moz-tree-image(google_bookmark, treecolAutoCompleteImage) {
+  list-style-image: url("chrome://GBE/skin/images/bkmrk.png");
+  /* -moz-image-region: rect(0px 48px 16px 32px); */
+  width: 16px;
+  height: 16px;
+}

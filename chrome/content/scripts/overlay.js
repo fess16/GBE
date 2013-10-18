@@ -111,8 +111,15 @@ var fGoogleBookmarksExtension =
   'sortOrder' : "asc",
   // флаг автоподстановки меток для новых закладок
   'suggestLabel' : true,
+  // флаг включения автодополнения в адресной строке
+  'enableGBautocomplite' : true,
   'prefs' : null,
  	/* --------------------*/
+
+ 	'mDBConn' : null,
+ 	'defAutocompliteList' : "",
+
+
 
   // nsIWebProgressListener
   'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
@@ -135,6 +142,28 @@ var fGoogleBookmarksExtension =
 			}
 			gBrowser.addProgressListener(this);
 
+			// в настройка включено автодополнение в адресной строке
+			if (this.enableGBautocomplite)
+			{
+				// включаем автодополнение
+				this.setURLBarAutocompleteList("on");
+				try
+				{
+					this.initDBconnection();
+					// удаляем предыдущие закладки (если были)
+					this.dropTempBookmarkTable();
+					// создаем таблицу закладок заново
+					this.createTempBookmarkTable();
+				}
+				// при ошибке - отключаем
+				catch(e)
+				{
+					this.ErrorLog("GBE:init", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+					this.ErrorLog("GBE:init", "Google bookmarks autocomplete init failed. Autocomplete was disabled!");
+					this.enableGBautocomplite = false;
+					this.setURLBarAutocompleteList("off");
+				}
+			}
 		}
 		// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
@@ -145,15 +174,71 @@ var fGoogleBookmarksExtension =
 		//jQuery.noConflict(true);
 	},
 
+
 	uninit: function()
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
 			gBrowser.removeProgressListener(this);
+			if (this.enableGBautocomplite && this.mDBConn.connectionReady)
+			{
+				this.setURLBarAutocompleteList("off");
+				try
+				{
+					this.dropTempBookmarkTable();
+				}
+				catch (e)
+				{
+					this.ErrorLog("GBE:uninit", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+					this.ErrorLog("GBE:uninit", "Drop gbookmarks table - error!");
+				}
+				finally
+				{
+					this.mDBConn.asyncClose();
+				}
+			}
 		}
 	},
 
-	getLocalDirectory : function() 
+	/*
+		добавляет в адресную строку автодополнение по закладкам Google / восстанавливает первоначальное значение параметров 
+	 */
+	setURLBarAutocompleteList: function(state)
+	{
+		var searchList = fGoogleBookmarksExtension.defAutocompliteList;
+		if (state != 'off') {
+			var s = fGoogleBookmarksExtension.defAutocompliteList = gURLBar.getAttribute('autocompletesearch');
+			searchList = 'gbookmarks-autocomplete' + " " + s;
+		}
+		gURLBar.setAttribute("autocompletesearch", searchList);
+	},
+
+	initDBconnection : function()
+	{
+		// создаем/получаем каталог fessGBE в профиле
+		let localDir = this.getLocalDirectory("fessGBE");
+		let file = FileUtils.getFile("ProfD", [localDir.leafName,"fessgbe.sqlite"]);
+		// открываем/создаем БД файл
+		this.mDBConn = Services.storage.openDatabase(file);
+	},
+
+	createTempBookmarkTable: function()
+	{
+		if (!this.mDBConn.tableExists("gbookmarks"))
+		{
+			this.mDBConn.executeSimpleSQL("CREATE TABLE gbookmarks (ftitle TEXT, flink TEXT, ficon TEXT)");
+		}
+	},
+
+	dropTempBookmarkTable: function()
+	{
+		if (this.mDBConn.tableExists("gbookmarks"))
+		{
+			this.mDBConn.executeSimpleSQL("DROP TABLE gbookmarks");
+		}
+	},
+
+	getLocalDirectory : function(dir) 
 	{
 	  let directoryService =
 	    Cc["@mozilla.org/file/directory_service;1"].
@@ -161,13 +246,12 @@ var fGoogleBookmarksExtension =
 	  // this is a reference to the profile dir (ProfD) now.
 	  let localDir = directoryService.get("ProfD", Ci.nsIFile);
 
-	  localDir.append("fessGBE");
+	  localDir.append(dir);
 
 	  if (!localDir.exists() || !localDir.isDirectory()) {
 	    // read and write permissions to owner and group, read-only for others.
-	    localDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0777);
+	    localDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0774);
 	  }
-
 	  return localDir;
 	},
 
@@ -341,7 +425,7 @@ var fGoogleBookmarksExtension =
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
 	      	fGoogleBookmarksExtension.removeSIDCookie();
 	  			fGoogleBookmarksExtension.refreshInProgress = false;
-	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
+	    		fGoogleBookmarksExtension.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
 	      },
 	      success: function(responseXML, textStatus) {
 					if (responseXML)
@@ -357,7 +441,7 @@ var fGoogleBookmarksExtension =
 		    	{
 		    		fGoogleBookmarksExtension.removeSIDCookie();
 		    		fGoogleBookmarksExtension.refreshInProgress = false;
-		    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
+		    		fGoogleBookmarksExtension.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
 		    	}
 	      }
 	    });
@@ -450,7 +534,7 @@ var fGoogleBookmarksExtension =
 					else
 					{
 						this.m_bookmarkList[i][1] = "";
-						this.ErrorLog("doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL!!!");
+						this.ErrorLog("GBE:doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL!!!");
 					}
 					this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue;
 					this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName("pubDate")[0].childNodes[0].nodeValue;
@@ -459,7 +543,7 @@ var fGoogleBookmarksExtension =
 				}
 				catch(e1)
 				{
-					this.ErrorLog("doBuildMenu", "Last processing bookmark - " + this.m_bookmarkList[i][0]);
+					this.ErrorLog("GBE:doBuildMenu", "Last processing bookmark - " + this.m_bookmarkList[i][0]);
 					throw e1;
 				}
 				var	j;
@@ -556,19 +640,17 @@ var fGoogleBookmarksExtension =
 				}
 			}
 
-			var localDir = this.getLocalDirectory();
-
-
-			let file = FileUtils.getFile("ProfD", [localDir.leafName,"fessgbe.sqlite"]);
-			let mDBConn = Services.storage.openDatabase(file); // Will also create the file if it does not exist
-			if (mDBConn.tableExists("gbookmarks"))
+			// вставляем закладки во временную таблицу
+			if (this.enableGBautocomplite)
 			{
-				mDBConn.executeSimpleSQL("DROP TABLE gbookmarks");
+				if (!this.mDBConn.connectionReady)
+				{
+					this.initDBconnection();
+					this.createTempBookmarkTable();
+				}
+				var stmt = this.mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink) VALUES(:ftitle, :flink)");
+				var params = stmt.newBindingParamsArray();
 			}
-			mDBConn.executeSimpleSQL("CREATE TABLE gbookmarks (ftitle TEXT, flink TEXT)");
-
-			let stmt = mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink) VALUES(:ftitle, :flink)");
-			let params = stmt.newBindingParamsArray();
 
 			// добавляем закладки в меню
 			for (i = 0; i < this.m_bookmarkList.length; i++) 
@@ -593,31 +675,36 @@ var fGoogleBookmarksExtension =
 					parentContainer = GBE_GBlist;
 					this.appendMenuItem(parentContainer, tempMenuitem, this.m_bookmarkList[i]);
 				}
-				let bp1 = params.newBindingParams();
-  			bp1.bindByName("ftitle", this.m_bookmarkList[i][0]);
-  			bp1.bindByName("flink", this.m_bookmarkList[i][1]);
-  			params.addParams(bp1);
+				// параметры запроса
+				if (this.enableGBautocomplite && this.mDBConn.connectionReady)
+				{
+					let bp1 = params.newBindingParams();
+	  			bp1.bindByName("ftitle", this.m_bookmarkList[i][0]);
+	  			bp1.bindByName("flink", this.m_bookmarkList[i][1]);
+	  			params.addParams(bp1);
+	  		}
 			}
 			this.needRefresh = false;
 			this.refreshInProgress = false;
 
-			stmt.bindParameters(params);
-			stmt.executeAsync(
+			var self = this;
+			if (this.enableGBautocomplite && this.mDBConn.connectionReady)
 			{
-			  handleResult: function(aResultSet) {
-			    fGoogleBookmarksExtension.ErrorLog("handleResult","");
-			  },
+				stmt.bindParameters(params);
+				stmt.executeAsync(
+				{
+				  handleResult: function(aResultSet) {},
 
-			  handleError: function(aError) {
-			    fGoogleBookmarksExtension.ErrorLog("Error: " + aError.message);
-			  },
+				  handleError: function(aError) {
+				    self.ErrorLog("GBE:doBuildMenu:executeAsync", "Error: " + aError.message);
+				  },
 
-			  handleCompletion: function(aReason) {
-			    if (aReason != Components.interfaces.mozIStorageStatementCallback.REASON_FINISHED)
-			      fGoogleBookmarksExtension.ErrorLog("Query canceled or aborted!");
-			  }
-			});
-			
+				  handleCompletion: function(aReason) {
+				    if (aReason != Components.interfaces.mozIStorageStatementCallback.REASON_FINISHED)
+				      self.ErrorLog("GBE:doBuildMenu:executeAsync", "Query canceled or aborted!");
+				  }
+				});
+			}
 
 		}
 		catch (e)
@@ -835,7 +922,7 @@ var fGoogleBookmarksExtension =
    */
   ErrorLog: function(s1, s2)
 	{
-		this.GBLTut_ConsoleService.logStringMessage(s1 + s2);
+		this.GBLTut_ConsoleService.logStringMessage(s1 + " " + s2);
 	},
 
 	/**
@@ -967,6 +1054,11 @@ var fGoogleBookmarksExtension =
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
 			this.doClearList("GBE-GBlist");
+			if (this.mDBConn.connectionReady)
+			{
+				this.dropTempBookmarkTable();
+				this.mDBConn.asyncClose();
+			}
 		}
 		catch (e)
 		{
@@ -992,6 +1084,8 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
+			var self = this;
+
 			if (!this.showFavicons || url.length == 0)
 			{
 				item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");  
@@ -1004,13 +1098,25 @@ var fGoogleBookmarksExtension =
 	      {
 	        onComplete: function(uri, faviconData, mimeType, privateFlag)
 	        {
+	          let favUrl;
 	          if (uri !== null)
 	          {
-	          	item.setAttribute("image", uri.spec);
+	          	favUrl = uri.spec;
 	          }
 	          else
 	          {
-							item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");          
+							favUrl = "chrome://GBE/skin/images/bkmrk.png";
+						}
+						item.setAttribute("image",favUrl);
+						let stmt = self.mDBConn.createStatement("UPDATE gbookmarks SET ficon = :ficon WHERE flink = :flink");
+						try{
+							stmt.params.ficon = favUrl;
+							stmt.params.flink = url;
+							stmt.execute();
+						}
+						finally
+						{
+							stmt.reset();
 						}
 	        }
 	      }
@@ -1514,7 +1620,7 @@ var fGoogleBookmarksExtension =
 			}
 		}
 		catch (e) {
-			this.ErrorLog("contextRemoveBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			this.ErrorLog("GBE:contextRemoveBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}		
 
 	},
