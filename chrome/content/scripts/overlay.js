@@ -134,6 +134,8 @@ var fGoogleBookmarksExtension =
 		this.getPrefsValues();
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
+			Components.utils.import('chrome://GBE/content/scripts/local_domains.js');
+
 			Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
 				 Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 			if(this.needRefresh && this.checkLogin() && document.getElementById("GBE-toolbarbutton") )
@@ -368,14 +370,17 @@ var fGoogleBookmarksExtension =
   checkLogin: function () {
 		var cookieManager = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
 				iter = cookieManager.enumerator;
-		
+		var domainRegexp = new RegExp(fGoogleBookmarksModule.googleDomains.join('|'));
 		while (iter.hasMoreElements()) 
 		{
 			var cookie = iter.getNext();
-			if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
+			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
+			// if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
 			{
+				this.ErrorLog("checkLogin", cookie.host + " - " + cookie.name);
 				return true;	
 			}
+
 		}
 		return false;
 	},
