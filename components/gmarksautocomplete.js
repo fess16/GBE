@@ -195,33 +195,47 @@ GbookmarksAutoCompleteSearch.prototype = {
 
       var results = [];
 
-      let file = FileUtils.getFile("ProfD", ["fessGBE","fessgbe.sqlite"]);
-      let mDBConn = Services.storage.openDatabase(file); // Will also create the file if it does not exist
-      if (mDBConn.tableExists("gbookmarks") && searchString.trim().length > 0)
+      var tempString = searchString.toLowerCase();
+
+      var mySearchString = "";
+
+      if (tempString.indexOf("gb ") == 0)
       {
-        var statement = mDBConn.createStatement("SELECT * FROM gbookmarks WHERE ftitle LIKE '%" 
-          + searchString + "%' OR flink LIKE '%"+ searchString + "%'");
-        statement.execute();
-        try {
-          while (statement.step()) {
-            let ftitle = statement.row.ftitle;
-            let flink = statement.row.flink;
-            results.push(
-            {
-                  icon: statement.row.ficon,
-                  title: statement.row.ftitle,
-                  url: statement.row.flink,
-                  comment: statement.row.ftitle
-            });
-          }
-        }
-        finally 
+        tempString = tempString.replace("gb ", "").trim().split(" ");
+        if (tempString.length >= 1)
         {
-          statement.reset();
-          mDBConn.asyncClose();
+          mySearchString = tempString[0];
+          let file = FileUtils.getFile("ProfD", ["fessGBE","fessgbe.sqlite"]);
+          let mDBConn = Services.storage.openDatabase(file); 
+          if (mDBConn.tableExists("gbookmarks") && mySearchString.length > 0)
+          {
+            var statement = mDBConn.createStatement("SELECT * FROM gbookmarks WHERE ftitle LIKE '%" 
+              + mySearchString + "%' OR flink LIKE '%"+ mySearchString + "%'");
+            statement.execute();
+            try {
+              while (statement.step()) {
+                let ftitle = statement.row.ftitle;
+                let flink = statement.row.flink;
+                results.push(
+                {
+                      icon: statement.row.ficon,
+                      title: statement.row.ftitle,
+                      url: statement.row.flink,
+                      comment: statement.row.ftitle
+                });
+              }
+            }
+            finally 
+            {
+              statement.reset();
+              mDBConn.asyncClose();
+            }
+          }          
         }
+
       }
-      var newResult = new GbookmarksAutoCompleteResult(results, searchString);
+
+      var newResult = new GbookmarksAutoCompleteResult(results, mySearchString);
       listener.onSearchResult(this, newResult);
   },
 
