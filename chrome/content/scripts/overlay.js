@@ -425,13 +425,14 @@ var fGoogleBookmarksExtension =
 			this.m_signature = null;
 			this.m_bookmarkList = null;
 			this.m_labelsArr = null;
+			var withoutNotes = this.withoutNotes;
 			jQuery.noConflict();
 			jQuery.ajax({
 	      type: "GET",
 	      url: this.baseUrl + "lookup",
 	      data: 
 	      	{
-	          output: "rss",
+	          output: (withoutNotes ? "xml" : "rss"),
 	          num: 10000
 	        },
 	      dataType : "XML",
@@ -1217,7 +1218,7 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setCharPref("sortOrder", document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value);
 			gbe.prefs.setBoolPref("suggestLabel", document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").checked);
 			gbe.prefs.setBoolPref("enableGBautocomplite", document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked);
-			gbe.prefs.setBoolPref("withoutNotes", document.getElementById("fessGBE-prefs-withoutNotes-Ctrl").checked);
+			gbe.prefs.setBoolPref("withoutNotes", !document.getElementById("fessGBE-prefs-withoutNotes-Ctrl").checked);
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
@@ -1228,7 +1229,7 @@ var fGoogleBookmarksExtension =
 			gbe.suggestLabel = document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").value;
 			var oldValGBautocomplite = gbe.enableGBautocomplite;
 			gbe.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
-			gbe.withoutNotes = document.getElementById("fessGBE-prefs-withoutNotes-Ctrl").checked;
+			gbe.withoutNotes = !document.getElementById("fessGBE-prefs-withoutNotes-Ctrl").checked;
 
 			if (oldValGBautocomplite !== gbe.enableGBautocomplite)
 			{
