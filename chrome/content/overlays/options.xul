@@ -22,6 +22,7 @@
     <preference id="pref_sortType" name="extensions.fessGBE.sortType" type="string"/>
     <preference id="pref_sortOrder" name="extensions.fessGBE.sortOrder" type="string"/>
     <preference id="pref_enableGBautocomplite" name="extensions.fessGBE.enableGBautocomplite" type="bool"/>
+    <preference id="pref_withoutNotes" name="extensions.fessGBE.withoutNotes" type="bool"/>
   </preferences>
  
   <hbox align="center" flex="1">
@@ -72,6 +73,12 @@
       preference="pref_enableGBautocomplite" 
       id="fessGBE-prefs-enableGBautocomplite-Ctrl" 
       label="&prefWindow.enableGBautocomplite.label;"/>
+  </hbox>  
+  <hbox align="center">
+    <checkbox 
+      preference="pref_withoutNotes" 
+      id="fessGBE-prefs-withoutNotes-Ctrl" 
+      label="&prefWindow.withoutNotes.label;"/>
   </hbox>  
 </prefpane>
  

@@ -63,3 +63,4 @@
 <!ENTITY prefWindow.sortOrder.value2 "по убыванию">
 <!ENTITY prefWindow.suggestLabel.label "Автоматически предлагать метку">
 <!ENTITY prefWindow.enableGBautocomplite.label "Поиск Google Bookmarks в адресной строке: gb слово_для_поиска (требуется перезапуск)">
+<!ENTITY prefWindow.withoutNotes.label "Показывать примечания к закладкам (Предупреждение: локальные URL в закладках будут пустыми)">

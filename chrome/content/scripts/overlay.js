@@ -114,6 +114,8 @@ var fGoogleBookmarksExtension =
   'suggestLabel' : true,
   // флаг включения автодополнения в адресной строке
   'enableGBautocomplite' : false,
+	// режим без примечаний - формат получения закладок: rss or xml
+	'withoutNotes' : false,
   'prefs' : null,
  	/* --------------------*/
 
@@ -1182,6 +1184,7 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setCharPref("sortOrder", document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value);
 			gbe.prefs.setBoolPref("suggestLabel", document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").checked);
 			gbe.prefs.setBoolPref("enableGBautocomplite", document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked);
+			gbe.prefs.setBoolPref("withoutNotes", document.getElementById("fessGBE-prefs-withoutNotes-Ctrl").checked);
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
@@ -1192,6 +1195,7 @@ var fGoogleBookmarksExtension =
 			gbe.suggestLabel = document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").value;
 			var oldValGBautocomplite = gbe.enableGBautocomplite;
 			gbe.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
+			gbe.withoutNotes = document.getElementById("fessGBE-prefs-withoutNotes-Ctrl").checked;
 
 			if (oldValGBautocomplite !== gbe.enableGBautocomplite)
 			{
@@ -1290,6 +1294,16 @@ var fGoogleBookmarksExtension =
 		{
 			this.prefs.setBoolPref("enableGBautocomplite", false);
 			this.enableGBautocomplite = false;
+		}
+		
+		if (this.prefs.getPrefType("withoutNotes") == this.prefs.PREF_BOOL)
+		{
+			this.withoutNotes = this.prefs.getBoolPref("withoutNotes");
+		}
+		else
+		{
+			this.prefs.setBoolPref("withoutNotes", false);
+			this.withoutNotes = false;
 		}
 	},
 
