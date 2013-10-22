@@ -1,5 +1,6 @@
 /* 
 Version 0.1.6b
++ поиск в закладок в адресной строке
 + фильтр закладок
 +автозаполнение меток на основании заголовка страницы (для новых меток)
 !автодополнение меток ищет совпадения без учета регистра с начала строки/после разделителя меток
@@ -112,7 +113,7 @@ var fGoogleBookmarksExtension =
   // флаг автоподстановки меток для новых закладок
   'suggestLabel' : true,
   // флаг включения автодополнения в адресной строке
-  'enableGBautocomplite' : true,
+  'enableGBautocomplite' : false,
   'prefs' : null,
  	/* --------------------*/
 
@@ -149,22 +150,23 @@ var fGoogleBookmarksExtension =
 			{
 				// включаем автодополнение
 				this.setURLBarAutocompleteList("on");
-				try
-				{
-					this.initDBconnection();
-					// удаляем предыдущие закладки (если были)
-					this.dropTempBookmarkTable();
-					// создаем таблицу закладок заново
-					this.createTempBookmarkTable();
-				}
-				// при ошибке - отключаем
-				catch(e)
-				{
-					this.ErrorLog("GBE:init", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-					this.ErrorLog("GBE:init", "Google bookmarks autocomplete init failed. Autocomplete was disabled!");
-					this.enableGBautocomplite = false;
-					this.setURLBarAutocompleteList("off");
-				}
+			}
+			try
+			{
+				this.initDBconnection();
+				// удаляем предыдущие закладки (если были)
+				this.dropTempBookmarkTable();
+				// создаем таблицу закладок заново
+				this.createTempBookmarkTable();
+			}
+			// при ошибке - отключаем
+			catch(e)
+			{
+				this.ErrorLog("GBE:init", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+				this.ErrorLog("GBE:init", "Google bookmarks autocomplete init failed. Autocomplete was disabled!");
+				this.enableGBautocomplite = false;
+				gbe.prefs.setBoolPref("enableGBautocomplite", false);
+				this.setURLBarAutocompleteList("off");
 			}
 		}
 		// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
@@ -182,9 +184,8 @@ var fGoogleBookmarksExtension =
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
 			gBrowser.removeProgressListener(this);
-			if (this.enableGBautocomplite && this.mDBConn.connectionReady)
+			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
-				this.setURLBarAutocompleteList("off");
 				try
 				{
 					this.dropTempBookmarkTable();
@@ -198,6 +199,10 @@ var fGoogleBookmarksExtension =
 				{
 					this.mDBConn.asyncClose();
 				}
+			}
+			if (this.enableGBautocomplite)
+			{
+				this.setURLBarAutocompleteList("off");
 			}
 		}
 	},
@@ -213,6 +218,9 @@ var fGoogleBookmarksExtension =
 			searchList = 'gbookmarks-autocomplete' + " " + s;
 		}
 		gURLBar.setAttribute("autocompletesearch", searchList);
+		// this.ErrorLog("setURLBarAutocompleteList ", gURLBar.getAttribute('autocompletesearch'));
+		// gURLBar.setAttribute("disableautocomplete", true);
+		// gURLBar.setAttribute("disableautocomplete", false);
 	},
 
 	initDBconnection : function()
@@ -226,7 +234,7 @@ var fGoogleBookmarksExtension =
 
 	createTempBookmarkTable: function()
 	{
-		if (!this.mDBConn.tableExists("gbookmarks"))
+		if (this.mDBConn && !this.mDBConn.tableExists("gbookmarks"))
 		{
 			this.mDBConn.executeSimpleSQL("CREATE TABLE gbookmarks (ftitle TEXT, flink TEXT, ficon TEXT)");
 		}
@@ -234,7 +242,7 @@ var fGoogleBookmarksExtension =
 
 	dropTempBookmarkTable: function()
 	{
-		if (this.mDBConn.tableExists("gbookmarks"))
+		if (this.mDBConn && this.mDBConn.tableExists("gbookmarks"))
 		{
 			this.mDBConn.executeSimpleSQL("DROP TABLE gbookmarks");
 		}
@@ -377,7 +385,6 @@ var fGoogleBookmarksExtension =
 			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
 			// if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
 			{
-				this.ErrorLog("checkLogin", cookie.host + " - " + cookie.name);
 				return true;	
 			}
 
@@ -411,11 +418,11 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
+			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 			this.m_ganswer = null;
 			this.m_signature = null;
 			this.m_bookmarkList = null;
 			this.m_labelsArr = null;
-
 			jQuery.noConflict();
 			jQuery.ajax({
 	      type: "GET",
@@ -426,7 +433,7 @@ var fGoogleBookmarksExtension =
 	          num: 10000
 	        },
 	      dataType : "XML",
-	      timeout: 5000,
+	      timeout: 10000,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
 	      	fGoogleBookmarksExtension.removeSIDCookie();
 	  			fGoogleBookmarksExtension.refreshInProgress = false;
@@ -441,6 +448,7 @@ var fGoogleBookmarksExtension =
 			    	{
 			    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
 			    	}
+			    	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	}
 		    	else
 		    	{
@@ -645,14 +653,20 @@ var fGoogleBookmarksExtension =
 				}
 			}
 
-			// вставляем закладки во временную таблицу
-			if (this.enableGBautocomplite)
+			if (!this.mDBConn)
 			{
-				if (!this.mDBConn.connectionReady)
-				{
-					this.initDBconnection();
-					this.createTempBookmarkTable();
-				}
+				this.initDBconnection();
+				// удаляем предыдущие закладки (если были)
+				this.dropTempBookmarkTable();
+				// создаем таблицу закладок заново
+				this.createTempBookmarkTable();
+			}
+			
+
+
+			// вставляем закладки во временную таблицу
+			if (this.mDBConn && this.mDBConn.connectionReady)
+			{
 				var stmt = this.mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink) VALUES(:ftitle, :flink)");
 				var params = stmt.newBindingParamsArray();
 			}
@@ -681,7 +695,7 @@ var fGoogleBookmarksExtension =
 					this.appendMenuItem(parentContainer, tempMenuitem, this.m_bookmarkList[i]);
 				}
 				// параметры запроса
-				if (this.enableGBautocomplite && this.mDBConn.connectionReady)
+				if (this.mDBConn && this.mDBConn.connectionReady)
 				{
 					let bp1 = params.newBindingParams();
 	  			bp1.bindByName("ftitle", this.m_bookmarkList[i][0]);
@@ -693,7 +707,7 @@ var fGoogleBookmarksExtension =
 			this.refreshInProgress = false;
 
 			var self = this;
-			if (this.enableGBautocomplite && this.mDBConn.connectionReady)
+			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
 				stmt.bindParameters(params);
 				stmt.executeAsync(
@@ -710,7 +724,6 @@ var fGoogleBookmarksExtension =
 				  }
 				});
 			}
-
 		}
 		catch (e)
 		{
@@ -1059,7 +1072,8 @@ var fGoogleBookmarksExtension =
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
 			this.doClearList("GBE-GBlist");
-			if (this.mDBConn.connectionReady)
+			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
+			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
 				this.dropTempBookmarkTable();
 				this.mDBConn.asyncClose();
@@ -1113,15 +1127,18 @@ var fGoogleBookmarksExtension =
 							favUrl = "chrome://GBE/skin/images/bkmrk.png";
 						}
 						item.setAttribute("image",favUrl);
-						let stmt = self.mDBConn.createStatement("UPDATE gbookmarks SET ficon = :ficon WHERE flink = :flink");
-						try{
-							stmt.params.ficon = favUrl;
-							stmt.params.flink = url;
-							stmt.execute();
-						}
-						finally
+						if (self.enableGBautocomplite && self.mDBConn.connectionReady)
 						{
-							stmt.reset();
+							let stmt = self.mDBConn.createStatement("UPDATE gbookmarks SET ficon = :ficon WHERE flink = :flink");
+							try{
+								stmt.params.ficon = favUrl;
+								stmt.params.flink = url;
+								stmt.execute();
+							}
+							finally
+							{
+								stmt.reset();
+							}
 						}
 	        }
 	      }
@@ -1164,7 +1181,7 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setCharPref("sortType", document.getElementById("fessGBE-prefs-sortType-Ctrl").value);
 			gbe.prefs.setCharPref("sortOrder", document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value);
 			gbe.prefs.setBoolPref("suggestLabel", document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").checked);
-
+			gbe.prefs.setBoolPref("enableGBautocomplite", document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked);
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
@@ -1173,7 +1190,22 @@ var fGoogleBookmarksExtension =
 			gbe.sortType = document.getElementById("fessGBE-prefs-sortType-Ctrl").value;
 			gbe.sortOrder = document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value;
 			gbe.suggestLabel = document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").value;
+			var oldValGBautocomplite = gbe.enableGBautocomplite;
+			gbe.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
 
+			if (oldValGBautocomplite !== gbe.enableGBautocomplite)
+			{
+				if (gbe.enableGBautocomplite)
+				{
+					this.ErrorLog("GBE:enableGBautocomplite", "on");
+					gbe.setURLBarAutocompleteList("on");
+				}
+				else
+				{
+					this.ErrorLog("GBE:enableGBautocomplite", "off");
+					gbe.setURLBarAutocompleteList("off");
+				}
+			}
 		}
 		catch (e) {
 			this.ErrorLog("GBE:onLoadPrefwindow", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
@@ -1249,8 +1281,16 @@ var fGoogleBookmarksExtension =
 			this.prefs.setBoolPref("suggestLabel", false);
 			this.suggestLabel = false;
 		}
-
-
+		
+		if (this.prefs.getPrefType("enableGBautocomplite") == this.prefs.PREF_BOOL)
+		{
+			this.enableGBautocomplite = this.prefs.getBoolPref("enableGBautocomplite");
+		}
+		else
+		{
+			this.prefs.setBoolPref("enableGBautocomplite", false);
+			this.enableGBautocomplite = false;
+		}
 	},
 
 

@@ -61,3 +61,4 @@
 <!ENTITY prefWindow.sortOrder.value1 "ascending">
 <!ENTITY prefWindow.sortOrder.value2 "descending">
 <!ENTITY prefWindow.suggestLabel.label "Automatically propose label">
+<!ENTITY prefWindow.enableGBautocomplite.label "Search Google Bookmarks in address bar: gb search_word (needs restart)">

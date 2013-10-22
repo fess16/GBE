@@ -62,3 +62,4 @@
 <!ENTITY prefWindow.sortOrder.value1 "по возрастанию">
 <!ENTITY prefWindow.sortOrder.value2 "по убыванию">
 <!ENTITY prefWindow.suggestLabel.label "Автоматически предлагать метку">
+<!ENTITY prefWindow.enableGBautocomplite.label "Поиск Google Bookmarks в адресной строке: gb слово_для_поиска (требуется перезапуск)">
