@@ -467,6 +467,39 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
+	doRequestSignature: function()
+	{
+		try
+		{
+			this.m_signature = null;
+			var self = this;
+			jQuery.noConflict();
+			jQuery.ajax({
+	      type: "GET",
+	      url: this.baseUrl + "find",
+	      data: 
+	      	{
+	          zx: (new Date()).getTime(),
+	          output: "rss",
+	          q: "qB89f6ZAUXXsfrwPdN4t"
+	        },
+	      dataType : "XML",
+	      timeout: 10000,
+	      success: function(responseXML, textStatus) {
+	      	if (responseXML.getElementsByTagName("smh:signature").length)
+	      	{
+	      		self.m_signature = responseXML.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
+	      	}
+	      }
+	    });
+		}
+		catch (e)
+		{
+			this.ErrorLog("GBE:doRequestSignature", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+
+	},
+
 	/**
 	 * удаляет все закладки из указанного меню
 	 */
@@ -1295,7 +1328,7 @@ var fGoogleBookmarksExtension =
 			this.prefs.setBoolPref("enableGBautocomplite", false);
 			this.enableGBautocomplite = false;
 		}
-		
+
 		if (this.prefs.getPrefType("withoutNotes") == this.prefs.PREF_BOOL)
 		{
 			this.withoutNotes = this.prefs.getBoolPref("withoutNotes");
