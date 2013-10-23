@@ -1,5 +1,6 @@
 /* 
 Version 0.1.6b
++ переключение формата получения списка закладок: xml or rss
 + поиск в закладок в адресной строке
 + фильтр закладок
 +автозаполнение меток на основании заголовка страницы (для новых меток)
@@ -115,7 +116,7 @@ var fGoogleBookmarksExtension =
   // флаг включения автодополнения в адресной строке
   'enableGBautocomplite' : false,
 	// режим без примечаний - формат получения закладок: rss or xml
-	'withoutNotes' : false,
+	'enableNotes' : false,
   'prefs' : null,
  	/* --------------------*/
 
@@ -425,14 +426,14 @@ var fGoogleBookmarksExtension =
 			this.m_signature = null;
 			this.m_bookmarkList = null;
 			this.m_labelsArr = null;
-			var withoutNotes = this.withoutNotes;
+			var enableNotes = this.enableNotes;
 			jQuery.noConflict();
 			jQuery.ajax({
 	      type: "GET",
 	      url: this.baseUrl + "lookup",
 	      data: 
 	      	{
-	          output: (withoutNotes ? "xml" : "rss"),
+	          output: (!enableNotes ? "xml" : "rss"),
 	          num: 10000
 	        },
 	      dataType : "XML",
@@ -525,23 +526,60 @@ var fGoogleBookmarksExtension =
 	 */
 	doBuildMenu: function()
 	{
+		var bkmkFieldNames = { 
+			"rss" : {
+				bkmk 		: "item",
+				title 	: "title", 
+		    id 			: "smh:bkmk_id",
+		    url 		: "link",
+		    date 		: "pubDate",
+		    label 	: "smh:bkmk_label",
+		    notes 	: "smh:bkmk_annotation",
+		    sig 		: "smh:signature"
+			},
+		  "xml" : {
+		  	bkmk 		: "bookmark",
+				title 	: "title", 
+		    id 			: "id",
+		    url 		: "url",
+		    date 		: "timestamp",
+		    label 	: "label",
+		    notes 	: "",
+		    sig 		: "" 
+			}
+		}
+		if (!this.enableNotes)
+		{
+			var oType = "xml"
+		}
+		else
+		{
+			var oType = "rss"
+		}
 		try
 		{		
 			// получаем все метки из XML ответа сервера
-			var labels = this.m_ganswer.getElementsByTagName("smh:bkmk_label");
+			var labels = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].label);
+
 			// получаем все закладки из XML ответа сервера
-			var bookmarks = this.m_ganswer.getElementsByTagName("item");
+			var bookmarks = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].bkmk);
 			// контейнер в меню, в который будут добавляться закладки
 			var GBE_GBlist = document.getElementById("GBE-GBlist");
 			var allLabelsStr, i;
 
 
 			// сохраняем сигнатуру из ответа (необходима при работе с закладками)
-			if (this.m_ganswer.getElementsByTagName("smh:signature").length)
+			if (!this.enableNotes)
 			{
-				this.m_signature = this.m_ganswer.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
+				this.doRequestSignature();
 			}
-			
+			else
+			{
+				if (this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig).length)
+				{
+					this.m_signature = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig)[0].childNodes[0].nodeValue;
+				}
+			}
 			// если закладок и меток в ответе сервера нет - ничего не делаем
 			if (!labels.length && !bookmarks.length) 
 			{
@@ -576,19 +614,19 @@ var fGoogleBookmarksExtension =
 				this.m_bookmarkList[i] = new Array(6);
 				try
 				{
-					this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName("title")[0].childNodes[0].nodeValue;
-					if (bookmarks[i].getElementsByTagName("link")[0].hasChildNodes()) {
-	    			this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName("link")[0].childNodes[0].nodeValue;
+					this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
+					if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].hasChildNodes()) {
+	    			this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].childNodes[0].nodeValue;
 					}
 					else
 					{
 						this.m_bookmarkList[i][1] = "";
-						this.ErrorLog("GBE:doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL!!!");
+						this.ErrorLog("GBE:doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL (or local URL)!!!");
 					}
-					this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue;
-					this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName("pubDate")[0].childNodes[0].nodeValue;
+					this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
+					this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
 
-					var bookmark_labels = bookmarks[i].getElementsByTagName("smh:bkmk_label");
+					var bookmark_labels = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label);
 				}
 				catch(e1)
 				{
@@ -618,14 +656,11 @@ var fGoogleBookmarksExtension =
 				{
 					this.m_bookmarkList[i][3] = "";
 				}
+				this.m_bookmarkList[i][4] = "";
 				// закладка с примечанием?
-				if (bookmarks[i].getElementsByTagName("smh:bkmk_annotation").length)
+				if (this.enableNotes && bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes).length)
 				{
-					this.m_bookmarkList[i][4] = bookmarks[i].getElementsByTagName("smh:bkmk_annotation")[0].childNodes[0].nodeValue;
-				}
-				else
-				{
-					this.m_bookmarkList[i][4] = "";
+					this.m_bookmarkList[i][4] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes)[0].childNodes[0].nodeValue;
 				}
 			}
 			// сортируем массив закладок
@@ -1218,7 +1253,7 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setCharPref("sortOrder", document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value);
 			gbe.prefs.setBoolPref("suggestLabel", document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").checked);
 			gbe.prefs.setBoolPref("enableGBautocomplite", document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked);
-			gbe.prefs.setBoolPref("withoutNotes", !document.getElementById("fessGBE-prefs-withoutNotes-Ctrl").checked);
+			gbe.prefs.setBoolPref("enableNotes", document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked);
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
@@ -1229,7 +1264,7 @@ var fGoogleBookmarksExtension =
 			gbe.suggestLabel = document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").value;
 			var oldValGBautocomplite = gbe.enableGBautocomplite;
 			gbe.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
-			gbe.withoutNotes = !document.getElementById("fessGBE-prefs-withoutNotes-Ctrl").checked;
+			gbe.enableNotes = document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked;
 
 			if (oldValGBautocomplite !== gbe.enableGBautocomplite)
 			{
@@ -1330,14 +1365,14 @@ var fGoogleBookmarksExtension =
 			this.enableGBautocomplite = false;
 		}
 
-		if (this.prefs.getPrefType("withoutNotes") == this.prefs.PREF_BOOL)
+		if (this.prefs.getPrefType("enableNotes") == this.prefs.PREF_BOOL)
 		{
-			this.withoutNotes = this.prefs.getBoolPref("withoutNotes");
+			this.enableNotes = this.prefs.getBoolPref("enableNotes");
 		}
 		else
 		{
-			this.prefs.setBoolPref("withoutNotes", false);
-			this.withoutNotes = false;
+			this.prefs.setBoolPref("enableNotes", false);
+			this.enableNotes = false;
 		}
 	},
 
