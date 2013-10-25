@@ -20,3 +20,19 @@
   width: 16px;
   height: 16px;
 }
+
+@namespace
+url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#GBE-popup {
+
+   /*max-height: 600px; */
+}
+
+ #GBE-popup autorepeatbutton {
+   /*display: none !important;*/
+} 
+
+#GBE-popup scrollbox {
+    overflow-y: auto !important; 
+}

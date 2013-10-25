@@ -73,8 +73,9 @@
 					      />
 					</hbox>
 					<menuseparator/>
-					<vbox id="GBE-GBlist">
-					</vbox>
+<!-- 					<vbox id="GBE-GBlist">
+</vbox> -->
+					<menuseparator id="GBE-GBlist-Separator"/>
 					<vbox id="GBE-searchResultList">
 					</vbox>
 					<menuseparator id="GBE-AboutSeparator"/>

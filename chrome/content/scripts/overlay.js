@@ -502,22 +502,55 @@ var fGoogleBookmarksExtension =
 
 	},
 
+	doClearBookmarks: function()
+	{
+		// var popup = document.getElementById("GBE-popup");
+		// var eleChild = popup.childNodes;
+		// for( i = 0 , j = eleChild.length; i < j ; i++ )
+		// {
+   		
+  //  		if( eleChild[ i ].className == "autodropdown" )
+  //  		{
+  //       YOUr_SCRIPT
+  //   	}
+		// }	
+
+
+	},
+
 	/**
 	 * удаляет все закладки из указанного меню
 	 */
-	doClearList: function(listId)
+	doClearList: function(parentId, className)
 	{
-		var list = document.getElementById(listId);
+		var list = document.getElementById(parentId);
+
+
 		try
 		{
-			while(list.firstChild)
-			{
-				list.removeChild(list.firstChild);
+			// while(list.firstChild)
+			// {
+			// 	list.removeChild(list.firstChild);
+			// }
+			  // Fetch all elements in the document with the class 'tagSelected'
+			var selectTag = list.getElementsByClassName(className);
+
+			  // Remove all of them.
+			while( selectTag[0] ) {
+			    selectTag[0].parentNode.removeChild( selectTag[0] );
 			}
 		}
 		catch (e)
 		{
 			this.ErrorLog("GBE:doClearList", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+	hideBookmarks: function(hide)
+	{
+		var selectTag = document.getElementById("GBE-popup").getElementsByClassName("menuitem-iconic google-bookmarks");
+		for (var i = 0; i < selectTag.length; i++) {
+			selectTag[i].setAttribute("hidden", hide);
 		}
 	},
 
@@ -564,7 +597,9 @@ var fGoogleBookmarksExtension =
 			// получаем все закладки из XML ответа сервера
 			var bookmarks = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].bkmk);
 			// контейнер в меню, в который будут добавляться закладки
-			var GBE_GBlist = document.getElementById("GBE-GBlist");
+			//var GBE_GBlist = document.getElementById("GBE-GBlist");
+			var GBE_GBlist = document.getElementById("GBE-popup");
+			var GBE_GBlist_separator = document.getElementById("GBE-GBlist-Separator");
 			var allLabelsStr, i;
 
 
@@ -695,7 +730,7 @@ var fGoogleBookmarksExtension =
 						//var testLabel = GBE_GBlist.getElementsByAttribute('id',"GBE_" + this.m_labelsArr[i])[0];
 						if (GBE_GBlist.getElementsByAttribute('id',"GBE_" + this.m_labelsArr[i])[0] == null)
 						{
-							this.appendLabelItem(GBE_GBlist, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
+							this.appendLabelItem(GBE_GBlist_separator, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
 						}
 					}
 					else
@@ -704,7 +739,7 @@ var fGoogleBookmarksExtension =
 						var tempMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
 						if (tempMenu == null)
 						{
-							this.appendLabelItem(GBE_GBlist, document.createElement('menu'), fullName, fullName);
+							this.appendLabelItem(GBE_GBlist_separator, document.createElement('menu'), fullName, fullName);
 						}
 						
 						for (var j = 1; j < arr_nested_label.length; j++)
@@ -762,7 +797,7 @@ var fGoogleBookmarksExtension =
 				{
 					// иначе - в основное меню
 					tempMenuitem = document.createElement('menuitem');
-					parentContainer = GBE_GBlist;
+					parentContainer = GBE_GBlist_separator;
 					this.appendMenuItem(parentContainer, tempMenuitem, this.m_bookmarkList[i]);
 				}
 				// параметры запроса
@@ -1026,12 +1061,19 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("id", value[2]);
 		item.setAttribute("url", value[1]);
 		item.setAttribute("tooltiptext", value[1]);
-		item.setAttribute("class", "menuitem-iconic");
+		item.setAttribute("class", "menuitem-iconic google-bookmarks");
 		this.setFavicon(value[1], item);
 		item.addEventListener("click",fGoogleBookmarksExtension.bookmarkClick, false);
 		item.setAttribute("context", "GBE-contextMenu");
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
-		parent.appendChild(item);
+		if (parent.nodeName == "menuseparator")
+		{
+			document.getElementById("GBE-popup").insertBefore(item, parent);
+		}
+		else
+		{
+			parent.appendChild(item);
+		}
 	},
 
 	appendLabelItem: function(parent, item, id, label, fullName = "")
@@ -1040,19 +1082,26 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("id", "GBE_" + id);
 		item.setAttribute("label", label);
 		item.setAttribute("fullName", ((fullName == "") ? label : fullName));
-		item.setAttribute("class", "menu-iconic");
+		item.setAttribute("class", "menu-iconic google-bookmarks");
 		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 		item.setAttribute("container", "true");
 		item.setAttribute("context", "GBE-folderMenu");
 		item.appendChild(document.createElement('menupopup'));
-		parent.appendChild(item);
+		if (parent.nodeName == "menuseparator")
+		{
+			document.getElementById("GBE-popup").insertBefore(item, parent);
+		}
+		else
+		{
+			parent.appendChild(item);
+		}
 	},
 
 	appendSearchMenuItem: function(parent, item, label, url)
 	{
 		item.setAttribute("label", label);
 		item.setAttribute("url", url);
-		item.setAttribute("class", "menuitem-iconic");
+		item.setAttribute("class", "menuitem-iconic google-bookmarks-filter");
 		this.setFavicon(url, item);
 		item.addEventListener("click",fGoogleBookmarksExtension.bookmarkClick, false);
 		parent.appendChild(item);
@@ -1091,7 +1140,7 @@ var fGoogleBookmarksExtension =
 			tab = tBrowser.addTab(url);
 			tBrowser.selectedTab = tab;
 		}*/
-	},	
+	},
 
 	refreshBookmarks: function(showMenu = true)
 	{
@@ -1115,7 +1164,8 @@ var fGoogleBookmarksExtension =
 			if (!this.refreshInProgress)
 			{	
 				this.refreshInProgress = true;
-				this.doClearList("GBE-GBlist");
+				// this.doClearList("GBE-GBlist");
+				this.doClearList("GBE-popup", "menuitem-iconic google-bookmarks");
 				this.doRequestBookmarksJQuery(showMenu);
 			}
 		}
@@ -1142,7 +1192,8 @@ var fGoogleBookmarksExtension =
 			this.currentContextId = "";
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
-			this.doClearList("GBE-GBlist");
+			// this.doClearList("GBE-GBlist");
+			this.doClearList("GBE-popup", "menuitem-iconic google-bookmarks");
 			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
@@ -1270,12 +1321,10 @@ var fGoogleBookmarksExtension =
 			{
 				if (gbe.enableGBautocomplite)
 				{
-					this.ErrorLog("GBE:enableGBautocomplite", "on");
 					gbe.setURLBarAutocompleteList("on");
 				}
 				else
 				{
-					this.ErrorLog("GBE:enableGBautocomplite", "off");
 					gbe.setURLBarAutocompleteList("off");
 				}
 			}
@@ -1425,7 +1474,8 @@ var fGoogleBookmarksExtension =
 	onHideMenu: function()
 	{
 		// делаем видимым основной список закладок
-		document.getElementById("GBE-GBlist").setAttribute("hidden", false);
+		// document.getElementById("GBE-GBlist").setAttribute("hidden", false);
+		fGoogleBookmarksExtension.hideBookmarks(false);
 		// скрываем списко отфильтрованных закладок
 		document.getElementById("GBE-searchResultList").setAttribute("hidden", true);
 		// обнуляем значение фильтра
@@ -2029,23 +2079,25 @@ var fGoogleBookmarksExtension =
 	 */
 	filterBookmarks: function(searchValue)
 	{
-		var GBE_GBlist = document.getElementById("GBE-GBlist");
+		// var GBE_GBlist = document.getElementById("GBE-GBlist");
 		var GBE_searchResultList = document.getElementById("GBE-searchResultList");
 		var search = searchValue.value;
 		// копия массива предыдущих отфильтрованных закладок
 		var tempArray = this.tempFilterArray.slice();
 		GBE_searchResultList.setAttribute("hidden", true);
-		this.doClearList("GBE-searchResultList");
+		this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
 		// фильтр пустой
 		if (search.length == 0)
 		{
 			// показываем основной список (все закладки и метки)
-			GBE_GBlist.setAttribute("hidden", false);
+			// GBE_GBlist.setAttribute("hidden", false);
+			this.hideBookmarks(false);
 		}
 		else
 		{
 			// прячем основной список
-			GBE_GBlist.setAttribute("hidden", true);
+			// GBE_GBlist.setAttribute("hidden", true);
+			this.hideBookmarks(true);
 			// показываем список отфильтрованных закладок
 			GBE_searchResultList.setAttribute("hidden", false);
 			var tempMenuitem;
