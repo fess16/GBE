@@ -6,6 +6,7 @@ Version 0.1.6b
 +автозаполнение меток на основании заголовка страницы (для новых меток)
 !автодополнение меток ищет совпадения без учета регистра с начала строки/после разделителя меток
 !исправлена ошибка формирования списка закладок, когда у закладки не заполнено поле адреса
+!исправлен скроллинг закладок
 
 Version 0.1.5
 ! исправлено добавление пустых меток, когда ни у одной закладки меток нет
@@ -502,22 +503,6 @@ var fGoogleBookmarksExtension =
 
 	},
 
-	doClearBookmarks: function()
-	{
-		// var popup = document.getElementById("GBE-popup");
-		// var eleChild = popup.childNodes;
-		// for( i = 0 , j = eleChild.length; i < j ; i++ )
-		// {
-   		
-  //  		if( eleChild[ i ].className == "autodropdown" )
-  //  		{
-  //       YOUr_SCRIPT
-  //   	}
-		// }	
-
-
-	},
-
 	/**
 	 * удаляет все закладки из указанного меню
 	 */
@@ -528,15 +513,11 @@ var fGoogleBookmarksExtension =
 
 		try
 		{
-			// while(list.firstChild)
-			// {
-			// 	list.removeChild(list.firstChild);
-			// }
-			  // Fetch all elements in the document with the class 'tagSelected'
+			// Fetch all elements in the document with the class 'tagSelected'
 			var selectTag = list.getElementsByClassName(className);
-
-			  // Remove all of them.
-			while( selectTag[0] ) {
+		  // Remove all of them.
+			while( selectTag[0] ) 
+			{
 			    selectTag[0].parentNode.removeChild( selectTag[0] );
 			}
 		}
@@ -548,10 +529,20 @@ var fGoogleBookmarksExtension =
 
 	hideBookmarks: function(hide)
 	{
-		var selectTag = document.getElementById("GBE-popup").getElementsByClassName("menuitem-iconic google-bookmarks");
-		for (var i = 0; i < selectTag.length; i++) {
-			selectTag[i].setAttribute("hidden", hide);
+		// var selectTag = document.getElementById("GBE-popup").getElementsByClassName("menuitem-iconic google-bookmarks");
+		// for (var i = 0; i < selectTag.length; i++) {
+		// 	selectTag[i].setAttribute("hidden", hide);
+		// }
+		jQuery.noConflict();
+		if (hide)
+		{
+			jQuery("#GBE-popup").find(".google-bookmarks").hide();
 		}
+		else
+		{
+			jQuery("#GBE-popup").find(".google-bookmarks").show();
+		}
+
 	},
 
 	/**
@@ -1164,8 +1155,8 @@ var fGoogleBookmarksExtension =
 			if (!this.refreshInProgress)
 			{	
 				this.refreshInProgress = true;
-				// this.doClearList("GBE-GBlist");
-				this.doClearList("GBE-popup", "menuitem-iconic google-bookmarks");
+				this.doClearList("GBE-popup", "google-bookmarks");
+				this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
 				this.doRequestBookmarksJQuery(showMenu);
 			}
 		}
@@ -1192,8 +1183,7 @@ var fGoogleBookmarksExtension =
 			this.currentContextId = "";
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
-			// this.doClearList("GBE-GBlist");
-			this.doClearList("GBE-popup", "menuitem-iconic google-bookmarks");
+			this.doClearList("GBE-popup", "google-bookmarks");
 			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
