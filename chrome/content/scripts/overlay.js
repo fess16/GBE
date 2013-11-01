@@ -278,24 +278,24 @@ var fGoogleBookmarksExtension =
 				if (id)
 				{
 					document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
-					document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
-					document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "true");
-					document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_on.png");
-					document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "false");
-					document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_on.png");
-					document.getElementById("GBE-hmenuDel").setAttribute("disabled", "false");
+					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
+					document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "true");
+					document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_on.png");
+					document.getElementById("GBE-bc-hmenuEdit").setAttribute("disabled", "false");
+					document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_on.png");
+					document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "false");
 
 					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "true");
 				}
 				else
 				{
 					document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
-					document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
-					document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "false");
-					document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
-					document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "true");
-					document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
-					document.getElementById("GBE-hmenuDel").setAttribute("disabled", "true");
+					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
+					document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "false");
+					document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
+					document.getElementById("GBE-bc-hmenuEdit").setAttribute("disabled", "true");
+					document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
+					document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "true");
 
 					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "false");
 				}
@@ -451,7 +451,7 @@ var fGoogleBookmarksExtension =
 			    	fGoogleBookmarksExtension.doBuildMenu();
 			    	if (showMenu)
 			    	{
-			    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+			    		document.getElementById("GBE-ToolBar-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
 			    	}
 			    	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	}
@@ -529,18 +529,18 @@ var fGoogleBookmarksExtension =
 
 	hideBookmarks: function(hide)
 	{
-		// var selectTag = document.getElementById("GBE-popup").getElementsByClassName("menuitem-iconic google-bookmarks");
+		// var selectTag = document.getElementById("GBE-ToolBar-popup").getElementsByClassName("menuitem-iconic google-bookmarks");
 		// for (var i = 0; i < selectTag.length; i++) {
 		// 	selectTag[i].setAttribute("hidden", hide);
 		// }
 		jQuery.noConflict();
 		if (hide)
 		{
-			jQuery("#GBE-popup").find(".google-bookmarks").hide();
+			jQuery("#GBE-ToolBar-popup").find(".google-bookmarks").hide();
 		}
 		else
 		{
-			jQuery("#GBE-popup").find(".google-bookmarks").show();
+			jQuery("#GBE-ToolBar-popup").find(".google-bookmarks").show();
 		}
 
 	},
@@ -589,8 +589,8 @@ var fGoogleBookmarksExtension =
 			var bookmarks = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].bkmk);
 			// контейнер в меню, в который будут добавляться закладки
 			//var GBE_GBlist = document.getElementById("GBE-GBlist");
-			var GBE_GBlist = document.getElementById("GBE-popup");
-			var GBE_GBlist_separator = document.getElementById("GBE-GBlist-Separator");
+			var GBE_GBlist = document.getElementById("GBE-ToolBar-popup");
+			var GBE_GBlist_separator = document.getElementById("GBE-tb-GBlist-Separator");
 			var allLabelsStr, i;
 
 
@@ -1059,7 +1059,7 @@ var fGoogleBookmarksExtension =
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 		if (parent.nodeName == "menuseparator")
 		{
-			document.getElementById("GBE-popup").insertBefore(item, parent);
+			document.getElementById("GBE-ToolBar-popup").insertBefore(item, parent);
 		}
 		else
 		{
@@ -1080,7 +1080,7 @@ var fGoogleBookmarksExtension =
 		item.appendChild(document.createElement('menupopup'));
 		if (parent.nodeName == "menuseparator")
 		{
-			document.getElementById("GBE-popup").insertBefore(item, parent);
+			document.getElementById("GBE-ToolBar-popup").insertBefore(item, parent);
 		}
 		else
 		{
@@ -1155,7 +1155,7 @@ var fGoogleBookmarksExtension =
 			if (!this.refreshInProgress)
 			{	
 				this.refreshInProgress = true;
-				this.doClearList("GBE-popup", "google-bookmarks");
+				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
 				this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
 				this.doRequestBookmarksJQuery(showMenu);
 			}
@@ -1183,7 +1183,7 @@ var fGoogleBookmarksExtension =
 			this.currentContextId = "";
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
-			this.doClearList("GBE-popup", "google-bookmarks");
+			this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
 			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
@@ -1265,8 +1265,9 @@ var fGoogleBookmarksExtension =
 	/**
 	 * обработчик меню About
 	 */
-	showAboutForm: function()
+	showAboutForm: function(e)
 	{
+		this.ErrorLog(e.currentTarget.getAttribute("id"));
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
 	},
 
@@ -1417,15 +1418,15 @@ var fGoogleBookmarksExtension =
 
 
 	/**
-	 * обработчик события onpopupshowing для основного меню (GBE-popup)
+	 * обработчик события onpopupshowing для основного меню (GBE-ToolBar-popup)
 	 */
 	onShowMenu: function()
 	{
 		try
 		{
 			// кнопки логин и логаут
-			var btnLgn = document.getElementById("GBE-hmenuLgn"), 
-					btnLgt = document.getElementById("GBE-hmenuLgt");
+			var btnLgn = document.getElementById("GBE-bc-hmenuLgn"), 
+					btnLgt = document.getElementById("GBE-bc-hmenuLgt");
 			// если залогинены в GB
 			if (this.checkLogin())
 			{
@@ -1446,12 +1447,12 @@ var fGoogleBookmarksExtension =
 				// показываем кнопку логин и прячем логаут
 				btnLgt.setAttribute("hidden", "true");
 				btnLgn.setAttribute("hidden", "false");
-				document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "true");
-				document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
-				document.getElementById("GBE-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
-				document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "true");
-				document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
-				document.getElementById("GBE-hmenuDel").setAttribute("disabled", "true");
+				document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "true");
+				document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
+				document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
+				document.getElementById("GBE-bc-hmenuEdit").setAttribute("disabled", "true");
+				document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
+				document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "true");
 			}
 		}
 		catch (e)
