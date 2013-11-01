@@ -1,4 +1,14 @@
 /* 
+Version 0.1.6
++ переключение формата получения списка закладок: xml or rss
++ поиск закладок в адресной строке
++ фильтр закладок
++ автозаполнение меток на основании заголовка страницы (для новых меток)
++ пункт для добавления в закладки через контекстное меню страницы
+!автодополнение меток ищет совпадения без учета регистра с начала строки/после разделителя меток
+!исправлена ошибка формирования списка закладок, когда у закладки не заполнено поле адреса
+!исправлен скроллинг закладок
+
 Version 0.1.5
 ! исправлено добавление пустых меток, когда ни у одной закладки меток нет
 + при клике средней кнопкой (колесиком) по закладке выполняется действие открытия из контекстного меню (в зависимости от настроек)
@@ -51,17 +61,15 @@ Version 0.0.1
 + появилась кнопка на панели :)
 */
 Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
+Components.utils.import("resource://gre/modules/Services.jsm");
+Components.utils.import("resource://gre/modules/FileUtils.jsm");
+
 var fGoogleBookmarksExtension = 
 {
 	// адрес для получения списка закладок
 	'baseUrl' : "https://www.google.com/bookmarks/",
 	// адрес для работы с отдельными закладками
 	'baseUrl2' : "https://www.google.com/bookmarks/mark",
-	// для вывода отладочной информации (ошибок) в консоль
-	'GBLTut_ConsoleService' :
-      Components.
-          classes['@mozilla.org/consoleservice;1'].
-              getService(Components.interfaces.nsIConsoleService),
   // список всех закладок (полученный с сервера) в формате XML
   'm_ganswer' : null,
   // список всех меток (папок)
@@ -84,15 +92,35 @@ var fGoogleBookmarksExtension =
   'oldSearchValue' : "",
 
   'refreshInProgress' : false,
+  // массив отфильтрованных закладок
+  'tempFilterArray' : [],
+  // предыдущее значение фильтра
+  'oldFilterValue' : "",
 
   /* ------Свойства------*/
+  // разделитель вложенных меток
   'nestedLabelSep' : '/',
+  // флаг показа иконок для закладок
   'showFavicons' : true,
+  // флаг переключения действия левого клика по закладке
   'reverseBkmrkLeftClick' : false,
+  // тип сортировки 
   'sortType' : "name",
+  // направление сортировки
   'sortOrder' : "asc",
+  // флаг автоподстановки меток для новых закладок
+  'suggestLabel' : true,
+  // флаг включения автодополнения в адресной строке
+  'enableGBautocomplite' : false,
+	// режим без примечаний - формат получения закладок: rss or xml
+	'enableNotes' : false,
   'prefs' : null,
  	/* --------------------*/
+
+ 	'mDBConn' : null,
+ 	'defAutocompliteList' : "",
+
+
 
   // nsIWebProgressListener
   'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
@@ -107,6 +135,8 @@ var fGoogleBookmarksExtension =
 		this.getPrefsValues();
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
+			Components.utils.import('chrome://GBE/content/scripts/local_domains.js');
+
 			Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
 				 Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 			if(this.needRefresh && this.checkLogin() && document.getElementById("GBE-toolbarbutton") )
@@ -115,6 +145,29 @@ var fGoogleBookmarksExtension =
 			}
 			gBrowser.addProgressListener(this);
 
+			// в настройка включено автодополнение в адресной строке
+			if (this.enableGBautocomplite)
+			{
+				// включаем автодополнение
+				this.setURLBarAutocompleteList("on");
+			}
+			try
+			{
+				this.initDBconnection();
+				// удаляем предыдущие закладки (если были)
+				this.dropTempBookmarkTable();
+				// создаем таблицу закладок заново
+				this.createTempBookmarkTable();
+			}
+			// при ошибке - отключаем
+			catch(e)
+			{
+				this.ErrorLog("GBE:init", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+				this.ErrorLog("GBE:init", "Google bookmarks autocomplete init failed. Autocomplete was disabled!");
+				this.enableGBautocomplite = false;
+				gbe.prefs.setBoolPref("enableGBautocomplite", false);
+				this.setURLBarAutocompleteList("off");
+			}
 		}
 		// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
@@ -125,12 +178,91 @@ var fGoogleBookmarksExtension =
 		//jQuery.noConflict(true);
 	},
 
+
 	uninit: function()
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
 			gBrowser.removeProgressListener(this);
+			if (this.mDBConn && this.mDBConn.connectionReady)
+			{
+				try
+				{
+					this.dropTempBookmarkTable();
+				}
+				catch (e)
+				{
+					this.ErrorLog("GBE:uninit", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+					this.ErrorLog("GBE:uninit", "Drop gbookmarks table - error!");
+				}
+				finally
+				{
+					this.mDBConn.asyncClose();
+				}
+			}
+			if (this.enableGBautocomplite)
+			{
+				this.setURLBarAutocompleteList("off");
+			}
 		}
+	},
+
+	/*
+		добавляет в адресную строку автодополнение по закладкам Google / восстанавливает первоначальное значение параметров 
+	 */
+	setURLBarAutocompleteList: function(state)
+	{
+		var searchList = fGoogleBookmarksExtension.defAutocompliteList;
+		if (state != 'off') {
+			var s = fGoogleBookmarksExtension.defAutocompliteList = gURLBar.getAttribute('autocompletesearch');
+			searchList = 'gbookmarks-autocomplete' + " " + s;
+		}
+		gURLBar.setAttribute("autocompletesearch", searchList);
+		// this.ErrorLog("setURLBarAutocompleteList ", gURLBar.getAttribute('autocompletesearch'));
+		// gURLBar.setAttribute("disableautocomplete", true);
+		// gURLBar.setAttribute("disableautocomplete", false);
+	},
+
+	initDBconnection : function()
+	{
+		// создаем/получаем каталог fessGBE в профиле
+		let localDir = this.getLocalDirectory("fessGBE");
+		let file = FileUtils.getFile("ProfD", [localDir.leafName,"fessgbe.sqlite"]);
+		// открываем/создаем БД файл
+		this.mDBConn = Services.storage.openDatabase(file);
+	},
+
+	createTempBookmarkTable: function()
+	{
+		if (this.mDBConn && !this.mDBConn.tableExists("gbookmarks"))
+		{
+			this.mDBConn.executeSimpleSQL("CREATE TABLE gbookmarks (ftitle TEXT, flink TEXT, ficon TEXT)");
+		}
+	},
+
+	dropTempBookmarkTable: function()
+	{
+		if (this.mDBConn && this.mDBConn.tableExists("gbookmarks"))
+		{
+			this.mDBConn.executeSimpleSQL("DROP TABLE gbookmarks");
+		}
+	},
+
+	getLocalDirectory : function(dir) 
+	{
+	  let directoryService =
+	    Cc["@mozilla.org/file/directory_service;1"].
+	      getService(Ci.nsIProperties);
+	  // this is a reference to the profile dir (ProfD) now.
+	  let localDir = directoryService.get("ProfD", Ci.nsIFile);
+
+	  localDir.append(dir);
+
+	  if (!localDir.exists() || !localDir.isDirectory()) {
+	    // read and write permissions to owner and group, read-only for others.
+	    localDir.create(Ci.nsIFile.DIRECTORY_TYPE, 0774);
+	  }
+	  return localDir;
 	},
 
 	/**
@@ -152,6 +284,8 @@ var fGoogleBookmarksExtension =
 					document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "false");
 					document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_on.png");
 					document.getElementById("GBE-hmenuDel").setAttribute("disabled", "false");
+
+					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "true");
 				}
 				else
 				{
@@ -162,6 +296,8 @@ var fGoogleBookmarksExtension =
 					document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "true");
 					document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
 					document.getElementById("GBE-hmenuDel").setAttribute("disabled", "true");
+
+					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "false");
 				}
 			}
 		}
@@ -246,14 +382,16 @@ var fGoogleBookmarksExtension =
   checkLogin: function () {
 		var cookieManager = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
 				iter = cookieManager.enumerator;
-		
+		var domainRegexp = new RegExp(fGoogleBookmarksModule.googleDomains.join('|'));
 		while (iter.hasMoreElements()) 
 		{
 			var cookie = iter.getNext();
-			if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
+			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
+			// if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
 			{
 				return true;	
 			}
+
 		}
 		return false;
 	},
@@ -277,75 +415,34 @@ var fGoogleBookmarksExtension =
 	},
 
 	/**
-	 * получает список закладок с сервера в формате RSS
+	 * получает список закладок с сервера в формате XML
 	 * @param  {bool} showMenu - показывать меню после обновления или нет
 	 */
-	doRequestBookmarks: function(showMenu)
-	{
-		try
-		{
-			this.m_ganswer = null;
-			this.m_signature = null;
-			this.m_bookmarkList = null;
-			this.m_labelsArr = null;
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", this.baseUrl + "lookup?output=rss&num=10000", true); 
-			//TODO: может переделать на onreadystatechange ?
-			xhr.onload = function() {
-				if (this.responseXML)
-				{
-		    	fGoogleBookmarksExtension.m_ganswer = this.responseXML.documentElement;
-		    	fGoogleBookmarksExtension.doBuildMenu();
-		    	if (showMenu)
-		    	{
-		    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
-		    	}
-	    	}
-	    	else
-	    	{
-	    		fGoogleBookmarksExtension.removeSIDCookie();
-	    		fGoogleBookmarksExtension.refreshInProgress = false;
-	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
-	    	}
-	  	};
-	  	xhr.onerror = function() {
-	  		fGoogleBookmarksExtension.removeSIDCookie();
-	  		fGoogleBookmarksExtension.refreshInProgress = false;
-	    	fGoogleBookmarksExtension.ErrorLog("doRequestBookmarks", "Ошибка при получении списка закладок");
-	  	};
-	  	xhr.send(null);
-	  }
-	  catch (e)
-		{
-			this.ErrorLog("GBE:doRequestBookmarks", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-		}
-	},
-
-
 	doRequestBookmarksJQuery: function(showMenu)
 	{
 		try
 		{
+			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 			this.m_ganswer = null;
 			this.m_signature = null;
 			this.m_bookmarkList = null;
 			this.m_labelsArr = null;
-
+			var enableNotes = this.enableNotes;
 			jQuery.noConflict();
 			jQuery.ajax({
 	      type: "GET",
 	      url: this.baseUrl + "lookup",
 	      data: 
 	      	{
-	          output: "rss",
+	          output: (!enableNotes ? "xml" : "rss"),
 	          num: 10000
 	        },
 	      dataType : "XML",
-	      timeout: 5000,
+	      timeout: 10000,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
 	      	fGoogleBookmarksExtension.removeSIDCookie();
 	  			fGoogleBookmarksExtension.refreshInProgress = false;
-	    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
+	    		fGoogleBookmarksExtension.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
 	      },
 	      success: function(responseXML, textStatus) {
 					if (responseXML)
@@ -356,12 +453,13 @@ var fGoogleBookmarksExtension =
 			    	{
 			    		document.getElementById("GBE-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
 			    	}
+			    	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	}
 		    	else
 		    	{
 		    		fGoogleBookmarksExtension.removeSIDCookie();
 		    		fGoogleBookmarksExtension.refreshInProgress = false;
-		    		fGoogleBookmarksExtension.ErrorLog("doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
+		    		fGoogleBookmarksExtension.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
 		    	}
 	      }
 	    });
@@ -372,24 +470,79 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
-	/**
-	 * удаляет все закладки из меню
-	 */
-	doClearBookmarkList: function()
+	doRequestSignature: function()
 	{
-		var GBE_GBlist = document.getElementById("GBE-GBlist");
 		try
 		{
-			while (GBE_GBlist.hasChildNodes())
+			this.m_signature = null;
+			var self = this;
+			jQuery.noConflict();
+			jQuery.ajax({
+	      type: "GET",
+	      url: this.baseUrl + "find",
+	      data: 
+	      	{
+	          zx: (new Date()).getTime(),
+	          output: "rss",
+	          q: "qB89f6ZAUXXsfrwPdN4t"
+	        },
+	      dataType : "XML",
+	      timeout: 10000,
+	      success: function(responseXML, textStatus) {
+	      	if (responseXML.getElementsByTagName("smh:signature").length)
+	      	{
+	      		self.m_signature = responseXML.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
+	      	}
+	      }
+	    });
+		}
+		catch (e)
+		{
+			this.ErrorLog("GBE:doRequestSignature", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+
+	},
+
+	/**
+	 * удаляет все закладки из указанного меню
+	 */
+	doClearList: function(parentId, className)
+	{
+		var list = document.getElementById(parentId);
+
+
+		try
+		{
+			// Fetch all elements in the document with the class 'tagSelected'
+			var selectTag = list.getElementsByClassName(className);
+		  // Remove all of them.
+			while( selectTag[0] ) 
 			{
-				var firstChild = GBE_GBlist.firstElementChild;
-				GBE_GBlist.removeChild(firstChild);
+			    selectTag[0].parentNode.removeChild( selectTag[0] );
 			}
 		}
 		catch (e)
 		{
-			this.ErrorLog("GBE:doClearBookmarkList", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			this.ErrorLog("GBE:doClearList", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
+	},
+
+	hideBookmarks: function(hide)
+	{
+		// var selectTag = document.getElementById("GBE-popup").getElementsByClassName("menuitem-iconic google-bookmarks");
+		// for (var i = 0; i < selectTag.length; i++) {
+		// 	selectTag[i].setAttribute("hidden", hide);
+		// }
+		jQuery.noConflict();
+		if (hide)
+		{
+			jQuery("#GBE-popup").find(".google-bookmarks").hide();
+		}
+		else
+		{
+			jQuery("#GBE-popup").find(".google-bookmarks").show();
+		}
+
 	},
 
 	/**
@@ -397,22 +550,62 @@ var fGoogleBookmarksExtension =
 	 */
 	doBuildMenu: function()
 	{
+		var bkmkFieldNames = { 
+			"rss" : {
+				bkmk 		: "item",
+				title 	: "title", 
+		    id 			: "smh:bkmk_id",
+		    url 		: "link",
+		    date 		: "pubDate",
+		    label 	: "smh:bkmk_label",
+		    notes 	: "smh:bkmk_annotation",
+		    sig 		: "smh:signature"
+			},
+		  "xml" : {
+		  	bkmk 		: "bookmark",
+				title 	: "title", 
+		    id 			: "id",
+		    url 		: "url",
+		    date 		: "timestamp",
+		    label 	: "label",
+		    notes 	: "",
+		    sig 		: "" 
+			}
+		}
+		if (!this.enableNotes)
+		{
+			var oType = "xml"
+		}
+		else
+		{
+			var oType = "rss"
+		}
 		try
 		{		
 			// получаем все метки из XML ответа сервера
-			var labels = this.m_ganswer.getElementsByTagName("smh:bkmk_label");
+			var labels = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].label);
+
 			// получаем все закладки из XML ответа сервера
-			var bookmarks = this.m_ganswer.getElementsByTagName("item");
+			var bookmarks = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].bkmk);
 			// контейнер в меню, в который будут добавляться закладки
-			var GBE_GBlist = document.getElementById("GBE-GBlist");
+			//var GBE_GBlist = document.getElementById("GBE-GBlist");
+			var GBE_GBlist = document.getElementById("GBE-popup");
+			var GBE_GBlist_separator = document.getElementById("GBE-GBlist-Separator");
 			var allLabelsStr, i;
 
+
 			// сохраняем сигнатуру из ответа (необходима при работе с закладками)
-			if (this.m_ganswer.getElementsByTagName("smh:signature").length)
+			if (!this.enableNotes)
 			{
-				this.m_signature = this.m_ganswer.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
+				this.doRequestSignature();
 			}
-			
+			else
+			{
+				if (this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig).length)
+				{
+					this.m_signature = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig)[0].childNodes[0].nodeValue;
+				}
+			}
 			// если закладок и меток в ответе сервера нет - ничего не делаем
 			if (!labels.length && !bookmarks.length) 
 			{
@@ -445,12 +638,27 @@ var fGoogleBookmarksExtension =
 			for (i = 0; i < bookmarks.length; i++) 
 			{
 				this.m_bookmarkList[i] = new Array(6);
-				this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName("title")[0].childNodes[0].nodeValue;
-				this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName("link")[0].childNodes[0].nodeValue;
-				this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue;
-				this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName("pubDate")[0].childNodes[0].nodeValue;
+				try
+				{
+					this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
+					if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].hasChildNodes()) {
+	    			this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].childNodes[0].nodeValue;
+					}
+					else
+					{
+						this.m_bookmarkList[i][1] = "";
+						this.ErrorLog("GBE:doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL (or local URL)!!!");
+					}
+					this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
+					this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
 
-				var bookmark_labels = bookmarks[i].getElementsByTagName("smh:bkmk_label");
+					var bookmark_labels = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label);
+				}
+				catch(e1)
+				{
+					this.ErrorLog("GBE:doBuildMenu", "Last processing bookmark - " + this.m_bookmarkList[i][0]);
+					throw e1;
+				}
 				var	j;
 				// закладка с метками?
 				if (bookmark_labels.length)
@@ -474,14 +682,11 @@ var fGoogleBookmarksExtension =
 				{
 					this.m_bookmarkList[i][3] = "";
 				}
+				this.m_bookmarkList[i][4] = "";
 				// закладка с примечанием?
-				if (bookmarks[i].getElementsByTagName("smh:bkmk_annotation").length)
+				if (this.enableNotes && bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes).length)
 				{
-					this.m_bookmarkList[i][4] = bookmarks[i].getElementsByTagName("smh:bkmk_annotation")[0].childNodes[0].nodeValue;
-				}
-				else
-				{
-					this.m_bookmarkList[i][4] = "";
+					this.m_bookmarkList[i][4] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes)[0].childNodes[0].nodeValue;
 				}
 			}
 			// сортируем массив закладок
@@ -516,7 +721,7 @@ var fGoogleBookmarksExtension =
 						//var testLabel = GBE_GBlist.getElementsByAttribute('id',"GBE_" + this.m_labelsArr[i])[0];
 						if (GBE_GBlist.getElementsByAttribute('id',"GBE_" + this.m_labelsArr[i])[0] == null)
 						{
-							this.appendLabelItem(GBE_GBlist, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
+							this.appendLabelItem(GBE_GBlist_separator, document.createElement('menu'), this.m_labelsArr[i], this.m_labelsArr[i]);
 						}
 					}
 					else
@@ -525,7 +730,7 @@ var fGoogleBookmarksExtension =
 						var tempMenu = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0];
 						if (tempMenu == null)
 						{
-							this.appendLabelItem(GBE_GBlist, document.createElement('menu'), fullName, fullName);
+							this.appendLabelItem(GBE_GBlist_separator, document.createElement('menu'), fullName, fullName);
 						}
 						
 						for (var j = 1; j < arr_nested_label.length; j++)
@@ -543,6 +748,24 @@ var fGoogleBookmarksExtension =
 						}
 					}
 				}
+			}
+
+			if (!this.mDBConn)
+			{
+				this.initDBconnection();
+				// удаляем предыдущие закладки (если были)
+				this.dropTempBookmarkTable();
+				// создаем таблицу закладок заново
+				this.createTempBookmarkTable();
+			}
+			
+
+
+			// вставляем закладки во временную таблицу
+			if (this.mDBConn && this.mDBConn.connectionReady)
+			{
+				var stmt = this.mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink) VALUES(:ftitle, :flink)");
+				var params = stmt.newBindingParamsArray();
 			}
 
 			// добавляем закладки в меню
@@ -565,12 +788,39 @@ var fGoogleBookmarksExtension =
 				{
 					// иначе - в основное меню
 					tempMenuitem = document.createElement('menuitem');
-					parentContainer = GBE_GBlist;
+					parentContainer = GBE_GBlist_separator;
 					this.appendMenuItem(parentContainer, tempMenuitem, this.m_bookmarkList[i]);
 				}
+				// параметры запроса
+				if (this.mDBConn && this.mDBConn.connectionReady)
+				{
+					let bp1 = params.newBindingParams();
+	  			bp1.bindByName("ftitle", this.m_bookmarkList[i][0]);
+	  			bp1.bindByName("flink", this.m_bookmarkList[i][1]);
+	  			params.addParams(bp1);
+	  		}
 			}
 			this.needRefresh = false;
 			this.refreshInProgress = false;
+
+			var self = this;
+			if (this.mDBConn && this.mDBConn.connectionReady)
+			{
+				stmt.bindParameters(params);
+				stmt.executeAsync(
+				{
+				  handleResult: function(aResultSet) {},
+
+				  handleError: function(aError) {
+				    self.ErrorLog("GBE:doBuildMenu:executeAsync", "Error: " + aError.message);
+				  },
+
+				  handleCompletion: function(aReason) {
+				    if (aReason != Components.interfaces.mozIStorageStatementCallback.REASON_FINISHED)
+				      self.ErrorLog("GBE:doBuildMenu:executeAsync", "Query canceled or aborted!");
+				  }
+				});
+			}
 		}
 		catch (e)
 		{
@@ -582,55 +832,6 @@ var fGoogleBookmarksExtension =
 	 * отправляет запрос на добавление (изменение) закладки
 	 * @param  {object} params - параметры редактируемой закладки
 	 */
-	doChangeBookmark: function(params)
-	{
-		var xhr = new XMLHttpRequest();
-		xhr.open("POST", this.baseUrl2, true); 
-		// запрос отправлен удачно
-		xhr.onload = function() 
-		{
-			//TODO: может переделать на onreadystatechange ?
-			// необходимо обновить меню
-			fGoogleBookmarksExtension.needRefresh = true;  
-			if (window.content.location.href == params.url)
-			{
-				// меняем иконку на панели
-				fGoogleBookmarksExtension.setButtonIcons(!params.id);
-				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.statusText);
-				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.responseText);
-				// fGoogleBookmarksExtension.ErrorLog("GBE:onLoad", " " + this.getAllResponseHeaders());
-			}
-  	};
-  	// ошибка при запросе
-  	xhr.onerror = function() 
-  	{
-    	fGoogleBookmarksExtension.ErrorLog("GBE:doChangeBookmark", " An error occurred while saving bookmark (" + params.url + ").");
-  	};
-  	var curdate = new Date();
-  	// var request = 'zx=' + (new Date()).getTime() + '&bkmk=' + escape(params.url) + '&title=' + encodeURIComponent(params.name) + 
-  	// 					'&annotation=' + encodeURIComponent(params.notes) + '&labels=' + encodeURIComponent(params.labels) + 
-  	// 					'&prev="/lookup"&sig=' + params.sig;
-   	var request = 'q=&bkmk=' + encodeURIComponent(params.url) + 
-   								'&prev=' + encodeURIComponent('/lookup') + 
-   								'&start=0&cd=bkmk&sig=' + params.sig + 
-   								'&day=' + curdate.getDate() + '&month=' + (curdate.getMonth()+1) + '&yr=' + curdate.getFullYear() +
-   								'&title=' + encodeURIComponent(params.name) +
-   								'&labels=' + encodeURIComponent(params.labels) +
-   								'&annotation=' + encodeURIComponent(params.notes);
-
-   	var request = 'bkmk=' + encodeURIComponent(params.url) + 
-   								'&prev=' + encodeURIComponent('/lookup') + 
-   								'&sig=' + params.sig + 
-   								//'&day=' + curdate.getDate() + '&month=' + (curdate.getMonth()+1) + '&yr=' + curdate.getFullYear() +
-   								'&title=' + encodeURIComponent(params.name) +
-   								'&labels=' + encodeURIComponent(params.labels) +
-   								'&annotation=' + encodeURIComponent(params.notes);
-  	this.ErrorLog("GBE:doChangeBookmark", " " + this.baseUrl2 + " " + request);
-  	xhr.send(request);
-	},	
-
-
-
 	doChangeBookmarkJQuery: function(params)
 	{
 		try
@@ -673,29 +874,6 @@ var fGoogleBookmarksExtension =
 	 * отправляет запрос на удаление закладки
 	 * @param  {object} params параметры удаляемой закладки
 	 */
-	doDeleteBookmark: function(params)
-	{
-			var request = this.baseUrl2 + "?zx=" + (new Date()).getTime() + "&dlq=" + params.id + "&sig=" + params.sig;
-			var xhr = new XMLHttpRequest();
-			xhr.open("GET", request, true); 
-			xhr.onload = function() 
-			{
-				//TODO: может переделать на onreadystatechange ?
-				fGoogleBookmarksExtension.needRefresh = true; 
-				if (window.content.location.href == params.url)
-				{
-					// меняем иконку на панели
-					fGoogleBookmarksExtension.setButtonIcons(null);
-					//document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
-				}
-	  	};
-	  	xhr.onerror = function() 
-	  	{
-	    	fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteBookmark", " An error occurred while deleting bookmark (" + params.url + ").");
-	  	};
-	  	xhr.send(null);
-	},
-
 	doDeleteBookmarkJQuery: function(params)
 	{
 		try
@@ -859,7 +1037,7 @@ var fGoogleBookmarksExtension =
    */
   ErrorLog: function(s1, s2)
 	{
-		this.GBLTut_ConsoleService.logStringMessage(s1 + s2);
+		Application.console.log(s1 + " " + s2);
 	},
 
 	/**
@@ -874,12 +1052,19 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("id", value[2]);
 		item.setAttribute("url", value[1]);
 		item.setAttribute("tooltiptext", value[1]);
-		item.setAttribute("class", "menuitem-iconic");
+		item.setAttribute("class", "menuitem-iconic google-bookmarks");
 		this.setFavicon(value[1], item);
-		item.setAttribute("onclick", "fGoogleBookmarksExtension.bookmarkClick(event);");
+		item.addEventListener("click",fGoogleBookmarksExtension.bookmarkClick, false);
 		item.setAttribute("context", "GBE-contextMenu");
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
-		parent.appendChild(item);
+		if (parent.nodeName == "menuseparator")
+		{
+			document.getElementById("GBE-popup").insertBefore(item, parent);
+		}
+		else
+		{
+			parent.appendChild(item);
+		}
 	},
 
 	appendLabelItem: function(parent, item, id, label, fullName = "")
@@ -888,11 +1073,28 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("id", "GBE_" + id);
 		item.setAttribute("label", label);
 		item.setAttribute("fullName", ((fullName == "") ? label : fullName));
-		item.setAttribute("class", "menu-iconic");
+		item.setAttribute("class", "menu-iconic google-bookmarks");
 		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 		item.setAttribute("container", "true");
 		item.setAttribute("context", "GBE-folderMenu");
 		item.appendChild(document.createElement('menupopup'));
+		if (parent.nodeName == "menuseparator")
+		{
+			document.getElementById("GBE-popup").insertBefore(item, parent);
+		}
+		else
+		{
+			parent.appendChild(item);
+		}
+	},
+
+	appendSearchMenuItem: function(parent, item, label, url)
+	{
+		item.setAttribute("label", label);
+		item.setAttribute("url", url);
+		item.setAttribute("class", "menuitem-iconic google-bookmarks-filter");
+		this.setFavicon(url, item);
+		item.addEventListener("click",fGoogleBookmarksExtension.bookmarkClick, false);
 		parent.appendChild(item);
 	},
 
@@ -929,7 +1131,7 @@ var fGoogleBookmarksExtension =
 			tab = tBrowser.addTab(url);
 			tBrowser.selectedTab = tab;
 		}*/
-	},	
+	},
 
 	refreshBookmarks: function(showMenu = true)
 	{
@@ -953,7 +1155,8 @@ var fGoogleBookmarksExtension =
 			if (!this.refreshInProgress)
 			{	
 				this.refreshInProgress = true;
-				this.doClearBookmarkList();
+				this.doClearList("GBE-popup", "google-bookmarks");
+				this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
 				this.doRequestBookmarksJQuery(showMenu);
 			}
 		}
@@ -980,7 +1183,13 @@ var fGoogleBookmarksExtension =
 			this.currentContextId = "";
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
-			this.doClearBookmarkList();
+			this.doClearList("GBE-popup", "google-bookmarks");
+			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
+			if (this.mDBConn && this.mDBConn.connectionReady)
+			{
+				this.dropTempBookmarkTable();
+				this.mDBConn.asyncClose();
+			}
 		}
 		catch (e)
 		{
@@ -1006,7 +1215,9 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
-			if (!this.showFavicons)
+			var self = this;
+
+			if (!this.showFavicons || url.length == 0)
 			{
 				item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");  
 				return;
@@ -1018,13 +1229,28 @@ var fGoogleBookmarksExtension =
 	      {
 	        onComplete: function(uri, faviconData, mimeType, privateFlag)
 	        {
+	          let favUrl;
 	          if (uri !== null)
 	          {
-	          	item.setAttribute("image", uri.spec);
+	          	favUrl = uri.spec;
 	          }
 	          else
 	          {
-							item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");          
+							favUrl = "chrome://GBE/skin/images/bkmrk.png";
+						}
+						item.setAttribute("image",favUrl);
+						if (self.enableGBautocomplite && self.mDBConn.connectionReady)
+						{
+							let stmt = self.mDBConn.createStatement("UPDATE gbookmarks SET ficon = :ficon WHERE flink = :flink");
+							try{
+								stmt.params.ficon = favUrl;
+								stmt.params.flink = url;
+								stmt.execute();
+							}
+							finally
+							{
+								stmt.reset();
+							}
 						}
 	        }
 	      }
@@ -1066,6 +1292,9 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setBoolPref("reverseBkmrkLeftClick", document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked);
 			gbe.prefs.setCharPref("sortType", document.getElementById("fessGBE-prefs-sortType-Ctrl").value);
 			gbe.prefs.setCharPref("sortOrder", document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value);
+			gbe.prefs.setBoolPref("suggestLabel", document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").checked);
+			gbe.prefs.setBoolPref("enableGBautocomplite", document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked);
+			gbe.prefs.setBoolPref("enableNotes", document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked);
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
@@ -1073,7 +1302,22 @@ var fGoogleBookmarksExtension =
 			gbe.reverseBkmrkLeftClick = document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked;
 			gbe.sortType = document.getElementById("fessGBE-prefs-sortType-Ctrl").value;
 			gbe.sortOrder = document.getElementById("fessGBE-prefs-sortOrder-Ctrl").value;
+			gbe.suggestLabel = document.getElementById("fessGBE-prefs-suggestLabel-Ctrl").value;
+			var oldValGBautocomplite = gbe.enableGBautocomplite;
+			gbe.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
+			gbe.enableNotes = document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked;
 
+			if (oldValGBautocomplite !== gbe.enableGBautocomplite)
+			{
+				if (gbe.enableGBautocomplite)
+				{
+					gbe.setURLBarAutocompleteList("on");
+				}
+				else
+				{
+					gbe.setURLBarAutocompleteList("off");
+				}
+			}
 		}
 		catch (e) {
 			this.ErrorLog("GBE:onLoadPrefwindow", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
@@ -1140,7 +1384,35 @@ var fGoogleBookmarksExtension =
 			this.sortOrder = "asc";
 		}		
 
+		if (this.prefs.getPrefType("suggestLabel") == this.prefs.PREF_BOOL)
+		{
+			this.suggestLabel = this.prefs.getBoolPref("suggestLabel");
+		}
+		else
+		{
+			this.prefs.setBoolPref("suggestLabel", false);
+			this.suggestLabel = false;
+		}
+		
+		if (this.prefs.getPrefType("enableGBautocomplite") == this.prefs.PREF_BOOL)
+		{
+			this.enableGBautocomplite = this.prefs.getBoolPref("enableGBautocomplite");
+		}
+		else
+		{
+			this.prefs.setBoolPref("enableGBautocomplite", false);
+			this.enableGBautocomplite = false;
+		}
 
+		if (this.prefs.getPrefType("enableNotes") == this.prefs.PREF_BOOL)
+		{
+			this.enableNotes = this.prefs.getBoolPref("enableNotes");
+		}
+		else
+		{
+			this.prefs.setBoolPref("enableNotes", false);
+			this.enableNotes = false;
+		}
 	},
 
 
@@ -1188,6 +1460,18 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
+	// при скрытии меню
+	onHideMenu: function()
+	{
+		// делаем видимым основной список закладок
+		// document.getElementById("GBE-GBlist").setAttribute("hidden", false);
+		fGoogleBookmarksExtension.hideBookmarks(false);
+		// скрываем списко отфильтрованных закладок
+		document.getElementById("GBE-searchResultList").setAttribute("hidden", true);
+		// обнуляем значение фильтра
+		document.getElementById("GBE-filterTextbox").value = "";
+	},
+
 	/**
 	 * открывает закладку в новой вкладке
 	 */
@@ -1196,10 +1480,10 @@ var fGoogleBookmarksExtension =
 		switch (e.button) 
 		{
 			case 0 :
-				this.showURL(e.currentTarget.getAttribute("url"), this.reverseBkmrkLeftClick);
+				fGoogleBookmarksExtension.showURL(e.currentTarget.getAttribute("url"), fGoogleBookmarksExtension.reverseBkmrkLeftClick);
 				break;
 			case 1 :
-				this.showURL(e.currentTarget.getAttribute("url"), !this.reverseBkmrkLeftClick);
+				fGoogleBookmarksExtension.showURL(e.currentTarget.getAttribute("url"), !fGoogleBookmarksExtension.reverseBkmrkLeftClick);
 				break;
 		}
 	},
@@ -1237,6 +1521,59 @@ var fGoogleBookmarksExtension =
 						notes : "",
 						sig : this.m_signature
 					};
+
+				var labelsList = this.m_labelsArr;
+
+				// автозаполнение меток на основании заголовка страницы
+				if (this.suggestLabel && window.content.document.title && labelsList !== null)
+				{
+					// все слова из заголовка
+					var words = window.content.document.title.split(" ");
+					// для хранения уникальных слов
+					var uniqueWords = [];
+					var labels = [];
+					jQuery.noConflict();
+					// проходим по всем словам
+					jQuery.each(words, function(i, el){
+						// пропускаем повторяющиеся и слова из одного символа
+				    if(jQuery.inArray(el, uniqueWords) === -1 && el.length > 1) 
+				    {
+				    	uniqueWords.push(el);
+				    	// регулярка для поиска
+				    	// ищем с начала строки/после nestedLabelSep до конца строки/nestedLabelSep 
+						  var SearchString = new RegExp("(^|" + fGoogleBookmarksExtension.nestedLabelSep + ")" 
+						  																		+ el 
+						  																		+ "($|" + fGoogleBookmarksExtension.nestedLabelSep + ")", "i");
+						  // просматриваем массив меток
+				      for (i=0; i<labelsList.length; i++) 
+				      {
+				      	// результат поиска
+				      	var position = labelsList[i].search(SearchString);
+				      	// нашли совпадение
+				        if (position != -1) 
+				        {
+				          // ограничиваем уровень вложенности метки
+				          // например: ищем chrome, есть закладка Browsers/Chrome/test
+				          // newLabel будет Browsers/Chrome/
+				          var newLabel = labelsList[i].substring(0,position + el.length+1);
+				          // если последний символ равен разделителю вложенных меток - удаляем его
+				          if (newLabel.charAt(newLabel.length - 1) == fGoogleBookmarksExtension.nestedLabelSep)
+				          {
+				          	newLabel = newLabel.substr(0, newLabel.length-1);
+				          }
+				          // если такой метки еще не было, добавляем ее в массив
+				          if (jQuery.inArray(newLabel, labels) === -1)
+				          {
+				          	labels.push(newLabel);
+				          }
+				        }
+				      }
+				    }
+					});
+					params.labels = labels;
+				}
+
+
 				// находим закладку по адресу (при редактировании)
 				if (editBkmk)
 				{
@@ -1289,12 +1626,12 @@ var fGoogleBookmarksExtension =
 			var labelsList = window.arguments[1].m_labelsArr;
 			if (labelsList !== null)
 			{
-				paramsToSet = "[";
+				paramsToSet = "{\"delimiter\" : \""+window.arguments[1].nestedLabelSep + "\", \"labels\" : [";
 				for (var i = 0; i < labelsList.length; i++) {
 					paramsToSet += "{\"value\" : \"" + labelsList[i] + "\"},";
 				};
 				paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
-				paramsToSet += "]";
+				paramsToSet += "]}";
 				searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
 			}
 		}
@@ -1451,7 +1788,7 @@ var fGoogleBookmarksExtension =
 			}
 		}
 		catch (e) {
-			this.ErrorLog("contextRemoveBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			this.ErrorLog("GBE:contextRemoveBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}		
 
 	},
@@ -1723,82 +2060,75 @@ var fGoogleBookmarksExtension =
 						}
 	  			}
 	  		}
-/*	  		// находим закладки с нужной меткой
-	  		for (i = 0; i < gbe.m_bookmarkList.length; i++)
-		  	{
-		  		var labelPos = -1;
-		  		var newLabels = gbe.m_bookmarkList[i][3];
-		  		if (newLabels.length)
-		  		{
-			  		for (var j = 0; j < newLabels.length; j++) {
-			  			if (newLabels[j] == name)
-			  			{
-			  				// запоминаем позицию искомой метки в массиве меток найденной закладки
-			  				labelPos = j;
-			  				break;
-			  			}
-			  		}
-			  	}	
-			  	// закладка с искомой меткой
-			  	if (labelPos >= 0)
-			  	{
-			  		var params = {
-							name : gbe.m_bookmarkList[i][0],
-							id : gbe.m_bookmarkList[i][2],
-							url : gbe.m_bookmarkList[i][1],
-							labels : newLabels,
-							notes : gbe.m_bookmarkList[i][4],
-							sig : gbe.m_signature
-						};
-						// если у закладки это единственная метка и стоял флаг deleteChildren
-			  		if ((newLabels.length == 1) && deleteChildren) 
-			  		{
-			  			// отправляем запрос на удаление закладки
-			  			gbe.doDeleteBookmarkJQuery(params);
-			  		}
-			  		else
-			  		{
-			  			// удаляем метку из массива меток найденной закладки
-			  			params.labels.splice(labelPos,1);
-			  			// отправляем запрос на изменение закладки 
-			  			gbe.doChangeBookmarkJQuery(params);
-			  		}
-			  	}
-		  	}*/
 	  	}
 		}
 	},
 
+	/*
+	показывает отфильтрованные закладки
+	 */
+	filterBookmarks: function(searchValue)
+	{
+		// var GBE_GBlist = document.getElementById("GBE-GBlist");
+		var GBE_searchResultList = document.getElementById("GBE-searchResultList");
+		var search = searchValue.value;
+		// копия массива предыдущих отфильтрованных закладок
+		var tempArray = this.tempFilterArray.slice();
+		GBE_searchResultList.setAttribute("hidden", true);
+		this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
+		// фильтр пустой
+		if (search.length == 0)
+		{
+			// показываем основной список (все закладки и метки)
+			// GBE_GBlist.setAttribute("hidden", false);
+			this.hideBookmarks(false);
+		}
+		else
+		{
+			// прячем основной список
+			// GBE_GBlist.setAttribute("hidden", true);
+			this.hideBookmarks(true);
+			// показываем список отфильтрованных закладок
+			GBE_searchResultList.setAttribute("hidden", false);
+			var tempMenuitem;
 
-
+			if (this.m_bookmarkList && this.m_bookmarkList.length)
+			{
+				this.tempFilterArray.length = 0;
+				// если новое значение фильтра входит в предыдущее,
+				if(this.oldFilterValue !== "" && search.indexOf(this.oldFilterValue) == 0)
+				{
+					// то ищем только среди ранее отфильтрованных закладок
+					for(var i = 0; i < tempArray.length; i++)
+					{
+						if (tempArray[i][0].toLowerCase().indexOf(search) !== -1)
+						{
+							tempMenuitem = document.createElement('menuitem');
+							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i][0], tempArray[i][1]);
+							// и формируем this.tempFilterArray заново
+							this.tempFilterArray.push([tempArray[i][0], tempArray[i][1]]);
+						}
+					}
+				}
+				else
+				{
+					// иначе - поиск по всем закладкам
+					for (var i = 0; i < this.m_bookmarkList.length; i++)
+					{
+						if (this.m_bookmarkList[i][0].toLowerCase().indexOf(search) !== -1)
+						{
+							tempMenuitem = document.createElement('menuitem');
+							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this.m_bookmarkList[i][0], this.m_bookmarkList[i][1]);
+							this.tempFilterArray.push([this.m_bookmarkList[i][0], this.m_bookmarkList[i][1]]);
+						}
+					}
+				}
+			}
+		}
+		this.oldFilterValue = search;
+		tempArray.length = 0;
+	},
 };
-
-
-// //wrap our code in a closure so it doesn't conflict with other add-ons
-// (function(){
-// 	window.addEventListener("load", function jQueryLoader(evt){
-// 		window.removeEventListener("load", jQueryLoader, false);
-
-// 		//load jQuery
-// 	Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
-// 		Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
-
-// 		//copy the jQuery variable into our namespace
-// 		//var $ = window.$;
-
-// 		//then restore the global $ and jQuery objects
-// 		//jQuery.noConflict(true);
-
-// 		//a couple of tests to make verify
-// 		//alert(window.$);
-// 		//alert(window.jQuery);
-// 		//alert($);
-
-// 		//now do something cool with it
-// 		//$('#appcontent').hide();
-
-// 	}, false);
-// })();
 
 
 window.addEventListener("load", function() { 

@@ -17,7 +17,10 @@
 												image="chrome://GBE/skin/images/Star_empty.png"
 												label="&overlay.toolbarbutton.label;"
 												tooltiptext="&overlay.toolbarbutton.hint;" >
-				<menupopup id="GBE-popup" onpopupshowing="fGoogleBookmarksExtension.onShowMenu();">
+				<menupopup 	id="GBE-popup" 
+										onpopupshowing="fGoogleBookmarksExtension.onShowMenu();" 
+										onpopuphidden="fGoogleBookmarksExtension.onHideMenu();"
+										ignorekeys="true">
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-hmenuRefresh" 
 												class="menuitem-iconic" 
@@ -58,7 +61,22 @@
 												tooltiptext="&overlay.hmenuLgt.hint;" />
 					</hbox>
 					<menuseparator/>
-					<vbox id="GBE-GBlist">
+					<hbox id="GBE-filterHBox" align="center">					
+							<label id="GBE-filterTextbox-label" control="GBE-filterTextbox" value="&overlay.textboxLabel;"/>
+					    <textbox 
+					      id="GBE-filterTextbox" 
+					      flex="1"
+					      type="search" 
+					      editable="true"
+					      timeout="100"
+					      oncommand="fGoogleBookmarksExtension.filterBookmarks(this);"
+					      />
+					</hbox>
+					<menuseparator/>
+<!-- 					<vbox id="GBE-GBlist">
+</vbox> -->
+					<menuseparator id="GBE-GBlist-Separator"/>
+					<vbox id="GBE-searchResultList">
 					</vbox>
 					<menuseparator id="GBE-AboutSeparator"/>
 					<menuitem id="GBE-menuAbout" 
@@ -117,4 +135,16 @@
 		</toolbaritem>
 <!-- 	</toolbar> -->
 	</toolbarpalette>
+
+	<popup id="contentAreaContextMenu">
+		<menuitem 
+			id="GBE-contextMenuAddBookmark" 
+			label="&overlay.contextMenuAddBookmark.label;" 
+			class="menuitem-iconic" 
+			image="chrome://GBE/skin/images/bkmrk_add_on.png"
+			insertbefore="context-selectall" 
+			oncommand="fGoogleBookmarksExtension.showBookmarkDialog(false);"
+		/>
+	</popup>
+
 </overlay>

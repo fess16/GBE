@@ -8,3 +8,31 @@
 #fessGBE-prefs-sortType-Ctrl listboxbody {
   overflow-y: scroll;
 }
+
+#GBE-filterTextbox-label {
+	margin-left: 30px;
+}
+
+.ac-result-type-google_bookmark,
+.autocomplete-treebody::-moz-tree-image(google_bookmark, treecolAutoCompleteImage) {
+  list-style-image: url("chrome://GBE/skin/images/bkmrk.png");
+  /* -moz-image-region: rect(0px 48px 16px 32px); */
+  width: 16px;
+  height: 16px;
+}
+
+@namespace
+url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#GBE-popup {
+
+   /*max-height: 600px; */
+}
+
+ #GBE-popup autorepeatbutton {
+   /*display: none !important;*/
+} 
+
+#GBE-popup scrollbox {
+    overflow-y: auto !important; 
+}

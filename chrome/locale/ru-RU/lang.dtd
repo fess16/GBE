@@ -19,9 +19,12 @@
 <!ENTITY overlay.folderMenuOpenAll.label "Открыть все">
 <!ENTITY overlay.folderMenuAddHere.label "Добавить закладку здесь">
 
+<!ENTITY overlay.contextMenuAddBookmark.label "Добавить станицу в Google Bookmarks">
+
+<!ENTITY overlay.textboxLabel "Фильтр:">
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
-<!ENTITY about.label-version.about "Версия 0.1.5 :)">
+<!ENTITY about.label-version.about "Версия 0.1.6">
 <!ENTITY about.label-author.about "fess61@gmail.com">
 <!ENTITY about.label-donation.title "Поддержите проект :)">
 
@@ -60,3 +63,6 @@
 <!ENTITY prefWindow.sortType.value2 "дате">
 <!ENTITY prefWindow.sortOrder.value1 "по возрастанию">
 <!ENTITY prefWindow.sortOrder.value2 "по убыванию">
+<!ENTITY prefWindow.suggestLabel.label "Автоматически предлагать метку">
+<!ENTITY prefWindow.enableGBautocomplite.label "Поиск Google Bookmarks в адресной строке: gb слово_для_поиска (требуется перезапуск)">
+<!ENTITY prefWindow.enableNotes.label "Показывать примечания к закладкам (Предупреждение: локальные URL в закладках будут пустыми)">

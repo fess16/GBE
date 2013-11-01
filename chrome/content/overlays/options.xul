@@ -15,11 +15,14 @@
 <prefpane id="fessGBE-prefs-pane" label="&prefWindow.pane.title;">
   <preferences>
     <preference id="pref_nestedLabelSep" name="extensions.fessGBE.nestedLabelSep" type="string"/>
+    <preference id="pref_suggestLabel" name="extensions.fessGBE.suggestLabel" type="bool"/>
     <preference id="pref_showFavicons" name="extensions.fessGBE.showFavicons" type="bool"/>
     <preference id="pref_reverseBkmrkLeftClick" name="extensions.fessGBE.reverseBkmrkLeftClick" type="bool"/>
     <preference id="pref_sortByDate" name="extensions.fessGBE.sortByDate" type="bool"/> 
     <preference id="pref_sortType" name="extensions.fessGBE.sortType" type="string"/>
     <preference id="pref_sortOrder" name="extensions.fessGBE.sortOrder" type="string"/>
+    <preference id="pref_enableGBautocomplite" name="extensions.fessGBE.enableGBautocomplite" type="bool"/>
+    <preference id="pref_enableNotes" name="extensions.fessGBE.enableNotes" type="bool"/>
   </preferences>
  
   <hbox align="center" flex="1">
@@ -28,6 +31,12 @@
       preference="pref_nestedLabelSep" 
       id="fessGBE-prefs-nestedLabelSep-Ctrl" 
       width="20px" maxlength="1"/>
+  </hbox>
+  <hbox align="center" flex="1">
+    <checkbox
+      preference="pref_suggestLabel"
+      id="fessGBE-prefs-suggestLabel-Ctrl"
+      label="&prefWindow.suggestLabel.label;"/>
   </hbox>
   <hbox align="center" flex="1">
     <checkbox 
@@ -58,8 +67,19 @@
         </menupopup>
       </menulist>  
   </hbox> 
- 
-
+  <separator class="thin"/>
+  <hbox align="center" flex="0">
+    <checkbox 
+      preference="pref_enableGBautocomplite" 
+      id="fessGBE-prefs-enableGBautocomplite-Ctrl" 
+      label="&prefWindow.enableGBautocomplite.label;"/>
+  </hbox>  
+  <hbox align="center">
+    <checkbox 
+      preference="pref_enableNotes" 
+      id="fessGBE-prefs-enableNotes-Ctrl" 
+      label="&prefWindow.enableNotes.label;"/>
+  </hbox>  
 </prefpane>
  
 </prefwindow>

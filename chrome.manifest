@@ -8,3 +8,6 @@ overlay	chrome://browser/content/browser.xul	chrome://GBE/content/overlays/overl
 
 component {c35dda30-b7ce-11e2-9e96-0800200c9a66} components/simpleautocomplete.js
 contract @mozilla.org/autocomplete/search;1?name=simple-autocomplete {c35dda30-b7ce-11e2-9e96-0800200c9a66}
+
+component {47a2e4a0-358f-11e3-aa6e-0800200c9a66} components/gmarksautocomplete.js
+contract @mozilla.org/autocomplete/search;1?name=gbookmarks-autocomplete {47a2e4a0-358f-11e3-aa6e-0800200c9a66}
