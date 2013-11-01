@@ -1,9 +1,10 @@
 /* 
 Version 0.1.6b
 + переключение формата получения списка закладок: xml or rss
-+ поиск в закладок в адресной строке
++ поиск закладок в адресной строке
 + фильтр закладок
-+автозаполнение меток на основании заголовка страницы (для новых меток)
++ автозаполнение меток на основании заголовка страницы (для новых меток)
++ пункт для добавления в закладки через контекстное меню страницы
 !автодополнение меток ищет совпадения без учета регистра с начала строки/после разделителя меток
 !исправлена ошибка формирования списка закладок, когда у закладки не заполнено поле адреса
 !исправлен скроллинг закладок
@@ -70,10 +71,10 @@ var fGoogleBookmarksExtension =
 	// адрес для работы с отдельными закладками
 	'baseUrl2' : "https://www.google.com/bookmarks/mark",
 	// для вывода отладочной информации (ошибок) в консоль
-	'GBLTut_ConsoleService' :
-      Components.
-          classes['@mozilla.org/consoleservice;1'].
-              getService(Components.interfaces.nsIConsoleService),
+	// 'GBLTut_ConsoleService' :
+ //      Components.
+ //          classes['@mozilla.org/consoleservice;1'].
+ //              getService(Components.interfaces.nsIConsoleService),
   // список всех закладок (полученный с сервера) в формате XML
   'm_ganswer' : null,
   // список всех меток (папок)
@@ -288,6 +289,8 @@ var fGoogleBookmarksExtension =
 					document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "false");
 					document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_on.png");
 					document.getElementById("GBE-hmenuDel").setAttribute("disabled", "false");
+
+					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "true");
 				}
 				else
 				{
@@ -298,6 +301,8 @@ var fGoogleBookmarksExtension =
 					document.getElementById("GBE-hmenuEdit").setAttribute("disabled", "true");
 					document.getElementById("GBE-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
 					document.getElementById("GBE-hmenuDel").setAttribute("disabled", "true");
+
+					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "false");
 				}
 			}
 		}
@@ -1037,7 +1042,8 @@ var fGoogleBookmarksExtension =
    */
   ErrorLog: function(s1, s2)
 	{
-		this.GBLTut_ConsoleService.logStringMessage(s1 + " " + s2);
+		//this.GBLTut_ConsoleService.logStringMessage(s1 + " " + s2);
+		Application.console.log(s1 + " " + s2);
 	},
 
 	/**

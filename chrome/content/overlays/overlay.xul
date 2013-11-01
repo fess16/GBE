@@ -135,4 +135,16 @@
 		</toolbaritem>
 <!-- 	</toolbar> -->
 	</toolbarpalette>
+
+	<popup id="contentAreaContextMenu">
+		<menuitem 
+			id="GBE-contextMenuAddBookmark" 
+			label="&overlay.contextMenuAddBookmark.label;" 
+			class="menuitem-iconic" 
+			image="chrome://GBE/skin/images/bkmrk_add_on.png"
+			insertbefore="context-selectall" 
+			oncommand="fGoogleBookmarksExtension.showBookmarkDialog(false);"
+		/>
+	</popup>
+
 </overlay>
