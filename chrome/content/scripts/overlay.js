@@ -114,6 +114,8 @@ var fGoogleBookmarksExtension =
   'enableGBautocomplite' : false,
 	// режим без примечаний - формат получения закладок: rss or xml
 	'enableNotes' : false,
+	//
+	'useMenuBar' : true,
   'prefs' : null,
  	/* --------------------*/
 
@@ -451,7 +453,14 @@ var fGoogleBookmarksExtension =
 			    	fGoogleBookmarksExtension.doBuildMenu();
 			    	if (showMenu)
 			    	{
-			    		document.getElementById("GBE-ToolBar-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+			    		if (fGoogleBookmarksExtension.useMenuBar)
+			    		{
+			    			document.getElementById("GBE-MainMenu-Popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+							}
+							else
+							{			    			
+			    			document.getElementById("GBE-ToolBar-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+			    		}
 			    	}
 			    	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	}
@@ -589,8 +598,16 @@ var fGoogleBookmarksExtension =
 			var bookmarks = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].bkmk);
 			// контейнер в меню, в который будут добавляться закладки
 			//var GBE_GBlist = document.getElementById("GBE-GBlist");
-			var GBE_GBlist = document.getElementById("GBE-ToolBar-popup");
-			var GBE_GBlist_separator = document.getElementById("GBE-tb-GBlist-Separator");
+			if (!this.useMenuBar)
+			{
+				var GBE_GBlist = document.getElementById("GBE-ToolBar-popup");
+				var GBE_GBlist_separator = document.getElementById("GBE-tb-GBlist-Separator");
+			}
+			else
+			{
+				var GBE_GBlist = document.getElementById("GBE-MainMenu-Popup");
+				var GBE_GBlist_separator = document.getElementById("GBE-mb-GBlist-Separator");				
+			}
 			var allLabelsStr, i;
 
 
@@ -1059,7 +1076,8 @@ var fGoogleBookmarksExtension =
 		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 		if (parent.nodeName == "menuseparator")
 		{
-			document.getElementById("GBE-ToolBar-popup").insertBefore(item, parent);
+			// document.getElementById("GBE-ToolBar-popup").insertBefore(item, parent);
+			parent.parentNode.insertBefore(item, parent);
 		}
 		else
 		{
@@ -1080,7 +1098,8 @@ var fGoogleBookmarksExtension =
 		item.appendChild(document.createElement('menupopup'));
 		if (parent.nodeName == "menuseparator")
 		{
-			document.getElementById("GBE-ToolBar-popup").insertBefore(item, parent);
+			// document.getElementById("GBE-ToolBar-popup").insertBefore(item, parent);
+			parent.parentNode.insertBefore(item, parent);
 		}
 		else
 		{
@@ -1155,7 +1174,14 @@ var fGoogleBookmarksExtension =
 			if (!this.refreshInProgress)
 			{	
 				this.refreshInProgress = true;
-				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
+				if (this.useMenuBar)
+				{
+					this.doClearList("GBE-MainMenu-Popup", "google-bookmarks");
+				}
+				else
+				{
+					this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
+				}
 				this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
 				this.doRequestBookmarksJQuery(showMenu);
 			}
@@ -1183,7 +1209,14 @@ var fGoogleBookmarksExtension =
 			this.currentContextId = "";
 			this.currentFolderId = "";
 			this.oldSearchValue = "";
-			this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
+			if (this.useMenuBar)
+			{
+				this.doClearList("GBE-MainMenu-Popup", "google-bookmarks");
+			}
+			else
+			{
+				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
+			}
 			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
