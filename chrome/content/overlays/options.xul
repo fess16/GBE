@@ -8,78 +8,91 @@
 	id="fessGBE-prefs"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   title="&prefWindow.form.title;"
-	ondialogaccept="return fGoogleBookmarksExtension.onAcceptPrefwindow(event);"
- >
- <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
+  onload="fGoogleBookmarksExtension.onLoadPrefWindow();"
+	ondialogaccept="return fGoogleBookmarksExtension.onAcceptPrefWindow(event);"
+>
+  <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
  
-<prefpane id="fessGBE-prefs-pane" label="&prefWindow.pane.title;">
-  <preferences>
-    <preference id="pref_nestedLabelSep" name="extensions.fessGBE.nestedLabelSep" type="string"/>
-    <preference id="pref_suggestLabel" name="extensions.fessGBE.suggestLabel" type="bool"/>
-    <preference id="pref_showFavicons" name="extensions.fessGBE.showFavicons" type="bool"/>
-    <preference id="pref_reverseBkmrkLeftClick" name="extensions.fessGBE.reverseBkmrkLeftClick" type="bool"/>
-    <preference id="pref_sortByDate" name="extensions.fessGBE.sortByDate" type="bool"/> 
-    <preference id="pref_sortType" name="extensions.fessGBE.sortType" type="string"/>
-    <preference id="pref_sortOrder" name="extensions.fessGBE.sortOrder" type="string"/>
-    <preference id="pref_enableGBautocomplite" name="extensions.fessGBE.enableGBautocomplite" type="bool"/>
-    <preference id="pref_enableNotes" name="extensions.fessGBE.enableNotes" type="bool"/>
-  </preferences>
- 
-  <hbox align="center" flex="1">
-    <label control="fessGBE-prefs-nestedLabelSep-Ctrl" value="&prefWindow.nestedLabelSep.label;"/>
-    <textbox 
-      preference="pref_nestedLabelSep" 
-      id="fessGBE-prefs-nestedLabelSep-Ctrl" 
-      width="20px" maxlength="1"/>
-  </hbox>
-  <hbox align="center" flex="1">
-    <checkbox
-      preference="pref_suggestLabel"
-      id="fessGBE-prefs-suggestLabel-Ctrl"
-      label="&prefWindow.suggestLabel.label;"/>
-  </hbox>
-  <hbox align="center" flex="1">
-    <checkbox 
-      preference="pref_showFavicons" 
-      id="fessGBE-prefs-showFavicons-Ctrl" 
-      label="&prefWindow.showFavicons.label;"/>
-  </hbox>     
-  <hbox align="center" flex="1">
-    <checkbox 
-      preference="pref_reverseBkmrkLeftClick" 
-      id="fessGBE-prefs-reverseBkmrkLeftClick-Ctrl" 
-      label="&prefWindow.reverseBkmrkLeftClick.label;"/>
-  </hbox>   
+  <prefpane id="fessGBE-prefs-pane" label="&prefWindow.pane.title;">
+    <preferences>
+      <preference id="pref_nestedLabelSep" name="extensions.fessGBE.nestedLabelSep" type="string"/>
+      <preference id="pref_suggestLabel" name="extensions.fessGBE.suggestLabel" type="bool"/>
+      <preference id="pref_showFavicons" name="extensions.fessGBE.showFavicons" type="bool"/>
+      <preference id="pref_reverseBkmrkLeftClick" name="extensions.fessGBE.reverseBkmrkLeftClick" type="bool"/>
+      <preference id="pref_sortByDate" name="extensions.fessGBE.sortByDate" type="bool"/> 
+      <preference id="pref_sortType" name="extensions.fessGBE.sortType" type="string"/>
+      <preference id="pref_sortOrder" name="extensions.fessGBE.sortOrder" type="string"/>
+      <preference id="pref_enableGBautocomplite" name="extensions.fessGBE.enableGBautocomplite" type="bool"/>
+      <preference id="pref_enableNotes" name="extensions.fessGBE.enableNotes" type="bool"/>
+      <preference id="pref_useMenuBar" name="extensions.fessGBE.useMenuBar" type="bool"/>
+    </preferences>
+   
+    <hbox align="center" flex="1">
+      <label control="fessGBE-prefs-nestedLabelSep-Ctrl" value="&prefWindow.nestedLabelSep.label;"/>
+      <textbox 
+        preference="pref_nestedLabelSep" 
+        id="fessGBE-prefs-nestedLabelSep-Ctrl" 
+        width="20px" maxlength="1"/>
+    </hbox>
+    <hbox align="center" flex="1">
+      <checkbox
+        preference="pref_suggestLabel"
+        id="fessGBE-prefs-suggestLabel-Ctrl"
+        label="&prefWindow.suggestLabel.label;"/>
+    </hbox>
+    <hbox align="center" flex="1">
+      <checkbox 
+        preference="pref_showFavicons" 
+        id="fessGBE-prefs-showFavicons-Ctrl" 
+        label="&prefWindow.showFavicons.label;"/>
+    </hbox>     
+    <hbox align="center" flex="1">
+      <checkbox 
+        preference="pref_reverseBkmrkLeftClick" 
+        id="fessGBE-prefs-reverseBkmrkLeftClick-Ctrl" 
+        label="&prefWindow.reverseBkmrkLeftClick.label;"/>
+    </hbox>   
 
-  <separator class="thin"/>
-  <hbox align="center" flex="1">
-    <label control="fessGBE-prefs-sortType-Ctrl" value="&prefWindow.sortBy.label;"/>
-    <menulist id="fessGBE-prefs-sortType-Ctrl" preference="pref_sortType">
-      <menupopup>
-        <menuitem value="name" label="&prefWindow.sortType.value1;"/>
-        <menuitem value="timestamp" label="&prefWindow.sortType.value2;"/>
-      </menupopup>
-    </menulist>
-      <menulist id="fessGBE-prefs-sortOrder-Ctrl" preference="pref_sortOrder">
+    <separator class="thin"/>
+    <hbox align="center" flex="1">
+      <label control="fessGBE-prefs-sortType-Ctrl" value="&prefWindow.sortBy.label;"/>
+      <menulist id="fessGBE-prefs-sortType-Ctrl" preference="pref_sortType">
         <menupopup>
-          <menuitem value="asc" label="&prefWindow.sortOrder.value1;"/>
-          <menuitem value="desc" label="&prefWindow.sortOrder.value2;"/>
+          <menuitem value="name" label="&prefWindow.sortType.value1;"/>
+          <menuitem value="timestamp" label="&prefWindow.sortType.value2;"/>
         </menupopup>
-      </menulist>  
-  </hbox> 
-  <separator class="thin"/>
-  <hbox align="center" flex="0">
-    <checkbox 
-      preference="pref_enableGBautocomplite" 
-      id="fessGBE-prefs-enableGBautocomplite-Ctrl" 
-      label="&prefWindow.enableGBautocomplite.label;"/>
-  </hbox>  
-  <hbox align="center">
-    <checkbox 
-      preference="pref_enableNotes" 
-      id="fessGBE-prefs-enableNotes-Ctrl" 
-      label="&prefWindow.enableNotes.label;"/>
-  </hbox>  
-</prefpane>
- 
+      </menulist>
+        <menulist id="fessGBE-prefs-sortOrder-Ctrl" preference="pref_sortOrder">
+          <menupopup>
+            <menuitem value="asc" label="&prefWindow.sortOrder.value1;"/>
+            <menuitem value="desc" label="&prefWindow.sortOrder.value2;"/>
+          </menupopup>
+        </menulist>  
+    </hbox> 
+    <separator class="thin"/>
+    <hbox align="center" flex="0">
+      <checkbox 
+        preference="pref_enableGBautocomplite" 
+        id="fessGBE-prefs-enableGBautocomplite-Ctrl" 
+        label="&prefWindow.enableGBautocomplite.label;"/>
+    </hbox>  
+    <hbox align="center">
+      <checkbox 
+        preference="pref_enableNotes" 
+        id="fessGBE-prefs-enableNotes-Ctrl" 
+        label="&prefWindow.enableNotes.label;"/>
+    </hbox> 
+    <groupbox>
+      <caption label="&prefWindow.useMenuBar.caption.label;" />
+      <radiogroup
+        preference="pref_useMenuBar"
+        id="fessGBE-prefs-useMenuBar-Ctrl"
+      >
+        <hbox>
+          <radio label="&prefWindow.useMenuBar.radio1.label;" value="on"/>
+          <radio label="&prefWindow.useMenuBar.radio2.label;" value="off"/>
+        </hbox>
+      </radiogroup>
+    </groupbox>
+  </prefpane>
 </prefwindow>

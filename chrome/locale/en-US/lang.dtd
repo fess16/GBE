@@ -65,3 +65,6 @@
 <!ENTITY prefWindow.suggestLabel.label "Automatically propose label">
 <!ENTITY prefWindow.enableGBautocomplite.label "Search Google Bookmarks in address bar: gb search_word (needs restart)">
 <!ENTITY prefWindow.enableNotes.label "Show bookmarks notes (Warning: local URLs in bookmarks will be empty)">
+<!ENTITY prefWindow.useMenuBar.caption.label "Use">
+<!ENTITY prefWindow.useMenuBar.radio1.label "item in Menu bar">
+<!ENTITY prefWindow.useMenuBar.radio2.label "buttom in Navigation bar">

@@ -66,3 +66,6 @@
 <!ENTITY prefWindow.suggestLabel.label "Автоматически предлагать метку">
 <!ENTITY prefWindow.enableGBautocomplite.label "Поиск Google Bookmarks в адресной строке: gb слово_для_поиска (требуется перезапуск)">
 <!ENTITY prefWindow.enableNotes.label "Показывать примечания к закладкам (Предупреждение: локальные URL в закладках будут пустыми)">
+<!ENTITY prefWindow.useMenuBar.caption.label "Использовать">
+<!ENTITY prefWindow.useMenuBar.radio1.label "пункт в Панели меню">
+<!ENTITY prefWindow.useMenuBar.radio2.label "кнопку на Панели навигации">

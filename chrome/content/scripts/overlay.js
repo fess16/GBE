@@ -115,7 +115,7 @@ var fGoogleBookmarksExtension =
 	// режим без примечаний - формат получения закладок: rss or xml
 	'enableNotes' : false,
 	//
-	'useMenuBar' : true,
+	'useMenuBar' : false,
   'prefs' : null,
  	/* --------------------*/
 
@@ -1309,7 +1309,22 @@ var fGoogleBookmarksExtension =
 		window.openDialog("chrome://GBE/content/overlays/options.xul", "","centerscreen", this);
 	},
 
-	onAcceptPrefwindow: function(event)
+	onLoadPrefWindow: function()
+	{
+		var gbe = window.arguments[0];
+		if (gbe.useMenuBar)
+		{
+			document.getElementById("fessGBE-prefs-useMenuBar-Ctrl").selectedIndex = 0;
+			gbe.ErrorLog("GBE:onLoadPrefWindow", "On" + gbe.useMenuBar);
+		}
+		else
+		{
+			document.getElementById("fessGBE-prefs-useMenuBar-Ctrl").selectedIndex = 1;
+			gbe.ErrorLog("GBE:onLoadPrefWindow", "Off " + gbe.useMenuBar);
+		}
+	},
+
+	onAcceptPrefWindow: function(event)
 	{
 		var gbe = window.arguments[0];
 
@@ -1330,6 +1345,16 @@ var fGoogleBookmarksExtension =
 			gbe.prefs.setBoolPref("enableGBautocomplite", document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked);
 			gbe.prefs.setBoolPref("enableNotes", document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked);
 
+			if (document.getElementById("fessGBE-prefs-useMenuBar-Ctrl").value == "on")
+			{
+				gbe.prefs.setBoolPref("useMenuBar", true);
+			}
+			else
+			{
+				gbe.prefs.setBoolPref("useMenuBar", false);
+			}
+
+
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
 			gbe.showFavicons = document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked;
@@ -1340,6 +1365,7 @@ var fGoogleBookmarksExtension =
 			var oldValGBautocomplite = gbe.enableGBautocomplite;
 			gbe.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
 			gbe.enableNotes = document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked;
+			gbe.useMenuBar = this.prefs.getBoolPref("useMenuBar");
 
 			if (oldValGBautocomplite !== gbe.enableGBautocomplite)
 			{
@@ -1446,6 +1472,16 @@ var fGoogleBookmarksExtension =
 		{
 			this.prefs.setBoolPref("enableNotes", false);
 			this.enableNotes = false;
+		}		
+
+		if (this.prefs.getPrefType("useMenuBar") == this.prefs.PREF_BOOL)
+		{
+			this.useMenuBar = this.prefs.getBoolPref("useMenuBar");
+		}
+		else
+		{
+			this.prefs.setBoolPref("useMenuBar", false);
+			this.useMenuBar = false;
 		}
 	},
 

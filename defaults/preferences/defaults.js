@@ -6,3 +6,4 @@ pref("extensions.fessGBE.sortOrder", "asc");
 pref("extensions.fessGBE.suggestLabel", false);
 pref("extensions.fessGBE.enableGBautocomplite", false);
 pref("extensions.fessGBE.enableNotes", false);
+pref("extensions.fessGBE.useMenuBar", false);
