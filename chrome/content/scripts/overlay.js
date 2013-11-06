@@ -120,7 +120,7 @@ var fGoogleBookmarksExtension =
   'enableGBautocomplite' : false,
 	// режим без примечаний - формат получения закладок: rss or xml
 	'enableNotes' : false,
-	//
+	// переключатель использования кнопки на панели или пункта в главном меню
 	'useMenuBar' : false,
   'prefs' : null,
  	/* --------------------*/
@@ -133,11 +133,13 @@ var fGoogleBookmarksExtension =
   // nsIWebProgressListener
   'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
 
+  // обработчик изменения адреса
   onLocationChange: function(aProgress, aRequest, aURI) 
   {
     this.processNewURL(aURI);
   },
 
+  // обработчик изменения настроек дополнения
   observe  : function(aSubject, aTopic, aData) {
   	if (aTopic != "nsPref:changed")
   	{
@@ -146,13 +148,12 @@ var fGoogleBookmarksExtension =
   	switch(aData)
   	{
   	  case "useMenuBar":
-  	  	// this.ErrorLog("observe:useMenuBar ", aSubject.getBoolPref(aData));
   	  	this.switchInteface(aSubject.getBoolPref(aData));
   	    break;
   	}
 	},
 
-
+	// в зависимости от useMenuBar прячет/показывает кнопку или пункт меню
 	switchInteface: function(useMenuBar)
 	{
   	jQuery.noConflict();
@@ -192,7 +193,7 @@ var fGoogleBookmarksExtension =
 
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
-
+			// добавляем обработчик изменения настроек
 			this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 			this.prefs.addObserver("", this, false);
 			this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
@@ -201,6 +202,7 @@ var fGoogleBookmarksExtension =
 
 			Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
 				 Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
+
 			this.switchInteface(this.useMenuBar);
 
 			if(this.needRefresh && this.checkLogin() && (document.getElementById("GBE-toolbarbutton") || (document.getElementById("GBE-MainMenu"))))
@@ -248,8 +250,10 @@ var fGoogleBookmarksExtension =
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
 			gBrowser.removeProgressListener(this);
+			// удаляем обработчик изменения настроек
 			this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 			this.prefs.removeObserver("", this);
+			
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
 				try
