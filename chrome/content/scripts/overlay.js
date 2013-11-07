@@ -253,7 +253,7 @@ var fGoogleBookmarksExtension =
 			// удаляем обработчик изменения настроек
 			this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 			this.prefs.removeObserver("", this);
-			
+
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
 				try
@@ -1753,7 +1753,7 @@ var fGoogleBookmarksExtension =
 					// для закладок, у которых уже есть метки
 					if (params.labels.length)
 					{
-						params.labels.push(addLabel);
+						if (jQuery.inArray(addLabel, params.labels) === -1) params.labels.push(addLabel);
 					}
 					// для закладок без меток и новых закладок
 					else
