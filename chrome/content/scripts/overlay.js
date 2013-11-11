@@ -209,6 +209,7 @@ var fGoogleBookmarksExtension =
 			{
 				 this.refreshBookmarks(false);
 			}
+			// добавляем обработчик изменения адреса
 			gBrowser.addProgressListener(this);
 
 			// в настройка включено автодополнение в адресной строке
@@ -249,8 +250,8 @@ var fGoogleBookmarksExtension =
 	{
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
+			// удаляем свои обработчики
 			gBrowser.removeProgressListener(this);
-			// удаляем обработчик изменения настроек
 			this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 			this.prefs.removeObserver("", this);
 
@@ -275,6 +276,65 @@ var fGoogleBookmarksExtension =
 				this.setURLBarAutocompleteList("off");
 			}
 		}
+	},
+
+	// заполняет поле ficon в SQLite файле
+	saveFavicons: function()
+	{
+		// выбираем список с закладками
+		var listName = "#GBE-MainMenu-Popup";
+		if (!this.useMenuBar)
+		{
+			listName = "#GBE-ToolBar-popup";
+		}
+		jQuery.noConflict;
+	  if (this.mDBConn && this.mDBConn.connectionReady && this.mDBConn.tableExists("gbookmarks"))
+	  {
+	  	// выбираем коды закладок
+	    var statement = this.mDBConn.createStatement("SELECT fid FROM gbookmarks");
+	    statement.execute();
+	    try 
+	    {
+	    	// формируем запрос на обновление записей
+	    	var stmt = this.mDBConn.createStatement("UPDATE gbookmarks SET ficon = :ficon WHERE fid = :fid");
+	    	var params = stmt.newBindingParamsArray();
+	    	// перебираем закладки
+	      while (statement.step()) {
+	        let fid = statement.row.fid;
+	        // получаем значение аттрибута 
+					let ficon = jQuery(listName).find("#" + fid).attr("image");
+  				let bp1 = params.newBindingParams();
+    			bp1.bindByName("ficon", ficon);
+    			bp1.bindByName("fid", fid);
+    			params.addParams(bp1);
+	      }
+	      // выполняем запрос
+	      var self = this;
+      	stmt.bindParameters(params);
+      	stmt.executeAsync(
+      	{
+      	  handleResult: function(aResultSet) {},
+
+      	  handleError: function(aError) {
+      	    self.ErrorLog("GBE:saveFavicons:executeAsync", "Error: " + aError.message);
+      	  },
+
+      	  handleCompletion: function(aReason) {
+      	    if (aReason != Components.interfaces.mozIStorageStatementCallback.REASON_FINISHED)
+      	      self.ErrorLog("GBE:saveFavicons:executeAsync", "Query canceled or aborted!");
+      	  }
+      	});
+      	stmt.reset();
+	    }
+	    catch(e)
+	    {
+					this.ErrorLog("GBE:saveFavicons", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	    }
+	    finally 
+	    {
+	      statement.reset();
+	    }
+	  }          
 	},
 
 	/*
@@ -306,7 +366,7 @@ var fGoogleBookmarksExtension =
 	{
 		if (this.mDBConn && !this.mDBConn.tableExists("gbookmarks"))
 		{
-			this.mDBConn.executeSimpleSQL("CREATE TABLE gbookmarks (ftitle TEXT, flink TEXT, ficon TEXT)");
+			this.mDBConn.executeSimpleSQL("CREATE TABLE gbookmarks (ftitle TEXT, flink TEXT, ficon TEXT, fid TEXT)");
 		}
 	},
 
@@ -849,7 +909,7 @@ var fGoogleBookmarksExtension =
 			// вставляем закладки во временную таблицу
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
-				var stmt = this.mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink) VALUES(:ftitle, :flink)");
+				var stmt = this.mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink, fid) VALUES(:ftitle, :flink, :fid)");
 				var params = stmt.newBindingParamsArray();
 			}
 
@@ -882,6 +942,7 @@ var fGoogleBookmarksExtension =
 					let bp1 = params.newBindingParams();
 	  			bp1.bindByName("ftitle", this.m_bookmarkList[i][0]);
 	  			bp1.bindByName("flink", this.m_bookmarkList[i][1]);
+	  			bp1.bindByName("fid", this.m_bookmarkList[i][2]);
 	  			params.addParams(bp1);
 	  		}
 			}
@@ -906,6 +967,8 @@ var fGoogleBookmarksExtension =
 				  }
 				});
 			}
+			// сохраняем адреса иконок закладок во временной таблице (с задержкой)
+			window.setTimeout('fGoogleBookmarksExtension.saveFavicons()', 3000);
 		}
 		catch (e)
 		{
@@ -1316,8 +1379,7 @@ var fGoogleBookmarksExtension =
 	{
 		try
 		{
-			var self = this;
-
+			// var self = this;
 			if (!this.showFavicons || url.length == 0)
 			{
 				item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");  
@@ -1340,19 +1402,19 @@ var fGoogleBookmarksExtension =
 							favUrl = "chrome://GBE/skin/images/bkmrk.png";
 						}
 						item.setAttribute("image",favUrl);
-						if (self.enableGBautocomplite && self.mDBConn.connectionReady)
-						{
-							let stmt = self.mDBConn.createStatement("UPDATE gbookmarks SET ficon = :ficon WHERE flink = :flink");
-							try{
-								stmt.params.ficon = favUrl;
-								stmt.params.flink = url;
-								stmt.execute();
-							}
-							finally
-							{
-								stmt.reset();
-							}
-						}
+						// if (false && self.enableGBautocomplite && self.mDBConn.connectionReady)
+						// {
+						// 	let stmt = self.mDBConn.createStatement("UPDATE gbookmarks SET ficon = :ficon WHERE flink = :flink");
+						// 	try{
+						// 		stmt.params.ficon = favUrl;
+						// 		stmt.params.flink = url;
+						// 		stmt.execute();
+						// 	}
+						// 	finally
+						// 	{
+						// 		stmt.reset();
+						// 	}
+						// }
 	        }
 	      }
 	    );
