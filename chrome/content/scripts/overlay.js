@@ -196,9 +196,7 @@ var fGoogleBookmarksExtension =
 		if (window.location == "chrome://browser/content/browser.xul")
 		{
 			// добавляем обработчик изменения настроек
-			this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 			this.prefs.addObserver("", this, false);
-			this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch);
 
 			Components.utils.import('chrome://GBE/content/scripts/local_domains.js');
 
@@ -254,7 +252,6 @@ var fGoogleBookmarksExtension =
 		{
 			// удаляем свои обработчики
 			gBrowser.removeProgressListener(this);
-			this.prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
 			this.prefs.removeObserver("", this);
 
 			if (this.mDBConn && this.mDBConn.connectionReady)
@@ -970,7 +967,12 @@ var fGoogleBookmarksExtension =
 				});
 			}
 			// сохраняем адреса иконок закладок во временной таблице (с задержкой)
-			window.setTimeout('fGoogleBookmarksExtension.saveFavicons()', 3000);
+			window.setTimeout(
+				function() {
+					fGoogleBookmarksExtension.saveFavicons();
+				}, 
+				3000
+			);
 		}
 		catch (e)
 		{
