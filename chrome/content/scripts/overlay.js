@@ -1234,6 +1234,7 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("class", "menu-iconic google-bookmarks");
 		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 		item.setAttribute("container", "true");
+		item.addEventListener("click",fGoogleBookmarksExtension.folderClick, false);
 		item.setAttribute("context", "GBE-folderMenu");
 		item.appendChild(document.createElement('menupopup'));
 		if (parent.nodeName == "menuseparator")
@@ -1727,7 +1728,7 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
-	/**
+	/** ,tp gfhjkz
 	 * открывает диалог добавления (редактирования) закладки
 	 * @param  {bool} editBkmk = true режим редактирования (true) или добавления (false) закладки
 	 * @param  {string} addLabel = "" режим добавления новой метки к закладке (через контекстное меню метки)
@@ -2060,6 +2061,25 @@ var fGoogleBookmarksExtension =
 			// объединяем старое значение и значение из списка
 			e.value = this.oldSearchValue + ', ' + (e.value);
 			this.oldSearchValue = "";
+		}
+	},
+
+	folderClick: function(e)
+	{
+		try{
+
+			switch (e.button) 
+			{
+				case 1 :
+					fGoogleBookmarksExtension.currentFolderId = e.currentTarget.getAttribute("id");
+					fGoogleBookmarksExtension.folderMenuOpenAll();
+					e.stopPropagation();
+					break;
+			}
+		}
+		catch(error)
+		{
+			fGoogleBookmarksExtension.ErrorLog("GBE:folderClick", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
