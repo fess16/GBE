@@ -471,7 +471,6 @@ var fGoogleBookmarksExtension =
   	{
 	  	// по-умолчанию ищем по коду
 	  	var number = 2, value = params.id;
-	  	var i;
 	  	// если установлен флаг - то по адресу
 	  	if (findByURL)
 	  	{
@@ -481,7 +480,7 @@ var fGoogleBookmarksExtension =
 	  	if ((this.m_bookmarkList) && (this.m_bookmarkList.length))
 	  	{
 		  	// перебираем закладки
-		  	for (i = 0; i < this.m_bookmarkList.length; i++)
+		  	for (var i = 0, m_bookmarkListLength = this.m_bookmarkList.length; i < m_bookmarkListLength; i++)
 		  	{
 		  		// если нашли заполняем поля и выходим
 		  		if (this.m_bookmarkList[i][number] === value)
@@ -532,13 +531,15 @@ var fGoogleBookmarksExtension =
 	{
 		var cookieManager = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
 				iter = cookieManager.enumerator;
+		var domainRegexp = new RegExp(fGoogleBookmarksModule.googleDomains.join('|'));
 		while (iter.hasMoreElements()) 
 		{
 			var cookie = iter.getNext();
-			if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
+			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
+			// if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
 			{
 				cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
-				return;	
+				//return;	
 			}
 		}
 	},
@@ -735,7 +736,7 @@ var fGoogleBookmarksExtension =
 				var GBE_GBlist = document.getElementById("GBE-MainMenu-Popup");
 				var GBE_GBlist_separator = document.getElementById("GBE-mb-GBlist-Separator");				
 			}
-			var allLabelsStr, i;
+			var allLabelsStr, i, j;
 
 
 			// сохраняем сигнатуру из ответа (необходима при работе с закладками)
@@ -761,8 +762,9 @@ var fGoogleBookmarksExtension =
 			allLabelsStr = this.labelSep;
 
 			var lbs = [];
+			let labelsLength = labels.length;
 			// группируем метки
-			for (i = 0; i < labels.length; i++) 
+			for (i = 0; i < labelsLength; i++) 
 			{
 				// название метки
 				var labelVal = labels[i].childNodes[0].nodeValue;
@@ -779,7 +781,8 @@ var fGoogleBookmarksExtension =
 			// список закладок
 			this.m_bookmarkList = new Array(bookmarks.length);
 			// сохраняем закладки в поле m_bookmarkList
-			for (i = 0; i < bookmarks.length; i++) 
+			let bookmarksLength = bookmarks.length;
+			for (i = 0; i < bookmarksLength; i++) 
 			{
 				this.m_bookmarkList[i] = new Array(6);
 				try
@@ -852,8 +855,9 @@ var fGoogleBookmarksExtension =
 
 			if (this.m_labelsArr.length && allLabelsStr !== "")
 			{
+				let m_labelsArrLength = this.m_labelsArr.length;
 				// добавляем метки в меню (в виде папок)
-				for (i = 0; i < this.m_labelsArr.length; i++) 
+				for (i = 0; i < m_labelsArrLength; i++) 
 				{
 					if (this.m_labelsArr[i] == "") 
 					{
@@ -877,7 +881,7 @@ var fGoogleBookmarksExtension =
 							this.appendLabelItem(GBE_GBlist_separator, document.createElement('menu'), fullName, fullName);
 						}
 						
-						for (var j = 1; j < arr_nested_label.length; j++)
+						for (j = 1; j < arr_nested_label.length; j++)
 						{
 							var parentContainer = GBE_GBlist.getElementsByAttribute('id',"GBE_" + fullName)[0].childNodes[0];
 							fullName += this.nestedLabelSep + arr_nested_label[j];
@@ -913,7 +917,8 @@ var fGoogleBookmarksExtension =
 			}
 
 			// добавляем закладки в меню
-			for (i = 0; i < this.m_bookmarkList.length; i++) 
+			let m_bookmarkListLength = this.m_bookmarkList.length;
+			for (i = 0; i < m_bookmarkListLength; i++) 
 			{
 				var parentContainer,
 						tempMenuitem;
@@ -1779,7 +1784,7 @@ var fGoogleBookmarksExtension =
 						  																		+ el 
 						  																		+ "($|" + fGoogleBookmarksExtension.nestedLabelSep + ")", "i");
 						  // просматриваем массив меток
-				      for (i=0; i<labelsList.length; i++) 
+				      for (var i=0; i<labelsList.length; i++) 
 				      {
 				      	// результат поиска
 				      	var position = labelsList[i].search(SearchString);
@@ -2090,7 +2095,7 @@ var fGoogleBookmarksExtension =
 			if (label.length && this.m_bookmarkList && this.m_bookmarkList.length)
 	  	{
 		  	// перебираем все закладки
-		  	for (i = 0; i < this.m_bookmarkList.length; i++)
+		  	for (var i = 0, m_bookmarkListLength = this.m_bookmarkList.length; i < m_bookmarkListLength; i++)
 		  	{
 		  		var labels = this.m_bookmarkList[i][3];
 		  		if (labels.length)
@@ -2268,7 +2273,7 @@ var fGoogleBookmarksExtension =
 	  		}
 	  		else
 	  		{
-	  			for (i = 0; i < gbe.m_bookmarkList.length; i++)
+	  			for (var i = 0, m_bookmarkListLength = gbe.m_bookmarkList.length; i < m_bookmarkListLength; i++)
 	  			{
 	  				var labelPos = -1;
 	  				var newLabels = gbe.m_bookmarkList[i][3];
