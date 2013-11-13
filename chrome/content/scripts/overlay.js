@@ -124,7 +124,11 @@ var fGoogleBookmarksExtension =
 	'enableNotes' : false,
 	// переключатель использования кнопки на панели или пункта в главном меню
 	'useMenuBar' : false,
-  'prefs' : null,
+	// включить добавление метки к закладкам без метки
+	'enableLabelUnlabeled' : false,
+	// добавляемая метка
+	'labelUnlabeledName' : "Unlabeled",
+	'prefs' : null,
  	/* --------------------*/
 
  	'mDBConn' : null,
@@ -758,6 +762,8 @@ var fGoogleBookmarksExtension =
 			 	return; 
 			}
 
+			var self = this;
+
 			// временная строка для группировки и сортировки меток
 			allLabelsStr = this.labelSep;
 
@@ -774,6 +780,11 @@ var fGoogleBookmarksExtension =
 					allLabelsStr += (labelVal + this.labelSep);
 					lbs.push({"title" : labelVal, "timestamp" : null});
 				}
+			}
+			// добавляем labelUnlabeledName метку в массив меток
+			if (this.enableLabelUnlabeled)
+			{
+				lbs.push({"title" : this.labelUnlabeledName, "timestamp" : null});
 			}
 
 			jQuery.noConflict();
@@ -815,7 +826,7 @@ var fGoogleBookmarksExtension =
 					for (j = 0; j < bookmark_labels.length; j++)
 					{
 						this.m_bookmarkList[i][3][j] =  bookmark_labels[j].childNodes[0].nodeValue;
-						var lbl = jQuery.grep(lbs, function(e){ return e.title == bookmark_labels[j].childNodes[0].nodeValue });
+						let lbl = jQuery.grep(lbs, function(e){ return e.title == bookmark_labels[j].childNodes[0].nodeValue });
 						if (lbl.length)
 						{
 							if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i][5])
@@ -828,6 +839,18 @@ var fGoogleBookmarksExtension =
 				else
 				{
 					this.m_bookmarkList[i][3] = "";
+					// определяем timestamp для закладок без метки
+					if (this.enableLabelUnlabeled)
+					{
+						let lbl = jQuery.grep(lbs, function(e){ return e.title == self.labelUnlabeledName });
+						if (lbl.length)
+						{
+							if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i][5])
+							{
+								lbl[0].timestamp = this.m_bookmarkList[i][5]
+							}
+						}
+					}
 				}
 				this.m_bookmarkList[i][4] = "";
 				// закладка с примечанием?
@@ -938,6 +961,11 @@ var fGoogleBookmarksExtension =
 					// иначе - в основное меню
 					tempMenuitem = document.createElement('menuitem');
 					parentContainer = GBE_GBlist_separator;
+					if (this.enableLabelUnlabeled)
+					{
+						// закладки без метки добавляем в папку labelUnlabeledName
+						parentContainer = GBE_GBlist.getElementsByAttribute("id", "GBE_" + this.labelUnlabeledName)[0].childNodes[0];
+					}
 					this.appendMenuItem(parentContainer, tempMenuitem, this.m_bookmarkList[i]);
 				}
 				// параметры запроса
@@ -953,7 +981,12 @@ var fGoogleBookmarksExtension =
 			this.needRefresh = false;
 			this.refreshInProgress = false;
 
-			var self = this;
+			// удаляем метку labelUnlabeledName из массива меток
+			if (this.enableLabelUnlabeled)
+			{
+				this.m_labelsArr = jQuery.grep(this.m_labelsArr, function (a) { return a != self.labelUnlabeledName; });
+			}
+			
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
 				stmt.bindParameters(params);
@@ -1235,7 +1268,18 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 		item.setAttribute("container", "true");
 		item.addEventListener("click",fGoogleBookmarksExtension.folderClick, false);
-		item.setAttribute("context", "GBE-folderMenu");
+		// для метки labelUnlabeledName контекстрое меню не назначаем
+		if (this.enableLabelUnlabeled)
+		{
+			if (id !== this.labelUnlabeledName)
+			{
+				item.setAttribute("context", "GBE-folderMenu");
+			}
+		}
+		else
+		{
+			item.setAttribute("context", "GBE-folderMenu");
+		}
 		item.appendChild(document.createElement('menupopup'));
 		if (parent.nodeName == "menuseparator")
 		{
@@ -1482,6 +1526,14 @@ var fGoogleBookmarksExtension =
 		{
 			document.getElementById("fessGBE-prefs-useMenuBar-Ctrl").selectedIndex = 1;
 		}
+		if (document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked)
+		{
+			document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = false;
+		}
+		else
+		{
+			document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = true;
+		}
 	},
 
 	onAcceptPrefWindow: function(event)
@@ -1496,12 +1548,22 @@ var fGoogleBookmarksExtension =
 		}
 
 		try {
+			// разделитель закладок не должен быть пустым и состоять из одного символа
 			if (document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value == "" || 
 					document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value.length != 1)
 					{
-						this.ErrorLog("GBE:onAcceptPrefwindow", "Seperator error! ");
+						gbe.ErrorLog("GBE:onAcceptPrefwindow", "Seperator error! ");
+						document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").focus();
 						return false;
-					}			
+					}	
+			// Метка для закладок без метки не должна быть пустой
+			if (document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked &&
+					document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value == "")
+			{
+				gbe.ErrorLog("GBE:onAcceptPrefwindow", "Label for Unlabeled labels error! ");
+				document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").focus();
+				return false;
+			}	
 			
 			gbe.prefs.setCharPref("nestedLabelSep", document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value);
 			gbe.prefs.setBoolPref("showFavicons", document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked);
@@ -1520,7 +1582,8 @@ var fGoogleBookmarksExtension =
 			{
 				gbe.prefs.setBoolPref("useMenuBar", false);
 			}
-
+			gbe.prefs.setBoolPref("enableLabelUnlabeled", document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked);
+			gbe.prefs.setCharPref("labelUnlabeledName", document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value);
 
 			gbe.needRefresh = true;
 			gbe.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
@@ -1532,7 +1595,9 @@ var fGoogleBookmarksExtension =
 			var oldValGBautocomplite = gbe.enableGBautocomplite;
 			gbe.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
 			gbe.enableNotes = document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked;
-			gbe.useMenuBar = this.prefs.getBoolPref("useMenuBar");
+			gbe.useMenuBar = gbe.prefs.getBoolPref("useMenuBar");
+			gbe.enableLabelUnlabeled = document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked;
+			gbe.labelUnlabeledName = document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value;
 
 			if (oldValGBautocomplite !== gbe.enableGBautocomplite)
 			{
@@ -1547,9 +1612,28 @@ var fGoogleBookmarksExtension =
 			}
 		}
 		catch (e) {
-			this.ErrorLog("GBE:onLoadPrefwindow", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			gbe.ErrorLog("GBE:onLoadPrefwindow", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 		return true;
+	},
+
+	onCheckboxStateChange : function()
+	{
+		try
+		{
+			if (document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked)
+			{
+				document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = false;
+			}
+			else
+			{
+				document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = true;
+			}
+		}
+		catch(e)
+		{
+			this.ErrorLog("GBE:onCheckboxStateChange", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
 
 
@@ -1649,6 +1733,26 @@ var fGoogleBookmarksExtension =
 		{
 			this.prefs.setBoolPref("useMenuBar", false);
 			this.useMenuBar = false;
+		}
+
+		if (this.prefs.getPrefType("enableLabelUnlabeled") == this.prefs.PREF_BOOL)
+		{
+			this.enableLabelUnlabeled = this.prefs.getBoolPref("enableLabelUnlabeled");
+		}
+		else
+		{
+			this.prefs.setBoolPref("enableLabelUnlabeled", false);
+			this.enableLabelUnlabeled = false;
+		}
+
+		if (this.prefs.getPrefType("labelUnlabeledName") == this.prefs.PREF_STRING)
+		{
+			this.labelUnlabeledName = this.prefs.getCharPref("labelUnlabeledName");
+		}
+		else 
+		{
+			this.prefs.setCharPref("labelUnlabeledName", "Unlabeled");
+			this.labelUnlabeledName = "Unlabeled";
 		}
 	},
 
@@ -2064,6 +2168,9 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
+	/**
+	 * средний клик по метке - открывае все вложенные закладки
+	 */
 	folderClick: function(e)
 	{
 		try{
@@ -2118,7 +2225,7 @@ var fGoogleBookmarksExtension =
 		  	for (var i = 0, m_bookmarkListLength = this.m_bookmarkList.length; i < m_bookmarkListLength; i++)
 		  	{
 		  		var labels = this.m_bookmarkList[i][3];
-		  		if (labels.length)
+		  		if (labels.length > 0 )
 		  		{
 			  		for (var j = 0; j < labels.length; j++) {
 			  			// открываем закладки, которые содержат искомую метку
@@ -2128,6 +2235,14 @@ var fGoogleBookmarksExtension =
 			  			}
 			  		};
 		  		}	
+		  		else
+		  		{
+		  			// открываем закладки без метки
+		  			if(this.enableLabelUnlabeled)
+		  			{
+		  				this.showURL(this.m_bookmarkList[i][1]);
+		  			}
+		  		}
 		  	}
 	  	}
 	  	this.currentFolderId = "";

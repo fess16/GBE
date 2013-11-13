@@ -7,3 +7,5 @@ pref("extensions.fessGBE.suggestLabel", false);
 pref("extensions.fessGBE.enableGBautocomplite", false);
 pref("extensions.fessGBE.enableNotes", false);
 pref("extensions.fessGBE.useMenuBar", false);
+pref("extensions.fessGBE.enableLabelUnlabeled", false);
+pref("extensions.fessGBE.labelUnlabeledName", "Unlabeled");

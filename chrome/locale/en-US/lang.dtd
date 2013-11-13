@@ -67,4 +67,5 @@
 <!ENTITY prefWindow.enableNotes.label "Show bookmarks notes (Warning: local URLs in bookmarks will be empty)">
 <!ENTITY prefWindow.useMenuBar.caption.label "Use">
 <!ENTITY prefWindow.useMenuBar.radio1.label "item in Menu bar">
-<!ENTITY prefWindow.useMenuBar.radio2.label "buttom in Navigation bar">
+<!ENTITY prefWindow.useMenuBar.radio2.label "button in Navigation bar">
+<!ENTITY prefWindow.enableLabelUnlabeled.label "Label Unlabeled Bookmarks:">

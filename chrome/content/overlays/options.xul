@@ -25,6 +25,8 @@
       <preference id="pref_enableGBautocomplite" name="extensions.fessGBE.enableGBautocomplite" type="bool"/>
       <preference id="pref_enableNotes" name="extensions.fessGBE.enableNotes" type="bool"/>
       <preference id="pref_useMenuBar" name="extensions.fessGBE.useMenuBar" type="bool"/>
+      <preference id="pref_enableLabelUnlabeled" name="extensions.fessGBE.enableLabelUnlabeled" type="bool"/>
+      <preference id="pref_labelUnlabeledName" name="extensions.fessGBE.labelUnlabeledName" type="string"/>
     </preferences>
    
     <hbox align="center" flex="1">
@@ -33,6 +35,17 @@
         preference="pref_nestedLabelSep" 
         id="fessGBE-prefs-nestedLabelSep-Ctrl" 
         width="20px" maxlength="1"/>
+    </hbox>
+    <hbox align="center" flex="1">
+      <label control="fessGBE-prefs-enableLabelUnlabeled-Ctrl" value="&prefWindow.enableLabelUnlabeled.label;"/>
+      <checkbox
+        preference="pref_enableLabelUnlabeled"
+        id="fessGBE-prefs-enableLabelUnlabeled-Ctrl"
+        oncommand="fGoogleBookmarksExtension.onCheckboxStateChange();"/>
+      <textbox
+        preference="pref_labelUnlabeledName"
+        id="fessGBE-prefs-labelUnlabeledName-Ctrl"
+        width="150px" maxlength="30"/>
     </hbox>
     <hbox align="center" flex="1">
       <checkbox

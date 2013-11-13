@@ -69,3 +69,4 @@
 <!ENTITY prefWindow.useMenuBar.caption.label "Использовать">
 <!ENTITY prefWindow.useMenuBar.radio1.label "пункт в Панели меню">
 <!ENTITY prefWindow.useMenuBar.radio2.label "кнопку на Панели навигации">
+<!ENTITY prefWindow.enableLabelUnlabeled.label "Метка для закладок без метки:">
