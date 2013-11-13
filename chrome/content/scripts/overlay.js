@@ -2,7 +2,10 @@
 Version 0.1.8
 + ссылка на Skrill
 + переключение между кнопкой на панели навигации и пунктом в главном меню программы
++ возможность добавления метки для закладок без меток
++ клик средней кнопкой по метке открывает все вложенные закладки
 ! оптимизировано сохранение facicons (адресов) во временном sqlite файле
+! исправлено удаление куки для всех доменов google
 
 Version 0.1.7
 из-за тормозов сайта мозилы 0.1.6 пришлось загрузить как 0.1.7
@@ -986,7 +989,7 @@ var fGoogleBookmarksExtension =
 			{
 				this.m_labelsArr = jQuery.grep(this.m_labelsArr, function (a) { return a != self.labelUnlabeledName; });
 			}
-			
+
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
 				stmt.bindParameters(params);
