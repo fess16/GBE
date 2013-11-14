@@ -6,6 +6,7 @@ Version 0.1.8
 + клик средней кнопкой по метке открывает все вложенные закладки
 ! оптимизировано сохранение facicons (адресов) во временном sqlite файле
 ! исправлено удаление куки для всех доменов google
+! замена bookmarkClick() и folderClick() на handleClick()
 
 Version 0.1.7
 из-за тормозов сайта мозилы 0.1.6 пришлось загрузить как 0.1.7
@@ -1633,6 +1634,33 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
+	/**
+	 * читает значение заданного свойства. при отсутствии задает значение по-умолчанию
+	 * @param  {string} prefName     назавание свойсива
+	 * @param  {long}		prefType     тип свойства
+	 * @param  					prefDefValue значение по-умолчанию
+	 */
+	readPrefValue: function(prefName, prefType, prefDefValue)
+	{
+		if (this.prefs.getPrefType(prefName) == prefType)
+		{
+			this[prefName] = ((prefType == this.prefs.PREF_STRING) ? this.prefs.getCharPref(prefName) : this.prefs.getBoolPref(prefName));
+		}
+		else
+		{
+			if (prefType == this.prefs.PREF_STRING)
+			{
+				this.prefs.setCharPref(prefName, prefDefValue);
+				this[prefName] = prefDefValue;
+			}
+			else
+			{
+				this.prefs.getBoolPref(prefName, prefDefValue);
+				this[prefName] = prefDefValue;
+			}
+		}		
+	},
+
 
 	/**
 	 * читает значения свойств
@@ -1642,115 +1670,19 @@ var fGoogleBookmarksExtension =
 		this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
      .getService(Components.interfaces.nsIPrefService)
      .getBranch("extensions.fessGBE.");
-		if (this.prefs.getPrefType("nestedLabelSep") == this.prefs.PREF_STRING)
-		{
-			this.nestedLabelSep = this.prefs.getCharPref("nestedLabelSep");
-		}
-		else 
-		{
-			this.prefs.setCharPref("nestedLabelSep", "/");
-			this.nestedLabelSep = "/";
-		}
 
-		if (this.prefs.getPrefType("showFavicons") == this.prefs.PREF_BOOL)
-		{
-			this.showFavicons = this.prefs.getBoolPref("showFavicons");
-		}
-		else 
-		{
-			this.prefs.setBoolPref("showFavicons", true);
-			this.showFavicons = true;
-		}
-
-		if (this.prefs.getPrefType("reverseBkmrkLeftClick") == this.prefs.PREF_BOOL)
-		{
-			this.reverseBkmrkLeftClick = this.prefs.getBoolPref("reverseBkmrkLeftClick");
-		}
-		else 
-		{
-			this.prefs.setBoolPref("reverseBkmrkLeftClick", false);
-			this.reverseBkmrkLeftClick = false;
-		}
-
-		if (this.prefs.getPrefType("sortType") == this.prefs.PREF_STRING)
-		{
-			this.sortType = this.prefs.getCharPref("sortType");
-		}
-		else 
-		{
-			this.prefs.setCharPref("sortType", "name");
-			this.sortType = "name";
-		}
-
-		if (this.prefs.getPrefType("sortOrder") == this.prefs.PREF_STRING)
-		{
-			this.sortOrder = this.prefs.getCharPref("sortOrder");
-		}
-		else 
-		{
-			this.prefs.setCharPref("sortOrder", "asc");
-			this.sortOrder = "asc";
-		}		
-
-		if (this.prefs.getPrefType("suggestLabel") == this.prefs.PREF_BOOL)
-		{
-			this.suggestLabel = this.prefs.getBoolPref("suggestLabel");
-		}
-		else
-		{
-			this.prefs.setBoolPref("suggestLabel", false);
-			this.suggestLabel = false;
-		}
-		
-		if (this.prefs.getPrefType("enableGBautocomplite") == this.prefs.PREF_BOOL)
-		{
-			this.enableGBautocomplite = this.prefs.getBoolPref("enableGBautocomplite");
-		}
-		else
-		{
-			this.prefs.setBoolPref("enableGBautocomplite", false);
-			this.enableGBautocomplite = false;
-		}
-
-		if (this.prefs.getPrefType("enableNotes") == this.prefs.PREF_BOOL)
-		{
-			this.enableNotes = this.prefs.getBoolPref("enableNotes");
-		}
-		else
-		{
-			this.prefs.setBoolPref("enableNotes", false);
-			this.enableNotes = false;
-		}		
-
-		if (this.prefs.getPrefType("useMenuBar") == this.prefs.PREF_BOOL)
-		{
-			this.useMenuBar = this.prefs.getBoolPref("useMenuBar");
-		}
-		else
-		{
-			this.prefs.setBoolPref("useMenuBar", false);
-			this.useMenuBar = false;
-		}
-
-		if (this.prefs.getPrefType("enableLabelUnlabeled") == this.prefs.PREF_BOOL)
-		{
-			this.enableLabelUnlabeled = this.prefs.getBoolPref("enableLabelUnlabeled");
-		}
-		else
-		{
-			this.prefs.setBoolPref("enableLabelUnlabeled", false);
-			this.enableLabelUnlabeled = false;
-		}
-
-		if (this.prefs.getPrefType("labelUnlabeledName") == this.prefs.PREF_STRING)
-		{
-			this.labelUnlabeledName = this.prefs.getCharPref("labelUnlabeledName");
-		}
-		else 
-		{
-			this.prefs.setCharPref("labelUnlabeledName", "Unlabeled");
-			this.labelUnlabeledName = "Unlabeled";
-		}
+    this.readPrefValue("nestedLabelSep", this.prefs.PREF_STRING, "/");
+    this.readPrefValue("showFavicons", this.prefs.PREF_BOOL, true);
+    this.readPrefValue("reverseBkmrkLeftClick", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("sortType", this.prefs.PREF_STRING, "name");
+    this.readPrefValue("sortOrder", this.prefs.PREF_STRING, "asc");
+    this.readPrefValue("suggestLabel", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableGBautocomplite", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableNotes", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("useMenuBar", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableLabelUnlabeled", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("labelUnlabeledName", this.prefs.PREF_STRING, "Unlabeled");
+	
 	},
 
 
