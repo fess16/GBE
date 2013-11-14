@@ -1831,6 +1831,7 @@ var fGoogleBookmarksExtension =
 				break;
 			case 1 :
 				fGoogleBookmarksExtension.showURL(e.currentTarget.getAttribute("url"), !fGoogleBookmarksExtension.reverseBkmrkLeftClick);
+				e.stopPropagation();
 				break;
 		}
 	},
@@ -2241,7 +2242,7 @@ var fGoogleBookmarksExtension =
 		  		else
 		  		{
 		  			// открываем закладки без метки
-		  			if(this.enableLabelUnlabeled)
+		  			if(this.enableLabelUnlabeled && this.currentFolderId == ("GBE_" + this.labelUnlabeledName))
 		  			{
 		  				this.showURL(this.m_bookmarkList[i][1]);
 		  			}
