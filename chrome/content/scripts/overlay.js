@@ -137,6 +137,7 @@ var fGoogleBookmarksExtension =
 
  	'mDBConn' : null,
  	'defAutocompliteList' : "",
+ 	'timeOut' : 10000,
 
 
 
@@ -566,6 +567,7 @@ var fGoogleBookmarksExtension =
 			this.m_bookmarkList = null;
 			this.m_labelsArr = null;
 			var enableNotes = this.enableNotes;
+			var self = this;
 			jQuery.noConflict();
 			jQuery.ajax({
 	      type: "GET",
@@ -576,20 +578,20 @@ var fGoogleBookmarksExtension =
 	          num: 10000
 	        },
 	      dataType : "XML",
-	      timeout: 10000,
+	      timeout: this.timeOut,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	      	fGoogleBookmarksExtension.removeSIDCookie();
-	  			fGoogleBookmarksExtension.refreshInProgress = false;
-	    		fGoogleBookmarksExtension.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
+	      	self.removeSIDCookie();
+	  			self.refreshInProgress = false;
+	    		self.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
 	      },
 	      success: function(responseXML, textStatus) {
 					if (responseXML)
 					{
-			    	fGoogleBookmarksExtension.m_ganswer = responseXML.documentElement;
-			    	fGoogleBookmarksExtension.doBuildMenu();
+			    	self.m_ganswer = responseXML.documentElement;
+			    	self.doBuildMenu();
 			    	if (showMenu)
 			    	{
-			    		if (fGoogleBookmarksExtension.useMenuBar)
+			    		if (self.useMenuBar)
 			    		{
 			    			document.getElementById("GBE-MainMenu-Popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
 							}
@@ -598,13 +600,13 @@ var fGoogleBookmarksExtension =
 			    			document.getElementById("GBE-ToolBar-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
 			    		}
 			    	}
-			    	if (!fGoogleBookmarksExtension.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
+			    	if (!self.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	}
 		    	else
 		    	{
-		    		fGoogleBookmarksExtension.removeSIDCookie();
-		    		fGoogleBookmarksExtension.refreshInProgress = false;
-		    		fGoogleBookmarksExtension.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
+		    		self.removeSIDCookie();
+		    		self.refreshInProgress = false;
+		    		self.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
 		    	}
 	      }
 	    });
@@ -632,7 +634,7 @@ var fGoogleBookmarksExtension =
 	          q: "qB89f6ZAUXXsfrwPdN4t"
 	        },
 	      dataType : "XML",
-	      timeout: 10000,
+	      timeout: this.timeOut,
 	      success: function(responseXML, textStatus) {
 	      	if (responseXML.getElementsByTagName("smh:signature").length)
 	      	{
@@ -869,8 +871,7 @@ var fGoogleBookmarksExtension =
 			lbs.sort((this.sortType == "timestamp") ? this.compareByDate : this.compareByName);	
 			allLabelsStr = "";//this.labelSep;
 			lbs.forEach(function(element, index) {
-			  allLabelsStr += element.title + fGoogleBookmarksExtension.labelSep;
-			  //fGoogleBookmarksExtension.ErrorLog("lbs.forEach","" + element.title + " " + element.timestamp);
+			  allLabelsStr += element.title + self.labelSep;
 			});
 			if (allLabelsStr.length > 0)
 			{
@@ -1011,7 +1012,7 @@ var fGoogleBookmarksExtension =
 			// сохраняем адреса иконок закладок во временной таблице (с задержкой)
 			window.setTimeout(
 				function() {
-					fGoogleBookmarksExtension.saveFavicons();
+					self.saveFavicons();
 				}, 
 				3000
 			);
@@ -1031,6 +1032,7 @@ var fGoogleBookmarksExtension =
 		try
 		{
 			jQuery.noConflict();
+			var self = this;
 			jQuery.ajax({
 	      type: "post",
 	      url: this.baseUrl2,
@@ -1044,16 +1046,16 @@ var fGoogleBookmarksExtension =
 	          prev: "/lookup",
 	          sig: params.sig
 	        },
-	      timeout: 5000,
+	      timeout: this.timeOut,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	        fGoogleBookmarksExtension.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
+	        self.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
 	      },
 	      success: function(data, textStatus) {
-					fGoogleBookmarksExtension.needRefresh = true;  
+					self.needRefresh = true;  
 					if (window.content.location.href == params.url)
 					{
 						// меняем иконку на панели
-						fGoogleBookmarksExtension.setButtonIcons(!params.id);
+						self.setButtonIcons(!params.id);
 	      	}
 	      }
 	    });
@@ -1073,6 +1075,7 @@ var fGoogleBookmarksExtension =
 		try
 		{
 			jQuery.noConflict();
+			var self = this;
 			jQuery.ajax({
 				type: "get",
 	      url: this.baseUrl2,
@@ -1082,16 +1085,16 @@ var fGoogleBookmarksExtension =
 	          dlq: params.id,
 	          sig: params.sig
 	        },
-	      timeout: 5000,
+	      timeout: this.timeOut,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	      	fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
+	      	self.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
 	      },
 	      success: function(data, textStatus) {
-					fGoogleBookmarksExtension.needRefresh = true; 
+					self.needRefresh = true; 
 					if (window.content.location.href == params.url)
 					{
 						// меняем иконку на панели
-						fGoogleBookmarksExtension.setButtonIcons(null);
+						self.setButtonIcons(null);
 					}
 	      }
 			});
@@ -1107,6 +1110,7 @@ var fGoogleBookmarksExtension =
 		try
 		{
 			jQuery.noConflict();
+			var self = this;
 			jQuery.ajax({
 				type: "POST",
     		url: this.baseUrl2,
@@ -1117,14 +1121,14 @@ var fGoogleBookmarksExtension =
           labels: oldLabel + "," + label,
           sig: signature
         },
-      	timeout: 5000,
+      	timeout: this.timeOut,
       	error: function(XMLHttpRequest, textStatus, errorThrown) 
       	{
-      		fGoogleBookmarksExtension.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
+      		self.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
       	},
       	success: function(data, textStatus) 
       	{
-					fGoogleBookmarksExtension.needRefresh = true; 
+					self.needRefresh = true; 
       	}
 			});			
 		}
@@ -1149,7 +1153,7 @@ var fGoogleBookmarksExtension =
           labels: label,
           sig: signature
         },
-      	timeout: 5000,
+      	timeout: this.timeOut,
       	error: function(XMLHttpRequest, textStatus, errorThrown) 
       	{
       		fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteFolderJQuery", " An error occurred while deleting label (" + label + ").");
@@ -1789,6 +1793,7 @@ var fGoogleBookmarksExtension =
 					// для хранения уникальных слов
 					var uniqueWords = [];
 					var labels = [];
+					var self = this;
 					jQuery.noConflict();
 					// проходим по всем словам
 					jQuery.each(words, function(i, el){
@@ -1798,9 +1803,9 @@ var fGoogleBookmarksExtension =
 				    	uniqueWords.push(el);
 				    	// регулярка для поиска
 				    	// ищем с начала строки/после nestedLabelSep до конца строки/nestedLabelSep 
-						  var SearchString = new RegExp("(^|" + fGoogleBookmarksExtension.nestedLabelSep + ")" 
+						  var SearchString = new RegExp("(^|" + self.nestedLabelSep + ")" 
 						  																		+ el 
-						  																		+ "($|" + fGoogleBookmarksExtension.nestedLabelSep + ")", "i");
+						  																		+ "($|" + self.nestedLabelSep + ")", "i");
 						  // просматриваем массив меток
 				      for (var i=0; i<labelsList.length; i++) 
 				      {
@@ -1814,7 +1819,7 @@ var fGoogleBookmarksExtension =
 				          // newLabel будет Browsers/Chrome/
 				          var newLabel = labelsList[i].substring(0,position + el.length+1);
 				          // если последний символ равен разделителю вложенных меток - удаляем его
-				          if (newLabel.charAt(newLabel.length - 1) == fGoogleBookmarksExtension.nestedLabelSep)
+				          if (newLabel.charAt(newLabel.length - 1) == self.nestedLabelSep)
 				          {
 				          	newLabel = newLabel.substr(0, newLabel.length-1);
 				          }
