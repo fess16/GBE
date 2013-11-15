@@ -929,17 +929,16 @@ var fGoogleBookmarksExtension =
 			if (!this.mDBConn)
 			{
 				this.initDBconnection();
-				// удаляем предыдущие закладки (если были)
-				this.dropTempBookmarkTable();
-				// создаем таблицу закладок заново
-				this.createTempBookmarkTable();
 			}
 			
-
 
 			// вставляем закладки во временную таблицу
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
+				// удаляем предыдущие закладки (если были)
+				this.dropTempBookmarkTable();
+				// создаем таблицу закладок заново
+				this.createTempBookmarkTable();
 				var stmt = this.mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink, fid) VALUES(:ftitle, :flink, :fid)");
 				var params = stmt.newBindingParamsArray();
 			}
@@ -1486,7 +1485,6 @@ var fGoogleBookmarksExtension =
 	 */
 	showAboutForm: function(e)
 	{
-		this.ErrorLog(e.currentTarget.getAttribute("id"));
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
 	},
 
