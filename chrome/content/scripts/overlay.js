@@ -795,10 +795,10 @@ var fGoogleBookmarksExtension =
 
 			jQuery.noConflict();
 
-			// список закладок
-			this.m_bookmarkList = new Array(bookmarks.length);
 			// сохраняем закладки в поле m_bookmarkList
 			let bookmarksLength = bookmarks.length;
+			// список закладок
+			this.m_bookmarkList = new Array(bookmarksLength);
 			for (i = 0; i < bookmarksLength; i++) 
 			{
 				this.m_bookmarkList[i] = new Array(6);
