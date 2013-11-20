@@ -13,7 +13,7 @@
   minheight= "100px" minwidth="300px" flex="1" orient="vertical"
   onload="fGoogleBookmarksExtension.onLoadFolderDeleteDialog();"
   ondialogaccept="return fGoogleBookmarksExtension.onAcceptFolderDeleteDlg();" >
-  <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
+  <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
   <groupbox>
     <label value="&folderDelete.label-info.value;" />
     <label id="GBE-folderDelete.dialog.title" flex="1" class="header"/>

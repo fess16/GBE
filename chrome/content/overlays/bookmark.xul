@@ -13,7 +13,7 @@
   minwidth="500px" flex="1" orient="vertical"
   onload="fGoogleBookmarksExtension.onLoadBookmarkDialog();"
   ondialogaccept="return fGoogleBookmarksExtension.onAcceptBookmarkDialog();" >
-  <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
+  <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
   <groupbox>
     <label control="GBE-bookmark.dialog.name" value="&bookmark.label-name.value;" />
     <textbox id="GBE-bookmark.dialog.name" value="" />

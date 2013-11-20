@@ -11,7 +11,7 @@
   onload="fGoogleBookmarksExtension.onLoadPrefWindow();"
 	ondialogaccept="return fGoogleBookmarksExtension.onAcceptPrefWindow(event);"
 >
-  <script src="chrome://GBE/content/scripts/overlay.js" type="application/javascript"/>
+  <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
  
   <prefpane id="fessGBE-prefs-pane" label="&prefWindow.pane.title;">
     <preferences>
