@@ -133,55 +133,9 @@ fGoogleBookmarksExtension.switchInteface = function(useMenuBar)
 	}
 };
 
-  /**
-   * проверяет залогинен пользователь в GB или нет
-   * @return {bool}
-   */
-  fGoogleBookmarksExtension.checkLogin = function () {
-		var cookieManager = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
-				iter = cookieManager.enumerator;
-		var domainRegexp = new RegExp(this.googleDomains.join('|'));
-		while (iter.hasMoreElements()) 
-		{
-			var cookie = iter.getNext();
-			this.ErrorLog(cookie.host, cookie.name);
-			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
-			// if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
-			{
-				this.ErrorLog("checkLogin","true");
-				return true;	
-			}
-
-		}
-		this.ErrorLog("checkLogin",this.googleDomains.join('|'));
-		return false;
-	};
-
-	/**
-	 * удаляет куки авторизации в гугл аке (при ошибке получения списка закладок, для повторного логина)
-	 */
-	fGoogleBookmarksExtension.removeSIDCookie = function()
-	{
-		var cookieManager = Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
-				iter = cookieManager.enumerator;
-		var domainRegexp = new RegExp(this.googleDomains.join('|'));
-		while (iter.hasMoreElements()) 
-		{
-			var cookie = iter.getNext();
-			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
-			// if (cookie instanceof Components.interfaces.nsICookie && cookie.host.indexOf("google.com") !== -1 && cookie.name === "SID")
-			{
-				cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
-				//return;	
-			}
-		}
-	};
-
 fGoogleBookmarksExtension.init = function()
 {
 	this.getPrefsValues();
-
-	this.ErrorLog("init","1");
 
 	if (window.location == "chrome://browser/content/browser.xul")
 	{
@@ -194,10 +148,8 @@ fGoogleBookmarksExtension.init = function()
 			 Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
 		this.switchInteface(this.useMenuBar);
-this.ErrorLog("init","2");
-		if(this.needRefresh && this.checkLogin() && (document.getElementById("GBE-toolbarbutton") || (document.getElementById("GBE-MainMenu"))))
+		 if(this.checkLogin() && (document.getElementById("GBE-toolbarbutton") || (document.getElementById("GBE-MainMenu") ) ) )
 		{
-			this.ErrorLog("init","3");
 			this.refreshBookmarks(false);
 		}
 		// добавляем обработчик изменения адреса
@@ -1221,7 +1173,6 @@ fGoogleBookmarksExtension.refreshBookmarks = function(showMenu = true)
 				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
 				this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
 			}
-			this.ErrorLog("refreshBookmarks","");
 			this.doRequestBookmarksJQuery(showMenu);
 		}
 	}

@@ -75,6 +75,7 @@ var fGoogleBookmarksExtension =
   'QueryInterface': XPCOMUtils.generateQI(["nsIWebProgressListener", "nsISupportsWeakReference"]),
 
   'GBLTut_ConsoleService' : Components.classes['@mozilla.org/consoleservice;1'].getService(Components.interfaces.nsIConsoleService),
+  'cookieManager' : Components.classes["@mozilla.org/cookiemanager;1"].getService(Components.interfaces.nsICookieManager),
 
 
 	/**
@@ -91,6 +92,42 @@ var fGoogleBookmarksExtension =
 		}
 		this.GBLTut_ConsoleService.logStringMessage(str);
 		//Application.console.log(s1 + " " + s2);
+	},
+
+	  /**
+   * проверяет залогинен пользователь в GB или нет
+   * @return {bool}
+   */
+  checkLogin : function () {
+		var	iter = this.cookieManager.enumerator;
+		var domainRegexp = new RegExp(this.googleDomains.join('|'));
+		while (iter.hasMoreElements()) 
+		{
+			var cookie = iter.getNext();
+			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
+			{
+				return true;	
+			}
+
+		}
+		return false;
+	},
+
+	/**
+	 * удаляет куки авторизации в гугл аке (при ошибке получения списка закладок, для повторного логина)
+	 */
+	removeSIDCookie : function()
+	{
+		var	iter = this.cookieManager.enumerator;
+		var domainRegexp = new RegExp(this.googleDomains.join('|'));
+		while (iter.hasMoreElements()) 
+		{
+			var cookie = iter.getNext();
+			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
+			{
+				cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
+			}
+		}
 	},
 
 
