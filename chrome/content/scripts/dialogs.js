@@ -306,7 +306,7 @@ fGoogleBookmarksExtension.onAcceptFolderDeleteDlg = function()
 			for (var i = 0, m_bookmarkListLength = this.m_bookmarkList.length; i < m_bookmarkListLength; i++)
 			{
 				var labelPos = -1;
-				var newLabels = this.m_bookmarkList[i][3];
+				var newLabels = this.m_bookmarkList[i].labels;
 				if (newLabels.length)
 	  		{
 		  		for (var j = 0; j < newLabels.length; j++) {
@@ -322,7 +322,7 @@ fGoogleBookmarksExtension.onAcceptFolderDeleteDlg = function()
 		  	if (labelPos >= 0)
 		  	{
 		  		var params = {
-						id : this.m_bookmarkList[i][2],
+						id : this.m_bookmarkList[i].id,
 						sig : this.m_signature
 					};
 					this.doDeleteBookmarkJQuery(params);

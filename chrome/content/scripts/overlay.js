@@ -161,23 +161,6 @@ fGoogleBookmarksExtension.init = function()
 			// включаем автодополнение
 			this.setURLBarAutocompleteList("on");
 		}
-		try
-		{
-			this.initDBconnection();
-			// удаляем предыдущие закладки (если были)
-			this.dropTempBookmarkTable();
-			// создаем таблицу закладок заново
-			this.createTempBookmarkTable();
-		}
-		// при ошибке - отключаем
-		catch(e)
-		{
-			this.ErrorLog("GBE:init", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-			this.ErrorLog("GBE:init", "Google bookmarks autocomplete init failed. Autocomplete was disabled!");
-			this.enableGBautocomplite = false;
-			this.prefs.setBoolPref("enableGBautocomplite", false);
-			this.setURLBarAutocompleteList("off");
-		}
 	}
 	// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
@@ -196,88 +179,11 @@ fGoogleBookmarksExtension.uninit = function()
 		// удаляем свои обработчики
 		gBrowser.removeProgressListener(this);
 		this.prefs.removeObserver("", this);
-
-		if (this.mDBConn && this.mDBConn.connectionReady)
-		{
-			try
-			{
-				this.dropTempBookmarkTable();
-			}
-			catch (e)
-			{
-				this.ErrorLog("GBE:uninit", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-				this.ErrorLog("GBE:uninit", "Drop gbookmarks table - error!");
-			}
-			finally
-			{
-				this.mDBConn.asyncClose();
-			}
-		}
 		if (this.enableGBautocomplite)
 		{
 			this.setURLBarAutocompleteList("off");
 		}
 	}
-};
-
-// заполняет поле ficon в SQLite файле
-fGoogleBookmarksExtension.saveFavicons = function()
-{
-	// выбираем список с закладками
-	var listName = "#GBE-MainMenu-Popup";
-	if (!this.useMenuBar)
-	{
-		listName = "#GBE-ToolBar-popup";
-	}
-
-	jQuery.noConflict;
-  if (this.mDBConn && this.mDBConn.connectionReady && this.mDBConn.tableExists("gbookmarks"))
-  {
-  	// выбираем коды закладок
-    var statement = this.mDBConn.createStatement("SELECT fid FROM gbookmarks");
-    statement.execute();
-    try 
-    {
-    	// формируем запрос на обновление записей
-    	var stmt = this.mDBConn.createStatement("UPDATE gbookmarks SET ficon = :ficon WHERE fid = :fid");
-    	var params = stmt.newBindingParamsArray();
-    	// перебираем закладки
-      while (statement.step()) {
-        let fid = statement.row.fid;
-        // получаем значение аттрибута 
-				let ficon = jQuery(listName).find("#" + fid).attr("image");
-				let bp1 = params.newBindingParams();
-  			bp1.bindByName("ficon", ficon);
-  			bp1.bindByName("fid", fid);
-  			params.addParams(bp1);
-      }
-      // выполняем запрос
-      var self = this;
-    	stmt.bindParameters(params);
-    	stmt.executeAsync(
-    	{
-    	  handleResult: function(aResultSet) {},
-
-    	  handleError: function(aError) {
-    	    self.ErrorLog("GBE:saveFavicons:executeAsync", "Error: " + aError.message);
-    	  },
-
-    	  handleCompletion: function(aReason) {
-    	    if (aReason != Components.interfaces.mozIStorageStatementCallback.REASON_FINISHED)
-    	      self.ErrorLog("GBE:saveFavicons:executeAsync", "Query canceled or aborted!");
-    	  }
-    	});
-    	stmt.reset();
-    }
-    catch(e)
-    {
-				this.ErrorLog("GBE:saveFavicons", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-    }
-    finally 
-    {
-      statement.reset();
-    }
-  }          
 };
 
 /*
@@ -792,23 +698,6 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			}
 		}
 
-		if (!this.mDBConn)
-		{
-			this.initDBconnection();
-		}
-		
-
-		// вставляем закладки во временную таблицу
-		if (this.mDBConn && this.mDBConn.connectionReady)
-		{
-			// удаляем предыдущие закладки (если были)
-			this.dropTempBookmarkTable();
-			// создаем таблицу закладок заново
-			this.createTempBookmarkTable();
-			var stmt = this.mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink, fid) VALUES(:ftitle, :flink, :fid)");
-			var params = stmt.newBindingParamsArray();
-		}
-
 		// добавляем закладки в меню
 		let m_bookmarkListLength = this.m_bookmarkList.length;
 		for (i = 0; i < m_bookmarkListLength; i++) 
@@ -838,15 +727,6 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 				}
 				this.appendMenuItem(parentContainer, tempMenuitem, this.m_bookmarkList[i]);
 			}
-			// параметры запроса
-			if (this.mDBConn && this.mDBConn.connectionReady)
-			{
-				let bp1 = params.newBindingParams();
-  			bp1.bindByName("ftitle", this.m_bookmarkList[i].title);
-  			bp1.bindByName("flink", this.m_bookmarkList[i].url);
-  			bp1.bindByName("fid", this.m_bookmarkList[i].id);
-  			params.addParams(bp1);
-  		}
 		}
 		this.needRefresh = false;
 		this.refreshInProgress = false;
@@ -857,30 +737,6 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			this.m_labelsArr = jQuery.grep(this.m_labelsArr, function (a) { return a != self.labelUnlabeledName; });
 		}
 
-		if (this.mDBConn && this.mDBConn.connectionReady)
-		{
-			stmt.bindParameters(params);
-			stmt.executeAsync(
-			{
-			  handleResult: function(aResultSet) {},
-
-			  handleError: function(aError) {
-			    self.ErrorLog("GBE:doBuildMenu:executeAsync", "Error: " + aError.message);
-			  },
-
-			  handleCompletion: function(aReason) {
-			    if (aReason != Components.interfaces.mozIStorageStatementCallback.REASON_FINISHED)
-			      self.ErrorLog("GBE:doBuildMenu:executeAsync", "Query canceled or aborted!");
-			  }
-			});
-		}
-		// сохраняем адреса иконок закладок во временной таблице (с задержкой)
-		window.setTimeout(
-			function() {
-				self.saveFavicons();
-			}, 
-			3000
-		);
 	}
 	catch (e)
 	{
@@ -1208,11 +1064,6 @@ fGoogleBookmarksExtension.logout = function()
 		{
 			this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
 			document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
-		}
-		if (this.mDBConn && this.mDBConn.connectionReady)
-		{
-			this.dropTempBookmarkTable();
-			this.mDBConn.asyncClose();
 		}
 	}
 	catch (e)

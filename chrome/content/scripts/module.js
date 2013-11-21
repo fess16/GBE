@@ -63,7 +63,6 @@ var fGoogleBookmarksExtension =
 	'prefs' : null,
  	/* --------------------*/
 
- 	'mDBConn' : null,
  	'defAutocompliteList' : "",
  	'timeOut' : 10000,
 
@@ -127,50 +126,6 @@ var fGoogleBookmarksExtension =
 			{
 				cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
 			}
-		}
-	},
-
-
-	getLocalDirectory : function(dir) 
-	{
-	  let directoryService =
-	    Components.classes["@mozilla.org/file/directory_service;1"].
-	      getService(Components.interfaces.nsIProperties);
-	  // this is a reference to the profile dir (ProfD) now.
-	  let localDir = directoryService.get("ProfD", Components.interfaces.nsIFile);
-
-	  localDir.append(dir);
-
-	  if (!localDir.exists() || !localDir.isDirectory()) {
-	    // read and write permissions to owner and group, read-only for others.
-	    localDir.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0774);
-	  }
-	  return localDir;
-	},
-
-
-	initDBconnection : function()
-	{
-		// создаем/получаем каталог fessGBE в профиле
-		let localDir = this.getLocalDirectory("fessGBE");
-		let file = FileUtils.getFile("ProfD", [localDir.leafName,"fessgbe.sqlite"]);
-		// открываем/создаем БД файл
-		this.mDBConn = Services.storage.openDatabase(file);
-	},
-
-	createTempBookmarkTable : function()
-	{
-		if (this.mDBConn && !this.mDBConn.tableExists("gbookmarks"))
-		{
-			this.mDBConn.executeSimpleSQL("CREATE TABLE gbookmarks (ftitle TEXT, flink TEXT, ficon TEXT, fid TEXT)");
-		}
-	},
-
-	dropTempBookmarkTable : function()
-	{
-		if (this.mDBConn && this.mDBConn.tableExists("gbookmarks"))
-		{
-			this.mDBConn.executeSimpleSQL("DROP TABLE gbookmarks");
 		}
 	},
 
