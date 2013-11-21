@@ -215,7 +215,7 @@ GbookmarksAutoCompleteSearch.prototype = {
             var listLength = bkmrkList.length;
             for (var i = 0; i < listLength; i++)
             {
-              if(bkmrkList[i].title.indexOf(mySearchString) !== -1 || bkmrkList[i].url.indexOf(mySearchString) !== -1)
+              if(bkmrkList[i].title.toLowerCase().indexOf(mySearchString) !== -1 || bkmrkList[i].url.toLowerCase().indexOf(mySearchString) !== -1)
               {
                 results.push(
                 {
