@@ -17,16 +17,16 @@
   </groupbox>
   <groupbox>
     <caption label="&about.label-donation.title;" />
-    <label class="text-link" value="Yandex.Money (41001790396469)"
-      onclick="var win = Components.classes['@mozilla.org/appshell/window-mediator;1']
-        .getService(Components.interfaces.nsIWindowMediator)
-        .getMostRecentWindow('navigator:browser');
-      win.gBrowser.selectedTab = win.gBrowser.addTab('http://fess16.blogspot.com/p/yandexmoney-donation.html');"/>    
     <label class="text-link" value="Skrill (Moneybookers)"
       onclick="var win = Components.classes['@mozilla.org/appshell/window-mediator;1']
         .getService(Components.interfaces.nsIWindowMediator)
         .getMostRecentWindow('navigator:browser');
       win.gBrowser.selectedTab = win.gBrowser.addTab('http://fess16.blogspot.com/p/make-donation-to-fess-google-bookmark.html');"/>
+    <label class="text-link" value="Yandex.Money (41001790396469)"
+      onclick="var win = Components.classes['@mozilla.org/appshell/window-mediator;1']
+        .getService(Components.interfaces.nsIWindowMediator)
+        .getMostRecentWindow('navigator:browser');
+      win.gBrowser.selectedTab = win.gBrowser.addTab('http://fess16.blogspot.com/p/yandexmoney-donation.html');"/>    
   </groupbox>
   <label></label>
 </dialog>
