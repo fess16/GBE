@@ -6,8 +6,9 @@ const CONTRACT_ID = "@mozilla.org/autocomplete/search;1?name=gbookmarks-autocomp
 
 try{
     Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-    Components.utils.import("resource://gre/modules/Services.jsm");
-    Components.utils.import("resource://gre/modules/FileUtils.jsm");
+    // Components.utils.import("resource://gre/modules/Services.jsm");
+    // Components.utils.import("resource://gre/modules/FileUtils.jsm");
+    Components.utils.import('chrome://GBE/content/scripts/module.js');
 } catch (x) {
 }
 
@@ -205,34 +206,28 @@ GbookmarksAutoCompleteSearch.prototype = {
         if (tempString.length >= 1)
         {
           mySearchString = tempString[0];
-          let file = FileUtils.getFile("ProfD", ["fessGBE","fessgbe.sqlite"]);
-          let mDBConn = Services.storage.openDatabase(file); 
-          if (mDBConn.tableExists("gbookmarks") && mySearchString.length > 0)
+          var bkmrkList = fGoogleBookmarksExtension.m_bookmarkList;
+
+          if (bkmrkList && bkmrkList.length > 0 && 
+            mySearchString.length > 0
+          )
           {
-            var statement = mDBConn.createStatement("SELECT * FROM gbookmarks WHERE ftitle LIKE '%" 
-              + mySearchString + "%' OR flink LIKE '%"+ mySearchString + "%'");
-            statement.execute();
-            try {
-              while (statement.step()) {
-                let ftitle = statement.row.ftitle;
-                let flink = statement.row.flink;
+            var listLength = bkmrkList.length;
+            for (var i = 0; i < listLength; i++)
+            {
+              if(bkmrkList[i].title.indexOf(mySearchString) !== -1 || bkmrkList[i].url.indexOf(mySearchString) !== -1)
+              {
                 results.push(
                 {
-                      icon: statement.row.ficon,
-                      title: statement.row.ftitle,
-                      url: statement.row.flink,
-                      comment: statement.row.ftitle
+                  icon: bkmrkList[i].favicon,
+                  title: bkmrkList[i].title,
+                  url: bkmrkList[i].url,
+                  comment: bkmrkList[i].title
                 });
               }
             }
-            finally 
-            {
-              statement.reset();
-              mDBConn.asyncClose();
-            }
-          }          
+          }
         }
-
       }
 
       var newResult = new GbookmarksAutoCompleteResult(results, mySearchString);

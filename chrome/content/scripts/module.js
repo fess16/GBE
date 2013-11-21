@@ -234,11 +234,11 @@ var fGoogleBookmarksExtension =
 		try
 		{
 	  	// по-умолчанию ищем по коду
-	  	var number = 2, value = params.id;
+	  	var field = "id", value = params.id;
 	  	// если установлен флаг - то по адресу
 	  	if (findByURL)
 	  	{
-	  		number = 1;
+	  		field = "url";
 	  		value = params.url;
 	  	}
 	  	if ((this.m_bookmarkList) && (this.m_bookmarkList.length))
@@ -247,13 +247,13 @@ var fGoogleBookmarksExtension =
 		  	for (var i = 0, m_bookmarkListLength = this.m_bookmarkList.length; i < m_bookmarkListLength; i++)
 		  	{
 		  		// если нашли заполняем поля и выходим
-		  		if (this.m_bookmarkList[i][number] === value)
+		  		if (this.m_bookmarkList[i][field] === value)
 		  		{
-		  			params.name = this.m_bookmarkList[i][0];
-		  			params.id = this.m_bookmarkList[i][2];
-		  			params.url = this.m_bookmarkList[i][1];
-		  			params.labels = this.m_bookmarkList[i][3];
-		  			params.notes = this.m_bookmarkList[i][4];
+		  			params.name = this.m_bookmarkList[i].title;
+		  			params.id = this.m_bookmarkList[i].id;
+		  			params.url = this.m_bookmarkList[i].url;
+		  			params.labels = this.m_bookmarkList[i].labels;
+		  			params.notes = this.m_bookmarkList[i].notes;
 		  			return;
 		  		}
 		  	}

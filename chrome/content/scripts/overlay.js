@@ -229,6 +229,7 @@ fGoogleBookmarksExtension.saveFavicons = function()
 	{
 		listName = "#GBE-ToolBar-popup";
 	}
+
 	jQuery.noConflict;
   if (this.mDBConn && this.mDBConn.connectionReady && this.mDBConn.tableExists("gbookmarks"))
   {
@@ -666,26 +667,26 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 		this.m_bookmarkList = new Array(bookmarksLength);
 		for (i = 0; i < bookmarksLength; i++) 
 		{
-			this.m_bookmarkList[i] = new Array(6);
+			this.m_bookmarkList[i] = {};
 			try
 			{
-				this.m_bookmarkList[i][0] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
+				this.m_bookmarkList[i].title = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
 				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].hasChildNodes()) {
-    			this.m_bookmarkList[i][1] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].childNodes[0].nodeValue;
+    			this.m_bookmarkList[i].url = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].childNodes[0].nodeValue;
 				}
 				else
 				{
-					this.m_bookmarkList[i][1] = "";
-					this.ErrorLog("GBE:doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i][0] + "' have no URL (or local URL)!!!");
+					this.m_bookmarkList[i].url = "";
+					this.ErrorLog("GBE:doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i].title + "' have no URL (or local URL)!!!");
 				}
-				this.m_bookmarkList[i][2] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
-				this.m_bookmarkList[i][5] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
+				this.m_bookmarkList[i].id = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
+				this.m_bookmarkList[i].timestamp = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
 
 				var bookmark_labels = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label);
 			}
 			catch(e1)
 			{
-				this.ErrorLog("GBE:doBuildMenu", "Last processing bookmark - " + this.m_bookmarkList[i][0]);
+				this.ErrorLog("GBE:doBuildMenu", "Last processing bookmark - " + this.m_bookmarkList[i].title);
 				throw e1;
 			}
 			var	j;
@@ -693,41 +694,41 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			if (bookmark_labels.length)
 			{
 				// сохраняем метки в массив
-				this.m_bookmarkList[i][3] = new Array(bookmark_labels.length);
+				this.m_bookmarkList[i].labels = [];
 				for (j = 0; j < bookmark_labels.length; j++)
 				{
-					this.m_bookmarkList[i][3][j] =  bookmark_labels[j].childNodes[0].nodeValue;
+					this.m_bookmarkList[i].labels[j] =  bookmark_labels[j].childNodes[0].nodeValue;
 					let lbl = jQuery.grep(lbs, function(e){ return e.title == bookmark_labels[j].childNodes[0].nodeValue });
 					if (lbl.length)
 					{
-						if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i][5])
+						if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i].timestamp)
 						{
-							lbl[0].timestamp = this.m_bookmarkList[i][5]
+							lbl[0].timestamp = this.m_bookmarkList[i].timestamp;
 						}
 					}
 				}
 			}
 			else
 			{
-				this.m_bookmarkList[i][3] = "";
+				this.m_bookmarkList[i].labels = "";
 				// определяем timestamp для закладок без метки
 				if (this.enableLabelUnlabeled)
 				{
 					let lbl = jQuery.grep(lbs, function(e){ return e.title == self.labelUnlabeledName });
 					if (lbl.length)
 					{
-						if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i][5])
+						if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i].timestamp)
 						{
-							lbl[0].timestamp = this.m_bookmarkList[i][5]
+							lbl[0].timestamp = this.m_bookmarkList[i].timestamp;
 						}
 					}
 				}
 			}
-			this.m_bookmarkList[i][4] = "";
+			this.m_bookmarkList[i].notes = "";
 			// закладка с примечанием?
 			if (this.enableNotes && bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes).length)
 			{
-				this.m_bookmarkList[i][4] = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes)[0].childNodes[0].nodeValue;
+				this.m_bookmarkList[i].notes = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes)[0].childNodes[0].nodeValue;
 			}
 		}
 		// сортируем массив закладок
@@ -815,13 +816,13 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			var parentContainer,
 					tempMenuitem;
 			// если у закладки есть метки
-			if (this.m_bookmarkList[i][3] !== "") 
+			if (this.m_bookmarkList[i].labels !== "") 
 			{
 				// то добавляем ее во вложенное меню каждой метки
-				for (j = 0; j < this.m_bookmarkList[i][3].length; j++)
+				for (j = 0; j < this.m_bookmarkList[i].labels.length; j++)
 				{
 					tempMenuitem = document.createElement('menuitem');
-					parentContainer = GBE_GBlist.getElementsByAttribute("id", "GBE_" + this.m_bookmarkList[i][3][j])[0].childNodes[0];
+					parentContainer = GBE_GBlist.getElementsByAttribute("id", "GBE_" + this.m_bookmarkList[i].labels[j])[0].childNodes[0];
 					this.appendMenuItem(parentContainer, tempMenuitem, this.m_bookmarkList[i]);
 				}
 			}
@@ -841,9 +842,9 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
 				let bp1 = params.newBindingParams();
-  			bp1.bindByName("ftitle", this.m_bookmarkList[i][0]);
-  			bp1.bindByName("flink", this.m_bookmarkList[i][1]);
-  			bp1.bindByName("fid", this.m_bookmarkList[i][2]);
+  			bp1.bindByName("ftitle", this.m_bookmarkList[i].title);
+  			bp1.bindByName("flink", this.m_bookmarkList[i].url);
+  			bp1.bindByName("fid", this.m_bookmarkList[i].id);
   			params.addParams(bp1);
   		}
 		}
@@ -1049,12 +1050,12 @@ fGoogleBookmarksExtension.doDeleteFolderJQuery = function(label, signature)
  */
 fGoogleBookmarksExtension.appendMenuItem = function(parent, item, value)
 {
-	item.setAttribute("label", value[0]);
-	item.setAttribute("id", value[2]);
-	item.setAttribute("url", value[1]);
-	item.setAttribute("tooltiptext", value[1]);
+	item.setAttribute("label", value.title);
+	item.setAttribute("id", value.id);
+	item.setAttribute("url", value.url);
+	item.setAttribute("tooltiptext", value.url);
 	item.setAttribute("class", "menuitem-iconic google-bookmarks");
-	this.setFavicon(value[1], item);
+	this.setFavicon(value, item);
 	item.setAttribute("context", "GBE-contextMenu");
 	if (parent.nodeName == "menuseparator")
 	{
@@ -1234,17 +1235,18 @@ fGoogleBookmarksExtension.login = function()
  * @param  {строка} url  адрес закладки
  * @param  {[type]} item ссылка на закладку (элемент меню)
  */
-fGoogleBookmarksExtension.setFavicon = function(url, item)
+fGoogleBookmarksExtension.setFavicon = function(bkmrk, item)
 {
 	try
 	{
 		// var self = this;
-		if (!this.showFavicons || url.length == 0)
+		if (!this.showFavicons || bkmrk.url.length == 0)
 		{
 			item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");  
+			bkmrk.favicon = "chrome://GBE/skin/images/bkmrk.png";
 			return;
 		}
-		var pageUrl = NetUtil.newURI(url);
+		var pageUrl = NetUtil.newURI(bkmrk.url);
     var FaviconService = Components.classes["@mozilla.org/browser/favicon-service;1"]
       .getService(Components.interfaces.nsIFaviconService);
     FaviconService.getFaviconURLForPage(pageUrl,
@@ -1261,6 +1263,7 @@ fGoogleBookmarksExtension.setFavicon = function(url, item)
 						favUrl = "chrome://GBE/skin/images/bkmrk.png";
 					}
 					item.setAttribute("image",favUrl);
+					bkmrk.favicon = favUrl;
         }
       }
     );
@@ -1665,14 +1668,14 @@ fGoogleBookmarksExtension.folderMenuOpenAll = function()
 	  	// перебираем все закладки
 	  	for (var i = 0, m_bookmarkListLength = this.m_bookmarkList.length; i < m_bookmarkListLength; i++)
 	  	{
-	  		var labels = this.m_bookmarkList[i][3];
+	  		var labels = this.m_bookmarkList[i].labels;
 	  		if (labels.length > 0 )
 	  		{
 		  		for (var j = 0; j < labels.length; j++) {
 		  			// открываем закладки, которые содержат искомую метку
 		  			if (labels[j].indexOf(label) == 0)
 		  			{
-		  				this.showURL(this.m_bookmarkList[i][1]);
+		  				this.showURL(this.m_bookmarkList[i].url);
 		  			}
 		  		};
 	  		}	
@@ -1681,7 +1684,7 @@ fGoogleBookmarksExtension.folderMenuOpenAll = function()
 	  			// открываем закладки без метки
 	  			if(this.enableLabelUnlabeled && this.currentFolderId == ("GBE_" + this.labelUnlabeledName))
 	  			{
-	  				this.showURL(this.m_bookmarkList[i][1]);
+	  				this.showURL(this.m_bookmarkList[i].url);
 	  			}
 	  		}
 	  	}
@@ -1814,11 +1817,11 @@ fGoogleBookmarksExtension.filterBookmarks = function(searchValue)
 				// иначе - поиск по всем закладкам
 				for (var i = 0; i < this.m_bookmarkList.length; i++)
 				{
-					if (this.m_bookmarkList[i][0].toLowerCase().indexOf(search) !== -1)
+					if (this.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1)
 					{
 						tempMenuitem = document.createElement('menuitem');
-						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this.m_bookmarkList[i][0], this.m_bookmarkList[i][1]);
-						this.tempFilterArray.push([this.m_bookmarkList[i][0], this.m_bookmarkList[i][1]]);
+						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this.m_bookmarkList[i].title, this.m_bookmarkList[i].url);
+						this.tempFilterArray.push([this.m_bookmarkList[i].title, this.m_bookmarkList[i].url]);
 					}
 				}
 			}
