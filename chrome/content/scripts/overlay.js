@@ -2,9 +2,11 @@
 Version 0.1.8
 + ссылка на Skrill
 + переключение между кнопкой на панели навигации и пунктом в главном меню программы
-+ возможность добавления метки для закладок без нее
++ возможность добавления метки для закладок без меток
++ клик средней кнопкой по метке открывает все вложенные закладки
 ! оптимизировано сохранение facicons (адресов) во временном sqlite файле
 ! исправлено удаление куки для всех доменов google
+! замена bookmarkClick() и folderClick() на handleClick()
 
 Version 0.1.7
 из-за тормозов сайта мозилы 0.1.6 пришлось загрузить как 0.1.7
@@ -135,6 +137,7 @@ var fGoogleBookmarksExtension =
 
  	'mDBConn' : null,
  	'defAutocompliteList' : "",
+ 	'timeOut' : 10000,
 
 
 
@@ -564,6 +567,7 @@ var fGoogleBookmarksExtension =
 			this.m_bookmarkList = null;
 			this.m_labelsArr = null;
 			var enableNotes = this.enableNotes;
+			var self = this;
 			jQuery.noConflict();
 			jQuery.ajax({
 	      type: "GET",
@@ -574,20 +578,20 @@ var fGoogleBookmarksExtension =
 	          num: 10000
 	        },
 	      dataType : "XML",
-	      timeout: 10000,
+	      timeout: this.timeOut,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	      	fGoogleBookmarksExtension.removeSIDCookie();
-	  			fGoogleBookmarksExtension.refreshInProgress = false;
-	    		fGoogleBookmarksExtension.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
+	      	self.removeSIDCookie();
+	  			self.refreshInProgress = false;
+	    		self.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
 	      },
 	      success: function(responseXML, textStatus) {
 					if (responseXML)
 					{
-			    	fGoogleBookmarksExtension.m_ganswer = responseXML.documentElement;
-			    	fGoogleBookmarksExtension.doBuildMenu();
+			    	self.m_ganswer = responseXML.documentElement;
+			    	self.doBuildMenu();
 			    	if (showMenu)
 			    	{
-			    		if (fGoogleBookmarksExtension.useMenuBar)
+			    		if (self.useMenuBar)
 			    		{
 			    			document.getElementById("GBE-MainMenu-Popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
 							}
@@ -596,13 +600,13 @@ var fGoogleBookmarksExtension =
 			    			document.getElementById("GBE-ToolBar-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
 			    		}
 			    	}
-			    	if (!fGoogleBookmarksExtension.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
+			    	if (!self.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	}
 		    	else
 		    	{
-		    		fGoogleBookmarksExtension.removeSIDCookie();
-		    		fGoogleBookmarksExtension.refreshInProgress = false;
-		    		fGoogleBookmarksExtension.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
+		    		self.removeSIDCookie();
+		    		self.refreshInProgress = false;
+		    		self.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок!");
 		    	}
 	      }
 	    });
@@ -630,7 +634,7 @@ var fGoogleBookmarksExtension =
 	          q: "qB89f6ZAUXXsfrwPdN4t"
 	        },
 	      dataType : "XML",
-	      timeout: 10000,
+	      timeout: this.timeOut,
 	      success: function(responseXML, textStatus) {
 	      	if (responseXML.getElementsByTagName("smh:signature").length)
 	      	{
@@ -867,8 +871,7 @@ var fGoogleBookmarksExtension =
 			lbs.sort((this.sortType == "timestamp") ? this.compareByDate : this.compareByName);	
 			allLabelsStr = "";//this.labelSep;
 			lbs.forEach(function(element, index) {
-			  allLabelsStr += element.title + fGoogleBookmarksExtension.labelSep;
-			  //fGoogleBookmarksExtension.ErrorLog("lbs.forEach","" + element.title + " " + element.timestamp);
+			  allLabelsStr += element.title + self.labelSep;
 			});
 			if (allLabelsStr.length > 0)
 			{
@@ -926,17 +929,16 @@ var fGoogleBookmarksExtension =
 			if (!this.mDBConn)
 			{
 				this.initDBconnection();
-				// удаляем предыдущие закладки (если были)
-				this.dropTempBookmarkTable();
-				// создаем таблицу закладок заново
-				this.createTempBookmarkTable();
 			}
 			
-
 
 			// вставляем закладки во временную таблицу
 			if (this.mDBConn && this.mDBConn.connectionReady)
 			{
+				// удаляем предыдущие закладки (если были)
+				this.dropTempBookmarkTable();
+				// создаем таблицу закладок заново
+				this.createTempBookmarkTable();
 				var stmt = this.mDBConn.createStatement("INSERT INTO gbookmarks (ftitle, flink, fid) VALUES(:ftitle, :flink, :fid)");
 				var params = stmt.newBindingParamsArray();
 			}
@@ -1009,7 +1011,7 @@ var fGoogleBookmarksExtension =
 			// сохраняем адреса иконок закладок во временной таблице (с задержкой)
 			window.setTimeout(
 				function() {
-					fGoogleBookmarksExtension.saveFavicons();
+					self.saveFavicons();
 				}, 
 				3000
 			);
@@ -1029,6 +1031,7 @@ var fGoogleBookmarksExtension =
 		try
 		{
 			jQuery.noConflict();
+			var self = this;
 			jQuery.ajax({
 	      type: "post",
 	      url: this.baseUrl2,
@@ -1042,16 +1045,16 @@ var fGoogleBookmarksExtension =
 	          prev: "/lookup",
 	          sig: params.sig
 	        },
-	      timeout: 5000,
+	      timeout: this.timeOut,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	        fGoogleBookmarksExtension.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
+	        self.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
 	      },
 	      success: function(data, textStatus) {
-					fGoogleBookmarksExtension.needRefresh = true;  
+					self.needRefresh = true;  
 					if (window.content.location.href == params.url)
 					{
 						// меняем иконку на панели
-						fGoogleBookmarksExtension.setButtonIcons(!params.id);
+						self.setButtonIcons(!params.id);
 	      	}
 	      }
 	    });
@@ -1071,6 +1074,7 @@ var fGoogleBookmarksExtension =
 		try
 		{
 			jQuery.noConflict();
+			var self = this;
 			jQuery.ajax({
 				type: "get",
 	      url: this.baseUrl2,
@@ -1080,16 +1084,16 @@ var fGoogleBookmarksExtension =
 	          dlq: params.id,
 	          sig: params.sig
 	        },
-	      timeout: 5000,
+	      timeout: this.timeOut,
 	      error: function(XMLHttpRequest, textStatus, errorThrown) {
-	      	fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
+	      	self.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
 	      },
 	      success: function(data, textStatus) {
-					fGoogleBookmarksExtension.needRefresh = true; 
+					self.needRefresh = true; 
 					if (window.content.location.href == params.url)
 					{
 						// меняем иконку на панели
-						fGoogleBookmarksExtension.setButtonIcons(null);
+						self.setButtonIcons(null);
 					}
 	      }
 			});
@@ -1105,6 +1109,7 @@ var fGoogleBookmarksExtension =
 		try
 		{
 			jQuery.noConflict();
+			var self = this;
 			jQuery.ajax({
 				type: "POST",
     		url: this.baseUrl2,
@@ -1115,14 +1120,14 @@ var fGoogleBookmarksExtension =
           labels: oldLabel + "," + label,
           sig: signature
         },
-      	timeout: 5000,
+      	timeout: this.timeOut,
       	error: function(XMLHttpRequest, textStatus, errorThrown) 
       	{
-      		fGoogleBookmarksExtension.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
+      		self.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
       	},
       	success: function(data, textStatus) 
       	{
-					fGoogleBookmarksExtension.needRefresh = true; 
+					self.needRefresh = true; 
       	}
 			});			
 		}
@@ -1147,7 +1152,7 @@ var fGoogleBookmarksExtension =
           labels: label,
           sig: signature
         },
-      	timeout: 5000,
+      	timeout: this.timeOut,
       	error: function(XMLHttpRequest, textStatus, errorThrown) 
       	{
       		fGoogleBookmarksExtension.ErrorLog("GBE:doDeleteFolderJQuery", " An error occurred while deleting label (" + label + ").");
@@ -1246,12 +1251,9 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("tooltiptext", value[1]);
 		item.setAttribute("class", "menuitem-iconic google-bookmarks");
 		this.setFavicon(value[1], item);
-		item.addEventListener("click",fGoogleBookmarksExtension.bookmarkClick, false);
 		item.setAttribute("context", "GBE-contextMenu");
-		// item.setAttribute("oncontextmenu", "GBE.showContextMenu(event, '" + value[2] + "'); return false;");
 		if (parent.nodeName == "menuseparator")
 		{
-			// document.getElementById("GBE-ToolBar-popup").insertBefore(item, parent);
 			parent.parentNode.insertBefore(item, parent);
 		}
 		else
@@ -1269,7 +1271,6 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("class", "menu-iconic google-bookmarks");
 		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 		item.setAttribute("container", "true");
-		item.addEventListener("click",fGoogleBookmarksExtension.folderClick, false);
 		// для метки labelUnlabeledName контекстрое меню не назначаем
 		if (this.enableLabelUnlabeled)
 		{
@@ -1285,7 +1286,6 @@ var fGoogleBookmarksExtension =
 		item.appendChild(document.createElement('menupopup'));
 		if (parent.nodeName == "menuseparator")
 		{
-			// document.getElementById("GBE-ToolBar-popup").insertBefore(item, parent);
 			parent.parentNode.insertBefore(item, parent);
 		}
 		else
@@ -1300,7 +1300,6 @@ var fGoogleBookmarksExtension =
 		item.setAttribute("url", url);
 		item.setAttribute("class", "menuitem-iconic google-bookmarks-filter");
 		this.setFavicon(url, item);
-		item.addEventListener("click",fGoogleBookmarksExtension.bookmarkClick, false);
 		parent.appendChild(item);
 	},
 
@@ -1486,7 +1485,6 @@ var fGoogleBookmarksExtension =
 	 */
 	showAboutForm: function(e)
 	{
-		this.ErrorLog(e.currentTarget.getAttribute("id"));
 		window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
 	},
 
@@ -1638,6 +1636,33 @@ var fGoogleBookmarksExtension =
 		}
 	},
 
+	/**
+	 * читает значение заданного свойства. при отсутствии задает значение по-умолчанию
+	 * @param  {string} prefName     назавание свойсива
+	 * @param  {long}		prefType     тип свойства
+	 * @param  					prefDefValue значение по-умолчанию
+	 */
+	readPrefValue: function(prefName, prefType, prefDefValue)
+	{
+		if (this.prefs.getPrefType(prefName) == prefType)
+		{
+			this[prefName] = ((prefType == this.prefs.PREF_STRING) ? this.prefs.getCharPref(prefName) : this.prefs.getBoolPref(prefName));
+		}
+		else
+		{
+			if (prefType == this.prefs.PREF_STRING)
+			{
+				this.prefs.setCharPref(prefName, prefDefValue);
+				this[prefName] = prefDefValue;
+			}
+			else
+			{
+				this.prefs.getBoolPref(prefName, prefDefValue);
+				this[prefName] = prefDefValue;
+			}
+		}		
+	},
+
 
 	/**
 	 * читает значения свойств
@@ -1647,115 +1672,19 @@ var fGoogleBookmarksExtension =
 		this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
      .getService(Components.interfaces.nsIPrefService)
      .getBranch("extensions.fessGBE.");
-		if (this.prefs.getPrefType("nestedLabelSep") == this.prefs.PREF_STRING)
-		{
-			this.nestedLabelSep = this.prefs.getCharPref("nestedLabelSep");
-		}
-		else 
-		{
-			this.prefs.setCharPref("nestedLabelSep", "/");
-			this.nestedLabelSep = "/";
-		}
 
-		if (this.prefs.getPrefType("showFavicons") == this.prefs.PREF_BOOL)
-		{
-			this.showFavicons = this.prefs.getBoolPref("showFavicons");
-		}
-		else 
-		{
-			this.prefs.setBoolPref("showFavicons", true);
-			this.showFavicons = true;
-		}
-
-		if (this.prefs.getPrefType("reverseBkmrkLeftClick") == this.prefs.PREF_BOOL)
-		{
-			this.reverseBkmrkLeftClick = this.prefs.getBoolPref("reverseBkmrkLeftClick");
-		}
-		else 
-		{
-			this.prefs.setBoolPref("reverseBkmrkLeftClick", false);
-			this.reverseBkmrkLeftClick = false;
-		}
-
-		if (this.prefs.getPrefType("sortType") == this.prefs.PREF_STRING)
-		{
-			this.sortType = this.prefs.getCharPref("sortType");
-		}
-		else 
-		{
-			this.prefs.setCharPref("sortType", "name");
-			this.sortType = "name";
-		}
-
-		if (this.prefs.getPrefType("sortOrder") == this.prefs.PREF_STRING)
-		{
-			this.sortOrder = this.prefs.getCharPref("sortOrder");
-		}
-		else 
-		{
-			this.prefs.setCharPref("sortOrder", "asc");
-			this.sortOrder = "asc";
-		}		
-
-		if (this.prefs.getPrefType("suggestLabel") == this.prefs.PREF_BOOL)
-		{
-			this.suggestLabel = this.prefs.getBoolPref("suggestLabel");
-		}
-		else
-		{
-			this.prefs.setBoolPref("suggestLabel", false);
-			this.suggestLabel = false;
-		}
-		
-		if (this.prefs.getPrefType("enableGBautocomplite") == this.prefs.PREF_BOOL)
-		{
-			this.enableGBautocomplite = this.prefs.getBoolPref("enableGBautocomplite");
-		}
-		else
-		{
-			this.prefs.setBoolPref("enableGBautocomplite", false);
-			this.enableGBautocomplite = false;
-		}
-
-		if (this.prefs.getPrefType("enableNotes") == this.prefs.PREF_BOOL)
-		{
-			this.enableNotes = this.prefs.getBoolPref("enableNotes");
-		}
-		else
-		{
-			this.prefs.setBoolPref("enableNotes", false);
-			this.enableNotes = false;
-		}		
-
-		if (this.prefs.getPrefType("useMenuBar") == this.prefs.PREF_BOOL)
-		{
-			this.useMenuBar = this.prefs.getBoolPref("useMenuBar");
-		}
-		else
-		{
-			this.prefs.setBoolPref("useMenuBar", false);
-			this.useMenuBar = false;
-		}
-
-		if (this.prefs.getPrefType("enableLabelUnlabeled") == this.prefs.PREF_BOOL)
-		{
-			this.enableLabelUnlabeled = this.prefs.getBoolPref("enableLabelUnlabeled");
-		}
-		else
-		{
-			this.prefs.setBoolPref("enableLabelUnlabeled", false);
-			this.enableLabelUnlabeled = false;
-		}
-
-		if (this.prefs.getPrefType("labelUnlabeledName") == this.prefs.PREF_STRING)
-		{
-			this.labelUnlabeledName = this.prefs.getCharPref("labelUnlabeledName");
-		}
-		else 
-		{
-			this.prefs.setCharPref("labelUnlabeledName", "Unlabeled");
-			this.labelUnlabeledName = "Unlabeled";
-		}
+    this.readPrefValue("nestedLabelSep", this.prefs.PREF_STRING, "/");
+    this.readPrefValue("showFavicons", this.prefs.PREF_BOOL, true);
+    this.readPrefValue("reverseBkmrkLeftClick", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("sortType", this.prefs.PREF_STRING, "name");
+    this.readPrefValue("sortOrder", this.prefs.PREF_STRING, "asc");
+    this.readPrefValue("suggestLabel", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableGBautocomplite", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableNotes", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("useMenuBar", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableLabelUnlabeled", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("labelUnlabeledName", this.prefs.PREF_STRING, "Unlabeled");
+	
 	},
 
 
@@ -1819,22 +1748,6 @@ var fGoogleBookmarksExtension =
 	},
 
 	/**
-	 * открывает закладку в новой вкладке
-	 */
-	bookmarkClick: function(e)
-	{
-		switch (e.button) 
-		{
-			case 0 :
-				fGoogleBookmarksExtension.showURL(e.currentTarget.getAttribute("url"), fGoogleBookmarksExtension.reverseBkmrkLeftClick);
-				break;
-			case 1 :
-				fGoogleBookmarksExtension.showURL(e.currentTarget.getAttribute("url"), !fGoogleBookmarksExtension.reverseBkmrkLeftClick);
-				break;
-		}
-	},
-
-	/** ,tp gfhjkz
 	 * открывает диалог добавления (редактирования) закладки
 	 * @param  {bool} editBkmk = true режим редактирования (true) или добавления (false) закладки
 	 * @param  {string} addLabel = "" режим добавления новой метки к закладке (через контекстное меню метки)
@@ -1878,6 +1791,7 @@ var fGoogleBookmarksExtension =
 					// для хранения уникальных слов
 					var uniqueWords = [];
 					var labels = [];
+					var self = this;
 					jQuery.noConflict();
 					// проходим по всем словам
 					jQuery.each(words, function(i, el){
@@ -1887,9 +1801,9 @@ var fGoogleBookmarksExtension =
 				    	uniqueWords.push(el);
 				    	// регулярка для поиска
 				    	// ищем с начала строки/после nestedLabelSep до конца строки/nestedLabelSep 
-						  var SearchString = new RegExp("(^|" + fGoogleBookmarksExtension.nestedLabelSep + ")" 
+						  var SearchString = new RegExp("(^|" + self.nestedLabelSep + ")" 
 						  																		+ el 
-						  																		+ "($|" + fGoogleBookmarksExtension.nestedLabelSep + ")", "i");
+						  																		+ "($|" + self.nestedLabelSep + ")", "i");
 						  // просматриваем массив меток
 				      for (var i=0; i<labelsList.length; i++) 
 				      {
@@ -1903,7 +1817,7 @@ var fGoogleBookmarksExtension =
 				          // newLabel будет Browsers/Chrome/
 				          var newLabel = labelsList[i].substring(0,position + el.length+1);
 				          // если последний символ равен разделителю вложенных меток - удаляем его
-				          if (newLabel.charAt(newLabel.length - 1) == fGoogleBookmarksExtension.nestedLabelSep)
+				          if (newLabel.charAt(newLabel.length - 1) == self.nestedLabelSep)
 				          {
 				          	newLabel = newLabel.substr(0, newLabel.length-1);
 				          }
@@ -2171,19 +2085,43 @@ var fGoogleBookmarksExtension =
 	},
 
 	/**
-	 * средний клик по метке - открывае все вложенные закладки
+	 * обработчик кликов по закладкам и меткам
 	 */
-	folderClick: function(e)
+	handleClick: function(e)
 	{
 		try{
 
 			switch (e.button) 
 			{
+				case 0 :
+					{
+						if ((e.target.getAttribute("class") == "menuitem-iconic google-bookmarks") || 
+								(e.target.getAttribute("class") == "menuitem-iconic google-bookmarks-filter"))
+						{
+							fGoogleBookmarksExtension.showURL(e.target.getAttribute("url"), fGoogleBookmarksExtension.reverseBkmrkLeftClick);
+							e.stopPropagation();
+							break;
+						}
+						break;
+					}
 				case 1 :
-					fGoogleBookmarksExtension.currentFolderId = e.currentTarget.getAttribute("id");
-					fGoogleBookmarksExtension.folderMenuOpenAll();
-					e.stopPropagation();
-					break;
+					{
+						if (e.target.getAttribute("class") == "menu-iconic google-bookmarks")
+						{
+							fGoogleBookmarksExtension.currentFolderId = e.target.getAttribute("id");
+							fGoogleBookmarksExtension.folderMenuOpenAll();
+							e.stopPropagation();
+							break;
+						}
+						if ((e.target.getAttribute("class") == "menuitem-iconic google-bookmarks") || 
+								(e.target.getAttribute("class") == "menuitem-iconic google-bookmarks-filter"))
+						{
+							fGoogleBookmarksExtension.showURL(e.target.getAttribute("url"), !fGoogleBookmarksExtension.reverseBkmrkLeftClick);
+							e.stopPropagation();
+							break;
+						}
+						break;
+					}
 			}
 		}
 		catch(error)
@@ -2240,7 +2178,7 @@ var fGoogleBookmarksExtension =
 		  		else
 		  		{
 		  			// открываем закладки без метки
-		  			if(this.enableLabelUnlabeled)
+		  			if(this.enableLabelUnlabeled && this.currentFolderId == ("GBE_" + this.labelUnlabeledName))
 		  			{
 		  				this.showURL(this.m_bookmarkList[i][1]);
 		  			}

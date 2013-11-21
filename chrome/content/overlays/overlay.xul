@@ -129,6 +129,7 @@
   	<broadcaster 	id="GBE-bc-popup" 
   							onpopupshowing="fGoogleBookmarksExtension.onShowMenu();" 
   							onpopuphidden="fGoogleBookmarksExtension.onHideMenu();"
+  							onclick="fGoogleBookmarksExtension.handleClick(event);"
   	/>
 
 		<broadcaster id="GBE-bc-hmenuRefresh" 
