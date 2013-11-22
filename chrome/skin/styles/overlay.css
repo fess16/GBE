@@ -13,6 +13,10 @@
 	margin-left: 30px;
 }
 
+#GBE-filterTextbox {
+  margin-right: 30px;
+}
+
 .ac-result-type-google_bookmark,
 .autocomplete-treebody::-moz-tree-image(google_bookmark, treecolAutoCompleteImage) {
   list-style-image: url("chrome://GBE/skin/images/bkmrk.png");
@@ -24,15 +28,14 @@
 @namespace
 url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
-#GBE-popup {
-
-   /*max-height: 600px; */
+#GBE-ToolBar-popup {
+  min-width: 250px;
 }
 
- #GBE-popup autorepeatbutton {
-   /*display: none !important;*/
-} 
+/*#GBE-ToolBar-popup autorepeatbutton {
+   display: none !important;
+}*/ 
 
-#GBE-popup scrollbox {
+#GBE-ToolBar-popup scrollbox, #GBE-MainMenu-Popup scrollbox {
     overflow-y: auto !important; 
 }

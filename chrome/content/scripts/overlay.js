@@ -1150,7 +1150,6 @@ fGoogleBookmarksExtension.showPrefWindow = function()
       );
 	}
 	this._preferencesWindow.focus();		
-	//window.openDialog("chrome://GBE/content/overlays/options.xul", "","centerscreen", this);
 };
 
 /**
@@ -1318,7 +1317,7 @@ fGoogleBookmarksExtension.showBookmarkDialog = function(editBkmk = true, addLabe
 					this.windowsParams.labels += addLabel;
 				}
 			}
-			window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","alwaysRaised,centerscreen,resizable");
+			window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","chrome,centerscreen,modal");
 		}
 	}
 	catch (e)
@@ -1362,7 +1361,7 @@ fGoogleBookmarksExtension.showDeleteDlg = function(e)
 			this.ErrorLog("GBE:showDeleteBkmkDlg", " Не найдена закладка.");
 			return;
 		}
-		window.openDialog("chrome://GBE/content/overlays/delete.xul", "","alwaysRaised,centerscreen");
+		window.openDialog("chrome://GBE/content/overlays/delete.xul", "","chrome,centerscreen,modal");
 	}
 	catch (e)
 	{
@@ -1414,7 +1413,7 @@ fGoogleBookmarksExtension.contextEditBookmark = function(event)
 		this.getBookmark(this.windowsParams);
 		if (this.windowsParams.id)
 		{
-			window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","alwaysRaised,centerscreen,resizable");
+			 window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","chrome,centerscreen,modal");
 		}
 	}
 	catch (e) {
@@ -1433,7 +1432,7 @@ fGoogleBookmarksExtension.contextRemoveBookmark = function(event)
 		this.getBookmark(this.windowsParams);
 		if (this.windowsParams.id)
 		{
-			window.openDialog("chrome://GBE/content/overlays/delete.xul", "","alwaysRaised,centerscreen");
+			window.openDialog("chrome://GBE/content/overlays/delete.xul", "","chrome,centerscreen,modal");
 		}
 	}
 	catch (e) {
@@ -1593,7 +1592,7 @@ fGoogleBookmarksExtension.showFolderDialog = function()
 		this.windowsParams = {
 			name : document.getElementById(this.currentFolderId).getAttribute("fullName")
 		};
-		window.openDialog("chrome://GBE/content/overlays/folder.xul", "","alwaysRaised,centerscreen");
+		window.openDialog("chrome://GBE/content/overlays/folder.xul", "","chrome,centerscreen,modal");
 		this.currentFolderId = "";
 	}
 	catch (e)
@@ -1612,7 +1611,7 @@ fGoogleBookmarksExtension.showRemoveLabelDialog = function()
 		this.windowsParams = {
 			name : document.getElementById(this.currentFolderId).getAttribute("fullName")
 		};
-		window.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","alwaysRaised,centerscreen");
+		window.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","chrome,centerscreen,modal");
 		this.currentFolderId = "";
 	}
 	catch (e)
