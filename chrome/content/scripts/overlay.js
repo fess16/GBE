@@ -2,6 +2,7 @@
 Version 0.1.9
 + перешел на использование модуля (module.js) для хранения общих данных
 - убрано все относящееся к SQLite
+! диалоги открываются в модальном режиме
 
 Version 0.1.8b
 + ссылка на Skrill
@@ -1662,7 +1663,6 @@ fGoogleBookmarksExtension.filterBookmarks = function(searchValue)
 						// tempArray[i][1].toLowerCase().indexOf(search) !== -1)
 					{
 						tempMenuitem = document.createElement('menuitem');
-						this.ErrorLog(search,tempArray[i][0],tempArray[i][2]);
 						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i][0], tempArray[i][1], tempArray[i][2]);
 						// и формируем this.tempFilterArray заново
 						this.tempFilterArray.push([ tempArray[i][0], tempArray[i][1], tempArray[i][2] ]);
