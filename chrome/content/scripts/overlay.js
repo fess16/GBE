@@ -959,12 +959,13 @@ fGoogleBookmarksExtension.appendLabelItem = function(parent, item, id, label, fu
 	}
 };
 
-fGoogleBookmarksExtension.appendSearchMenuItem = function(parent, item, label, url)
+fGoogleBookmarksExtension.appendSearchMenuItem = function(parent, item, label, url, favicon)
 {
 	item.setAttribute("label", label);
 	item.setAttribute("url", url);
+	item.setAttribute("tooltiptext", url);
 	item.setAttribute("class", "menuitem-iconic google-bookmarks-filter");
-	this.setFavicon(url, item);
+	item.setAttribute("image", favicon);
 	parent.appendChild(item);
 };
 
@@ -1657,12 +1658,14 @@ fGoogleBookmarksExtension.filterBookmarks = function(searchValue)
 				// то ищем только среди ранее отфильтрованных закладок
 				for(var i = 0; i < tempArray.length; i++)
 				{
-					if (tempArray[i][0].toLowerCase().indexOf(search) !== -1)
+					if (tempArray[i][0].toLowerCase().indexOf(search) !== -1 )//||
+						// tempArray[i][1].toLowerCase().indexOf(search) !== -1)
 					{
 						tempMenuitem = document.createElement('menuitem');
-						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i][0], tempArray[i][1]);
+						this.ErrorLog(search,tempArray[i][0],tempArray[i][2]);
+						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i][0], tempArray[i][1], tempArray[i][2]);
 						// и формируем this.tempFilterArray заново
-						this.tempFilterArray.push([tempArray[i][0], tempArray[i][1]]);
+						this.tempFilterArray.push([ tempArray[i][0], tempArray[i][1], tempArray[i][2] ]);
 					}
 				}
 			}
@@ -1671,11 +1674,12 @@ fGoogleBookmarksExtension.filterBookmarks = function(searchValue)
 				// иначе - поиск по всем закладкам
 				for (var i = 0; i < this.m_bookmarkList.length; i++)
 				{
-					if (this.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1)
+					if (this.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1 )//||
+						// this.m_bookmarkList[i].url.toLowerCase().indexOf(search) !== -1)
 					{
 						tempMenuitem = document.createElement('menuitem');
-						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this.m_bookmarkList[i].title, this.m_bookmarkList[i].url);
-						this.tempFilterArray.push([this.m_bookmarkList[i].title, this.m_bookmarkList[i].url]);
+						this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this.m_bookmarkList[i].title, this.m_bookmarkList[i].url, this.m_bookmarkList[i].favicon);
+						this.tempFilterArray.push([this.m_bookmarkList[i].title, this.m_bookmarkList[i].url, this.m_bookmarkList[i].favicon]);
 					}
 				}
 			}
