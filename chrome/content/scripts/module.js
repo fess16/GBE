@@ -124,7 +124,7 @@ var fGoogleBookmarksExtension =
 			var cookie = iter.getNext();
 			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
 			{
-				cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
+				this.cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
 			}
 		}
 	},

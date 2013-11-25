@@ -263,9 +263,9 @@ fGoogleBookmarksExtension.processNewURL = function(aURI)
   		return;
   	}
 		var params = {name : "", id : null,	url : aURI.spec, labels : "", notes : ""};
-		fGoogleBookmarksExtension.getBookmark(params, true);
-		fGoogleBookmarksExtension.setButtonIcons(params.id);
-    fGoogleBookmarksExtension.oldURL = aURI.spec;
+		this.getBookmark(params, true);
+		this.setButtonIcons(params.id);
+    this.oldURL = aURI.spec;
   }
   catch (e)
 	{
