@@ -68,7 +68,9 @@
 												tooltiptext="&overlay.toolbarbutton.hint;" >
 				<menupopup 	id="GBE-ToolBar-popup" 
 										observes="GBE-bc-popup"
-										ignorekeys="true">
+										ignorekeys="true" 
+										position="after_start"
+										onpopupshown="fGoogleBookmarksExtension.onPopupShown(event);">
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-tb-hmenuRefresh" observes="GBE-bc-hmenuRefresh" />
 							<menuitem id="GBE-tb-hmenuAdd" observes="GBE-bc-hmenuAdd" />
@@ -76,8 +78,9 @@
 							<menuitem id="GBE-tb-hmenuDel" observes="GBE-bc-hmenuDel" />
 							<menuitem id="GBE-tb-hmenuOpt" observes="GBE-bc-hmenuOpt" />
 							<menuitem id="GBE-tb-hmenuGBs" observes="GBE-bc-hmenuGBs" />
-							<menuitem id="GBE-tb-hmenuLgn" observes="GBE-bc-hmenuLgn" />
-							<menuitem id="GBE-tb-hmenuLgt" observes="GBE-bc-hmenuLgt" />
+							<menuitem id="GBE-tb-menuAbout" observes="GBE-bc-menuAbout" />
+							<menuitem id="GBE-tb-hmenuLgn" observes="GBE-bc-hmenuLgn"/>
+							<menuitem id="GBE-tb-hmenuLgt" observes="GBE-bc-hmenuLgt"/>
 					</hbox>
 					<menuseparator/>
 					<hbox id="GBE-filterHBox" align="center">					
@@ -97,7 +100,7 @@
 					<vbox id="GBE-searchResultList">
 					</vbox>
 					<menuseparator id="GBE-AboutSeparator"/>
-					<menuitem id="GBE-tb-menuAbout" observes="GBE-bc-menuAbout" />
+					<!-- <menuitem id="GBE-tb-menuAbout" observes="GBE-bc-menuAbout" /> -->
 				</menupopup>
 
 			</toolbarbutton>
@@ -115,20 +118,21 @@
       	<menuitem id="GBE-mb-hmenuDel" observes="GBE-bc-hmenuDel" label="&overlay.hmenuDel.hint;" />
       	<menuitem id="GBE-mb-hmenuOpt" observes="GBE-bc-hmenuOpt" label="&overlay.hmenuOpt.hint;" />
       	<menuitem id="GBE-mb-hmenuGBs" observes="GBE-bc-hmenuGBs" label="&overlay.hmenuGBs.hint;" />
+      	<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" label="About" />
       	<menuitem id="GBE-mb-hmenuLgn" observes="GBE-bc-hmenuLgn" />
       	<menuitem id="GBE-mb-hmenuLgt" observes="GBE-bc-hmenuLgt" />
       	<menuseparator/>
 
 				<menuseparator id="GBE-mb-GBlist-Separator"/>
-				<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" />
+<!-- 				<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" /> -->
       </menupopup>
     </menu>
   </menubar>
 
   <broadcasterset>
   	<broadcaster 	id="GBE-bc-popup" 
-  							onpopupshowing="fGoogleBookmarksExtension.onShowMenu();" 
-  							onpopuphidden="fGoogleBookmarksExtension.onHideMenu();"
+  							onpopupshowing="fGoogleBookmarksExtension.onShowMenu(event);" 
+  							onpopuphidden="fGoogleBookmarksExtension.onHideMenu(event);"
   							onclick="fGoogleBookmarksExtension.handleClick(event);"
   	/>
 
@@ -182,7 +186,9 @@
 
 
 		<broadcaster id="GBE-bc-menuAbout" 
-			label="About"
+			class="menuitem-iconic" 
+			image="chrome://GBE/skin/images/About_icon.png"
+			tooltiptext="About" 
 			oncommand="fGoogleBookmarksExtension.showAboutForm(event);"
 		/>
  	</broadcasterset>

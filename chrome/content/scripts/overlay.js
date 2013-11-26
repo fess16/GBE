@@ -313,7 +313,7 @@ fGoogleBookmarksExtension.doRequestBookmarksJQuery = function(showMenu)
 		    	{
 		    		if (self.useMenuBar)
 		    		{
-		    			document.getElementById("GBE-MainMenu-Popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+		    			document.getElementById("GBE-MainMenu-Popup").openPopup(document.getElementById("GBE-MainMenu"), "after_start",0,0,false,false);
 						}
 						else
 						{			    			
@@ -385,7 +385,7 @@ fGoogleBookmarksExtension.doClearList = function(parentId, className)
 	  // Remove all of them.
 		while( selectTag[0] ) 
 		{
-		    selectTag[0].parentNode.removeChild( selectTag[0] );
+	    selectTag[0].parentNode.removeChild( selectTag[0] );
 		}
 	}
 	catch (e)
@@ -393,6 +393,7 @@ fGoogleBookmarksExtension.doClearList = function(parentId, className)
 		this.ErrorLog("GBE:doClearList", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}
 };
+
 
 fGoogleBookmarksExtension.hideBookmarks = function(hide)
 {
@@ -1154,13 +1155,29 @@ fGoogleBookmarksExtension.showPrefWindow = function()
 	this._preferencesWindow.focus();		
 };
 
+fGoogleBookmarksExtension.onPopupShown = function(e)
+{
+	if (e.target.getAttribute("id") == "GBE-ToolBar-popup")
+	{
+		// //e.target.sizeTo(300, 700);
+		// e.target.width = 300;
+		document.getElementById("GBE-filterHBox").setAttribute("hidden","false");
+	}
+	e.stopPropagation();
+};
+
 /**
  * обработчик события onpopupshowing для основного меню (GBE-ToolBar-popup)
  */
-fGoogleBookmarksExtension.onShowMenu = function()
+fGoogleBookmarksExtension.onShowMenu = function(event)
 {
 	try
 	{
+		if ( !(event.target.getAttribute("id") == "GBE-ToolBar-popup" || event.target.getAttribute("id") == "GBE-MainMenu-Popup" ))
+		{
+			event.stopPropagation();
+			return;
+		}
 		// кнопки логин и логаут
 		var btnLgn = document.getElementById("GBE-bc-hmenuLgn"), 
 				btnLgt = document.getElementById("GBE-bc-hmenuLgt");
@@ -1191,6 +1208,10 @@ fGoogleBookmarksExtension.onShowMenu = function()
 			document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
 			document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "true");
 		}
+		if (!this.useMenuBar)
+		{
+			document.getElementById("GBE-filterHBox").setAttribute("hidden","true");
+		}
 	}
 	catch (e)
 	{
@@ -1199,13 +1220,18 @@ fGoogleBookmarksExtension.onShowMenu = function()
 };
 
 // при скрытии меню
-fGoogleBookmarksExtension.onHideMenu = function()
+fGoogleBookmarksExtension.onHideMenu = function(event)
 {
 	// делаем видимым основной список закладок
 	// document.getElementById("GBE-GBlist").setAttribute("hidden", false);
-	if (!fGoogleBookmarksExtension.useMenuBar)
+	if ( !(event.target.getAttribute("id") == "GBE-ToolBar-popup" || event.target.getAttribute("id") == "GBE-MainMenu-popup" ))
 	{
-		fGoogleBookmarksExtension.hideBookmarks(false);
+		event.stopPropagation();
+		return;
+	}
+	if (!this.useMenuBar)
+	{
+		this.hideBookmarks(false);
 		// скрываем списко отфильтрованных закладок
 		document.getElementById("GBE-searchResultList").setAttribute("hidden", true);
 		// обнуляем значение фильтра
