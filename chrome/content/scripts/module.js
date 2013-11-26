@@ -196,7 +196,7 @@ var fGoogleBookmarksExtension =
 	  		field = "url";
 	  		value = params.url;
 	  	}
-	  	if ((this.m_bookmarkList) && (this.m_bookmarkList.length))
+	  	if ((this.m_bookmarkList !== null) && (this.m_bookmarkList.length))
 	  	{
 		  	// перебираем закладки
 		  	for (var i = 0, m_bookmarkListLength = this.m_bookmarkList.length; i < m_bookmarkListLength; i++)

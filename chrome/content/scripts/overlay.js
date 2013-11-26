@@ -543,6 +543,15 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 		if (!labels.length && !bookmarks.length) 
 		{
 			this.refreshInProgress = false;
+			this.ErrorLog("GBE:doBuildMenu", "Labels and bookmarks (in server response) are empty!");
+		 	return; 
+		}
+
+		// если закладок и меток в ответе сервера нет - ничего не делаем
+		if (!bookmarks.length) 
+		{
+			this.refreshInProgress = false;
+			this.ErrorLog("GBE:doBuildMenu", "Bookmarks (in server response) are empty!");
 		 	return; 
 		}
 
@@ -598,7 +607,7 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			}
 			catch(e1)
 			{
-				this.ErrorLog("GBE:doBuildMenu", "Last processing bookmark - " + this.m_bookmarkList[i].title);
+				this.ErrorLog("GBE:doBuildMenu", "Obtain bookmark params - error. Last processing bookmark - " + this.m_bookmarkList[i].title);
 				throw e1;
 			}
 			var	j;
@@ -638,9 +647,17 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			}
 			this.m_bookmarkList[i].notes = "";
 			// закладка с примечанием?
-			if (this.enableNotes && bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes).length)
+			try 
 			{
-				this.m_bookmarkList[i].notes = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes)[0].childNodes[0].nodeValue;
+				if (this.enableNotes && bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes).length)
+				{
+					this.m_bookmarkList[i].notes = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes)[0].childNodes[0].nodeValue;
+				}
+			}
+			catch(e1)
+			{
+				this.ErrorLog("GBE:doBuildMenu", "Obtain bookmark notes - error. Last processing bookmark - " + this.m_bookmarkList[i].title )
+				throw e1;
 			}
 		}
 		// сортируем массив закладок
@@ -1162,8 +1179,8 @@ fGoogleBookmarksExtension.onPopupShown = function(e)
 		// //e.target.sizeTo(300, 700);
 		// e.target.width = 300;
 		document.getElementById("GBE-filterHBox").setAttribute("hidden","false");
+		e.stopPropagation();
 	}
-	e.stopPropagation();
 };
 
 /**
