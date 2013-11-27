@@ -1350,7 +1350,8 @@ fGoogleBookmarksExtension.showBookmarkDialog = function(editBkmk = true, addLabe
 			if (this.suggestLabel && window.content.document.title && labelsList !== null)
 			{
 				// все слова из заголовка
-				var words = window.content.document.title.split(" ");
+				// var words = window.content.document.title.split(" ");
+				var words = window.content.document.title.split(/[ ()-\/!?,.;:]/);
 				// для хранения уникальных слов
 				var uniqueWords = [];
 				var labels = [];
