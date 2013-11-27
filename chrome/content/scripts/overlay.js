@@ -338,7 +338,9 @@ fGoogleBookmarksExtension.doRequestBookmarksJQuery = function(showMenu)
 		this.ErrorLog("GBE:doRequestBookmarksJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}
 };
-
+/**
+ * получает сигнатуру для дальнейшей работы с закладками
+ */
 fGoogleBookmarksExtension.doRequestSignature = function()
 {
 	try
@@ -371,6 +373,56 @@ fGoogleBookmarksExtension.doRequestSignature = function()
 	}
 
 };
+
+/**
+ * получает примечание закладки
+ * @param  id       id закладки
+ * @param  name     название закладки (параметр для поиска)
+ * @param  noteCtrl текстовое поле для редактирования примечания (в окне редактирования закладки)
+ */
+fGoogleBookmarksExtension.doRequestBookmarkNote = function(id, name, noteCtrl)
+{
+	try
+	{
+		jQuery.noConflict();
+		jQuery.ajax({
+			type	: "GET",
+			url: this.baseUrl + "find",
+			data: 
+				{
+			    zx: (new Date()).getTime(),
+			    output: "rss",
+			    q: '"' + name + '"'
+			  },
+			dataType : "XML",
+			timeout: this.timeOut,
+			success: function(responseXML, textStatus) {
+				var bookmarks = responseXML.getElementsByTagName("item");
+				if (bookmarks.length)
+				{
+					for (var i = 0; i < bookmarks.length; i++)
+					{
+						if (id == bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue)
+						{
+							if (bookmarks[i].getElementsByTagName("smh:bkmk_annotation").length)
+							{
+								noteCtrl.value = bookmarks[i].getElementsByTagName("smh:bkmk_annotation")[0].childNodes[0].nodeValue;
+								return;
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doRequestBookmarkNote", "Obtain bookmark note (", name, ") - error!");
+		this.ErrorLog("GBE:doRequestBookmarkNote", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+};
+
+
 
 /**
  * удаляет все закладки из указанного меню

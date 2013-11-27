@@ -125,6 +125,7 @@ fGoogleBookmarksExtension.onCheckboxStateChange = function()
 	}
 };
 
+
 /**
  * выполняется при загрузке диалога редактирования закладок
  */
@@ -139,6 +140,11 @@ fGoogleBookmarksExtension.onLoadBookmarkDialog = function()
 	if (this.windowsParams.id)
 	{
 		document.getElementById("GBE-bookmark.dialog.url").setAttribute("readonly", "true");
+		if (!this.enableNotes)
+		{
+			// запрашиваем примечание к закладке
+			this.doRequestBookmarkNote(this.windowsParams.id, this.windowsParams.name, document.getElementById("GBE-bookmark.dialog.notes"));
+		}
 	}
 
 	var searchTextField = document.getElementById("GBE-bookmark.dialog.labels");
