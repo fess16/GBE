@@ -1347,11 +1347,13 @@ fGoogleBookmarksExtension.showBookmarkDialog = function(editBkmk = true, addLabe
 			var labelsList = this.m_labelsArr;
 
 			// автозаполнение меток на основании заголовка страницы
-			if (this.suggestLabel && window.content.document.title && labelsList !== null)
+			if (this.suggestLabel && window.content.document.title && labelsList !== null && !editBkmk)
 			{
 				// все слова из заголовка
 				// var words = window.content.document.title.split(" ");
-				var words = window.content.document.title.split(/[ ()-\/!?,.;:]/);
+				// let delimiter = /[ {}|=\[\]\(\)\-\\\/!?,.;:]/;
+				var words = window.content.document.title.split(/[ {}|=\[\]\(\)\-\\\/!?,.;:]/);
+
 				// для хранения уникальных слов
 				var uniqueWords = [];
 				var labels = [];
