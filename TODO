@@ -11,6 +11,29 @@ chrome://gbe/content/scripts/module.js
 undefined(line = 205, col = 0, file =
 chrome://gbe/content/scripts/module.js
 
+<div style="background: repeat-x scroll 0px bottom / 10px 100% #F2F2F2; border-radius: 8px; box-shadow: 0px 1px 3px rgb(153, 153, 153); font-family: Arial,sans-serif; font-size: 13px; margin: 2px 3px 4px; padding: 20px; width: 404px;">
+<form action="https://www.moneybookers.com/app/payment.pl" target="_blank">
+<label></label><br />
+<h3>
+Donate with Skrill (Moneybookers)</h3>
+<br />
+<label><strong>to Fess Google Bookmark Extension</strong></label>
+<input name="pay_to_email" type="hidden" value="fess61@gmail.com" />
+<br />
+<br />
+<input name="language" type="hidden" value="EN" />
+
+<label>Amount:</label>
+<input name="amount" size="10" type="edit" value="1.00" />
+<input name="currency" type="hidden" value="USD" />
+<label>USD</label>
+<br />
+<br />
+<input name="detail1_description" type="hidden" value="Fess Google Bookmark Extension" />
+<input name="detail1_text" type="hidden" value="Your donation helps me to continue" />
+<input alt="Make a donation to Fess Google Bookmark Extension" name="Pay" style="font-size: 15px;" type="submit" value="Donate!" />
+</form>
+</div>
 
 
  */

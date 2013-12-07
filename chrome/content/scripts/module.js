@@ -150,7 +150,7 @@ var fGoogleBookmarksExtension =
 			}
 			else
 			{
-				this.prefs.getBoolPref(prefName, prefDefValue);
+				this.prefs.setBoolPref(prefName, prefDefValue);
 				this[prefName] = prefDefValue;
 			}
 		}		

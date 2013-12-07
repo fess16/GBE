@@ -144,6 +144,7 @@ fGoogleBookmarksExtension.switchInteface = function(useMenuBar)
 fGoogleBookmarksExtension.init = function()
 {
 	this.getPrefsValues();
+	this.refreshInProgress = false;
 
 	if (window.location == "chrome://browser/content/browser.xul")
 	{
@@ -646,23 +647,75 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			this.m_bookmarkList[i] = {};
 			try
 			{
-				this.m_bookmarkList[i].title = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
-				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].hasChildNodes()) {
+				let errorFlag = '';
+				// read id field
+				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id).length)
+				{
+					this.m_bookmarkList[i].id = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
+				}
+				else
+				{
+					this.m_bookmarkList[i].id = null;
+					errorFlag += " id";
+				}
+
+				// read title field
+				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title).length)
+				{
+					this.m_bookmarkList[i].title = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
+				}
+				else
+				{
+					this.m_bookmarkList[i].title = '';
+					errorFlag += " title";
+				}
+
+				// read url field
+				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url).length && 
+					bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].hasChildNodes()) 
+				{
     			this.m_bookmarkList[i].url = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].childNodes[0].nodeValue;
 				}
 				else
 				{
 					this.m_bookmarkList[i].url = "";
-					this.ErrorLog("GBE:doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i].title + "' have no URL (or local URL)!!!");
+					errorFlag += " url";
 				}
-				this.m_bookmarkList[i].id = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
-				this.m_bookmarkList[i].timestamp = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
 
-				var bookmark_labels = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label);
+				// read timestamp field
+				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date).length)
+				{
+					this.m_bookmarkList[i].timestamp = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
+				}
+				else
+				{
+					this.m_bookmarkList[i].timestamp = '';
+					this.errorFlag += "timestamp";
+				}
+
+				// read label field
+				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label).length)
+				{
+					var bookmark_labels = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label);
+				}
+				else
+				{
+					var bookmark_labels = [];
+				}
+				if (errorFlag.length)
+				{
+					this.ErrorLog("GBE:doBuildMenu", "Bookmark '" + JSON.stringify(this.m_bookmarkList[i]) + "' do not have such fields (" + 
+						errorFlag + " )!!!");
+					if (errorFlag.indexOf("title") && this.m_bookmarkList[i].title == "" && this.m_bookmarkList[i].url !== "")
+					{
+						this.m_bookmarkList[i].title = this.m_bookmarkList[i].url;
+					}
+				}
 			}
 			catch(e1)
 			{
-				this.ErrorLog("GBE:doBuildMenu", "Obtain bookmark params - error. Last processing bookmark - " + this.m_bookmarkList[i].title);
+				this.ErrorLog("GBE:doBuildMenu", "Parse bookmark params - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]);
+				this.refreshInProgress = false;
 				throw e1;
 			}
 			var	j;
