@@ -1,4 +1,9 @@
 /* 
+Version 0.2.0b
++ добавлены проверки при парсинге закладки
+! не сбрасывался флаг refreshInProgress при ошибках в doBuildMenu
+! обновлена jquery
+
 Version 0.1.9
 + перешел на использование модуля (module.js) для хранения общих данных
 - убрано все относящееся к SQLite
@@ -296,6 +301,7 @@ fGoogleBookmarksExtension.doRequestBookmarksJQuery = function(showMenu)
 		jQuery.ajax({
       type: "GET",
       url: this.baseUrl + "lookup",
+      // url: "http://localhost/lookup.xml",
       data: 
       	{
           output: (!enableNotes ? "xml" : "rss"),
@@ -655,7 +661,7 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 				}
 				else
 				{
-					this.m_bookmarkList[i].id = null;
+					this.m_bookmarkList[i].id = '';
 					errorFlag += " id";
 				}
 
@@ -708,13 +714,16 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 						errorFlag + " )!!!");
 					if (errorFlag.indexOf("title") && this.m_bookmarkList[i].title == "" && this.m_bookmarkList[i].url !== "")
 					{
+						this.ErrorLog("GBE:doBuildMenu", "Warning. Bookmark", this.m_bookmarkList[i].url, " - has empty title. Title set to '",
+							this.m_bookmarkList[i].url, "'!");
 						this.m_bookmarkList[i].title = this.m_bookmarkList[i].url;
 					}
 				}
 			}
 			catch(e1)
 			{
-				this.ErrorLog("GBE:doBuildMenu", "Parse bookmark params - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]);
+				this.ErrorLog("GBE:doBuildMenu", "Parse bookmark params - error. Last processing bookmark - " + 
+					JSON.stringify(this.m_bookmarkList[i]));
 				this.refreshInProgress = false;
 				throw e1;
 			}
@@ -764,10 +773,13 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			}
 			catch(e1)
 			{
-				this.ErrorLog("GBE:doBuildMenu", "Obtain bookmark notes - error. Last processing bookmark - " + this.m_bookmarkList[i].title )
+				this.ErrorLog("GBE:doBuildMenu", "Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]) );
+				this.refreshInProgress = false;
 				throw e1;
 			}
 		}
+
+
 		// сортируем массив закладок
 		this.m_bookmarkList.sort((this.sortType == "timestamp")? this.compareByDate : this.compareByName);	
 		// сортируем массив меток
@@ -872,6 +884,7 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 	catch (e)
 	{
 		this.ErrorLog("GBE:doBuildMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		this.refreshInProgress = false;			
 	}
 };
 
