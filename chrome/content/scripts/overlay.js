@@ -1275,7 +1275,10 @@ fGoogleBookmarksExtension.setFavicon = function(bkmrk, item)
  */
 fGoogleBookmarksExtension.showAboutForm = function(e)
 {
-	window.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
+	let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+           .getService(Components.interfaces.nsIWindowMediator)
+           .getMostRecentWindow("navigator:browser");
+	win.openDialog("chrome://GBE/content/overlays/about.xul", "","centerscreen");
 };
 
 fGoogleBookmarksExtension.showPrefWindow = function()
@@ -1284,8 +1287,11 @@ fGoogleBookmarksExtension.showPrefWindow = function()
 	{
     let instantApply = Application.prefs.get("browser.preferences.instantApply");
     let features = "chrome,titlebar,toolbar,centerscreen" + (instantApply.value ? ",dialog=no" : ",modal");
+		let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+	           .getService(Components.interfaces.nsIWindowMediator)
+	           .getMostRecentWindow("navigator:browser");
     this._preferencesWindow =
-      window.openDialog(
+      win.openDialog(
         "chrome://GBE/content/overlays/options.xul",
         "", features
       );
@@ -1486,7 +1492,10 @@ fGoogleBookmarksExtension.showBookmarkDialog = function(editBkmk = true, addLabe
 					this.windowsParams.labels += addLabel;
 				}
 			}
-			window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","chrome,centerscreen,modal");
+			let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+           .getService(Components.interfaces.nsIWindowMediator)
+           .getMostRecentWindow("navigator:browser");
+			win.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","chrome,centerscreen,modal");
 		}
 	}
 	catch (e)
@@ -1530,7 +1539,10 @@ fGoogleBookmarksExtension.showDeleteDlg = function(e)
 			this.ErrorLog("GBE:showDeleteBkmkDlg", " Не найдена закладка.");
 			return;
 		}
-		window.openDialog("chrome://GBE/content/overlays/delete.xul", "","chrome,centerscreen,modal");
+		let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+	           .getService(Components.interfaces.nsIWindowMediator)
+	           .getMostRecentWindow("navigator:browser");
+		win.openDialog("chrome://GBE/content/overlays/delete.xul", "","chrome,centerscreen,modal");
 	}
 	catch (e)
 	{
@@ -1582,7 +1594,10 @@ fGoogleBookmarksExtension.contextEditBookmark = function(event)
 		this.getBookmark(this.windowsParams);
 		if (this.windowsParams.id)
 		{
-			 window.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","chrome,centerscreen,modal");
+		 	let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+			          .getService(Components.interfaces.nsIWindowMediator)
+			          .getMostRecentWindow("navigator:browser");
+			win.openDialog("chrome://GBE/content/overlays/bookmark.xul", "","chrome,centerscreen,modal");
 		}
 	}
 	catch (e) {
@@ -1601,7 +1616,10 @@ fGoogleBookmarksExtension.contextRemoveBookmark = function(event)
 		this.getBookmark(this.windowsParams);
 		if (this.windowsParams.id)
 		{
-			window.openDialog("chrome://GBE/content/overlays/delete.xul", "","chrome,centerscreen,modal");
+			let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+		           .getService(Components.interfaces.nsIWindowMediator)
+		           .getMostRecentWindow("navigator:browser");
+			win.openDialog("chrome://GBE/content/overlays/delete.xul", "","chrome,centerscreen,modal");
 		}
 	}
 	catch (e) {
@@ -1761,7 +1779,10 @@ fGoogleBookmarksExtension.showFolderDialog = function()
 		this.windowsParams = {
 			name : document.getElementById(this.currentFolderId).getAttribute("fullName")
 		};
-		window.openDialog("chrome://GBE/content/overlays/folder.xul", "","chrome,centerscreen,modal");
+		let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+	           .getService(Components.interfaces.nsIWindowMediator)
+	           .getMostRecentWindow("navigator:browser");
+		win.openDialog("chrome://GBE/content/overlays/folder.xul", "","chrome,centerscreen,modal");
 		this.currentFolderId = "";
 	}
 	catch (e)
@@ -1780,7 +1801,10 @@ fGoogleBookmarksExtension.showRemoveLabelDialog = function()
 		this.windowsParams = {
 			name : document.getElementById(this.currentFolderId).getAttribute("fullName")
 		};
-		window.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","chrome,centerscreen,modal");
+		let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+	           .getService(Components.interfaces.nsIWindowMediator)
+	           .getMostRecentWindow("navigator:browser");
+		win.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","chrome,centerscreen,modal");
 		this.currentFolderId = "";
 	}
 	catch (e)

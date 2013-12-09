@@ -35,5 +35,9 @@ Donate with Skrill (Moneybookers)</h3>
 </form>
 </div>
 
+Ошибка: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsIDOMJSWindow.openDialog]
+Источник: chrome://gbe/content/scripts/overlay.js
+Строка: 1278
+
 
  */
