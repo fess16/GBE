@@ -144,9 +144,11 @@ fGoogleBookmarksExtension.switchInteface = function(useMenuBar)
 fGoogleBookmarksExtension.init = function()
 {
 	this.getPrefsValues();
+	this.refreshInProgress = false;
 
 	if (window.location == "chrome://browser/content/browser.xul")
 	{
+		this.ErrorLog("init");
 		// добавляем обработчик изменения настроек
 		this.prefs.addObserver("", this, false);
 
@@ -156,10 +158,11 @@ fGoogleBookmarksExtension.init = function()
 			 Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
 		this.switchInteface(this.useMenuBar);
-		 if(this.checkLogin() && (document.getElementById("GBE-toolbarbutton") || (document.getElementById("GBE-MainMenu") ) ) )
+	//	 if(this.checkLogin() && (document.getElementById("GBE-toolbarbutton") || (document.getElementById("GBE-MainMenu") ) ) )
 		{
 			this.refreshBookmarks(false);
 		}
+		
 		// добавляем обработчик изменения адреса
 		gBrowser.addProgressListener(this);
 
@@ -294,12 +297,13 @@ fGoogleBookmarksExtension.doRequestBookmarksJQuery = function(showMenu)
 		jQuery.noConflict();
 		jQuery.ajax({
       type: "GET",
-      url: this.baseUrl + "lookup",
-      data: 
-      	{
-          output: (!enableNotes ? "xml" : "rss"),
-          num: 10000
-        },
+      // url: this.baseUrl + "lookup",
+      url: "http://10.115.161.12/my/lookup2.xml",
+      // data: 
+      // 	{
+      //     // output: (!enableNotes ? "xml" : "rss"),
+      //     // num: 10000
+      //   },
       dataType : "XML",
       timeout: this.timeOut,
       error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -308,6 +312,7 @@ fGoogleBookmarksExtension.doRequestBookmarksJQuery = function(showMenu)
     		self.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
       },
       success: function(responseXML, textStatus) {
+      	self.ErrorLog("doRequestBookmarksJQuery");
 				if (responseXML)
 				{
 		    	self.m_ganswer = responseXML.documentElement;
@@ -564,7 +569,7 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 	{		
 		// получаем все метки из XML ответа сервера
 		var labels = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].label);
-
+this.ErrorLog("doBuildMenu");
 		// получаем все закладки из XML ответа сервера
 		var bookmarks = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].bkmk);
 		// контейнер в меню, в который будут добавляться закладки
@@ -646,7 +651,18 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			this.m_bookmarkList[i] = {};
 			try
 			{
-				this.m_bookmarkList[i].title = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
+				// this.m_bookmarkList[i].title = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
+				//this.ErrorLog(bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title).length);
+				this.m_bookmarkList[i].id = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
+				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title).length) {
+    			this.m_bookmarkList[i].title = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
+				}
+				else
+				{
+					this.m_bookmarkList[i].title = "";
+					this.ErrorLog("GBE:doBuildMenu", " Bookmark with id '" + this.m_bookmarkList[i].id + "' have no title!!!");
+				}
+
 				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].hasChildNodes()) {
     			this.m_bookmarkList[i].url = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].childNodes[0].nodeValue;
 				}
@@ -655,10 +671,13 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 					this.m_bookmarkList[i].url = "";
 					this.ErrorLog("GBE:doBuildMenu", " Bookmark with title '" + this.m_bookmarkList[i].title + "' have no URL (or local URL)!!!");
 				}
-				this.m_bookmarkList[i].id = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
 				this.m_bookmarkList[i].timestamp = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
 
 				var bookmark_labels = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label);
+
+// var b = this.m_bookmarkList[i];
+// this.ErrorLog(b.title, "|", b.url, "|", b.id, "|", b.timestamp);
+
 			}
 			catch(e1)
 			{
@@ -1099,6 +1118,7 @@ fGoogleBookmarksExtension.refreshBookmarks = function(showMenu = true)
 		}
 		if (!this.refreshInProgress)
 		{	
+		this.ErrorLog("refreshBookmarks");
 			this.refreshInProgress = true;
 			if (this.useMenuBar)
 			{
