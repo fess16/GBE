@@ -2,7 +2,7 @@
 https://addons.mozilla.org/ru/firefox/addon/fess-google-bookmark-extens/
 
 //TODO: 
-//TODO:  
+//TODO:  QR код для закладок
 
 [06:26:11.393] GBE:getBookmark  TypeError: this.m_bookmarkList[i] is
 undefined(line = 205, col = 0, file =
@@ -38,6 +38,11 @@ Donate with Skrill (Moneybookers)</h3>
 Ошибка: NS_ERROR_NOT_AVAILABLE: Component returned failure code: 0x80040111 (NS_ERROR_NOT_AVAILABLE) [nsIDOMJSWindow.openDialog]
 Источник: chrome://gbe/content/scripts/overlay.js
 Строка: 1278
+
+GBE:showBookmarkDialog  [Exception... "Component returned failure code: 0x80004005 (NS_ERROR_FAILURE) [nsIDOMJSWindow.content]"  nsresult: "0x80004005 (NS_ERROR_FAILURE)"  location: "JS frame :: chrome://gbe/content/scripts/overlay.js :: <TOP_LEVEL> :: line 1396"  data: no](line = 1396, col = 0, file = undefined 
+
+GBE:doChangeBookmarkJQuery  [Exception... "Component returned failure code: 0xc1f30001 (NS_ERROR_NOT_INITIALIZED) [nsIDOMJSWindow.setTimeout]"  nsresult: "0xc1f30001 (NS_ERROR_NOT_INITIALIZED)"  location: "JS frame :: chrome://gbe/content/scripts/jquery.min.js :: .ajax :: line 6"  data: no](line = 6, col = 0, file = undefined 
+
 
 
  */

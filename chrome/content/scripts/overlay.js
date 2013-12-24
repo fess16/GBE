@@ -1880,7 +1880,24 @@ fGoogleBookmarksExtension.filterBookmarks = function(searchValue)
 	tempArray.length = 0;
 };
 
-
+fGoogleBookmarksExtension.showFFbookmarkWindow = function()
+{
+	if (null == this._ffWindow || this._ffWindow.closed) 
+	{
+    let features = "chrome,titlebar,toolbar,centerscreen";
+		let ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
+                   .getService(Components.interfaces.nsIWindowWatcher);
+    this._ffWindow =
+      ww.openWindow(
+      	null, 
+        "chrome://GBE/content/overlays/ff_bookmark.xul",
+        "ffWindow", 
+        features,
+        null
+      );
+	}
+	this._ffWindow.focus();	
+};
 
 window.addEventListener("load", function() { 
 	// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(

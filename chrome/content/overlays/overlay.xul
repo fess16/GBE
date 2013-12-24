@@ -79,6 +79,9 @@
 							<menuitem id="GBE-tb-hmenuOpt" observes="GBE-bc-hmenuOpt" />
 							<menuitem id="GBE-tb-hmenuGBs" observes="GBE-bc-hmenuGBs" />
 							<menuitem id="GBE-tb-menuAbout" observes="GBE-bc-menuAbout" />
+							<menuitem id="GBE-tb-menuFFbookmark" 
+												label="FF"
+												oncommand="fGoogleBookmarksExtension.showFFbookmarkWindow();"/>
 							<menuitem id="GBE-tb-hmenuLgn" observes="GBE-bc-hmenuLgn"/>
 							<menuitem id="GBE-tb-hmenuLgt" observes="GBE-bc-hmenuLgt"/>
 					</hbox>
