@@ -27,6 +27,11 @@
 				image="chrome://GBE/skin/images/delete.png"
 				label="&overlay.contextMenuRemove.label;"
 				oncommand="fGoogleBookmarksExtension.contextRemoveBookmark(event);"/>
+			<menuitem id="GBE-contextMenuShowQR" 
+				class="menuitem-iconic" 
+				image="chrome://GBE/skin/images/qr-code-icon.gif"
+				label="&overlay.contextMenuShowQR.label;"
+				oncommand="fGoogleBookmarksExtension.contextShowQR(event);"/>
 		</menupopup>
 
 		<!-- folder context menu -->

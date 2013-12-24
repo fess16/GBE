@@ -337,3 +337,12 @@ fGoogleBookmarksExtension.onAcceptFolderDeleteDlg = function()
 		}
 	}
 };
+
+fGoogleBookmarksExtension.onLoadQrDialog = function()
+{
+	if (this.windowsParams.url != null && this.windowsParams.url.length)
+	{
+		document.getElementById("GBE-qr.dialog.image").src = "https://chart.googleapis.com/chart?cht=qr&chl=" +
+			this.windowsParams.url + "&choe=UTF-8&chs=200x200";
+	}
+};

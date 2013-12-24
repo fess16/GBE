@@ -13,6 +13,7 @@
 <!ENTITY overlay.contextMenuShowHere.label "Открыть на месте">
 <!ENTITY overlay.contextMenuEdit.label "Редактировать">
 <!ENTITY overlay.contextMenuRemove.label "Удалить">
+<!ENTITY overlay.contextMenuShowQR.label "Получить QR-код">
 
 <!ENTITY overlay.folderMenuEdit.label "Редактировать">
 <!ENTITY overlay.folderMenuRemove.label "Удалить">

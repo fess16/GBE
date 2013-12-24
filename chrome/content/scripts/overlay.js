@@ -1899,6 +1899,26 @@ fGoogleBookmarksExtension.showFFbookmarkWindow = function()
 	this._ffWindow.focus();	
 };
 
+
+fGoogleBookmarksExtension.contextShowQR = function(event)
+{
+	try
+	{
+		this.windowsParams = {name : "", id : this.currentContextId,	url : "", labels : "", notes : "", sig : this.m_signature};
+		this.getBookmark(this.windowsParams);
+		if (this.windowsParams.id)
+		{
+			let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+		           .getService(Components.interfaces.nsIWindowMediator)
+		           .getMostRecentWindow("navigator:browser");
+			win.openDialog("chrome://GBE/content/overlays/qr.xul", "","chrome,centerscreen,modal");
+		}
+	}
+	catch (e) {
+		this.ErrorLog("GBE:contextShowQR", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}	
+}
+
 window.addEventListener("load", function() { 
 	// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(
 	// 	Components.interfaces.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 

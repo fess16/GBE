@@ -13,6 +13,7 @@
 <!ENTITY overlay.contextMenuShowHere.label "Open in current Tab">
 <!ENTITY overlay.contextMenuEdit.label "Edit">
 <!ENTITY overlay.contextMenuRemove.label "Delete">
+<!ENTITY overlay.contextMenuShowQR.label "Obtain QR-code">
 
 <!ENTITY overlay.folderMenuEdit.label "Edit">
 <!ENTITY overlay.folderMenuRemove.label "Delete">

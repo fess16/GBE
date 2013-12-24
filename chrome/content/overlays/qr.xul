@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
+
+<dialog 
+  id="GBE-qr.dialog"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  title="QR-code for bookmark"
+  buttons="cancel"
+  buttonlabelcancel="&bookmark.button-cancel.label;" 
+  minheight= "250px" minwidth="250px" flex="1" orient="vertical"
+  onload="fGoogleBookmarksExtension.onLoadQrDialog();"
+ >
+ <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
+  <groupbox>
+    <image id="GBE-qr.dialog.image" src='' width='200' height='200'/>
+  </groupbox>
+</dialog>
