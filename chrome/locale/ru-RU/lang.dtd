@@ -9,6 +9,7 @@
 <!ENTITY overlay.hmenuGBs.hint "Перейти к Google Bookmarks">
 <!ENTITY overlay.hmenuLgn.hint "Войти в Google Bookmarks">
 <!ENTITY overlay.hmenuLgt.hint "Выйти из Google Bookmarks">
+<!ENTITY overlay.hmenuFFbookmark.hint "Импорт/экспорт Google Bookmarks">
 
 <!ENTITY overlay.contextMenuShowHere.label "Открыть на месте">
 <!ENTITY overlay.contextMenuEdit.label "Редактировать">

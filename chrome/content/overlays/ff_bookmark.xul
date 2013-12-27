@@ -57,8 +57,14 @@
 	</hbox>
 
 	<hbox align="center" flex="1">
-			<button flex="1" label="&ffBookmark.button-GBtoFB.label;" oncommand="fGoogleBookmarksExtension.ff_bookmarks_export();"/>
-			<button flex="1" label="&ffBookmark.button-FBtoGB.label;" oncommand="fGoogleBookmarksExtension.ff_bookmarks_import();"/>
+			<button id="GBE-ffBookmark.button.export" 
+				flex="1" label="&ffBookmark.button-GBtoFB.label;" 
+				oncommand="fGoogleBookmarksExtension.ff_bookmarks_export();"
+			/>
+			<button id="GBE-ffBookmark.button.import" 
+				flex="1" label="&ffBookmark.button-FBtoGB.label;" 
+				oncommand="fGoogleBookmarksExtension.ff_bookmarks_import();"
+			/>
 	</hbox>
 	<progressmeter
     id="GBE-ffBookmark-progressmeter"

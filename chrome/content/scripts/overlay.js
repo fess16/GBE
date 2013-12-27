@@ -249,6 +249,7 @@ fGoogleBookmarksExtension.setButtonIcons = function(id)
 				document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "true");
 
 				document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "false");
+
 			}
 		}
 	}
@@ -1333,6 +1334,7 @@ fGoogleBookmarksExtension.onShowMenu = function(event)
 			// показываем кнопку логаут и прячем логин
 			btnLgn.setAttribute("hidden", "true");
 			btnLgt.setAttribute("hidden", "false");
+			document.getElementById("GBE-bc-hmenuFFbookmark").setAttribute("disabled", "false");
 			// document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "false");
 			// document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
 			// если необходимо - обновляем закладки
@@ -1347,6 +1349,7 @@ fGoogleBookmarksExtension.onShowMenu = function(event)
 			// показываем кнопку логин и прячем логаут
 			btnLgt.setAttribute("hidden", "true");
 			btnLgn.setAttribute("hidden", "false");
+			document.getElementById("GBE-bc-hmenuFFbookmark").setAttribute("disabled", "true");
 			document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "true");
 			document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
 			document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");

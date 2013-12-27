@@ -83,10 +83,8 @@
 							<menuitem id="GBE-tb-hmenuDel" observes="GBE-bc-hmenuDel" />
 							<menuitem id="GBE-tb-hmenuOpt" observes="GBE-bc-hmenuOpt" />
 							<menuitem id="GBE-tb-hmenuGBs" observes="GBE-bc-hmenuGBs" />
+							<menuitem id="GBE-tb-hmenuFFbookmark" observes="GBE-bc-hmenuFFbookmark" />
 							<menuitem id="GBE-tb-menuAbout" observes="GBE-bc-menuAbout" />
-							<menuitem id="GBE-tb-menuFFbookmark" 
-												label="FF"
-												oncommand="fGoogleBookmarksExtension.showFFbookmarkWindow();"/>
 							<menuitem id="GBE-tb-hmenuLgn" observes="GBE-bc-hmenuLgn"/>
 							<menuitem id="GBE-tb-hmenuLgt" observes="GBE-bc-hmenuLgt"/>
 					</hbox>
@@ -126,6 +124,7 @@
       	<menuitem id="GBE-mb-hmenuDel" observes="GBE-bc-hmenuDel" label="&overlay.hmenuDel.hint;" />
       	<menuitem id="GBE-mb-hmenuOpt" observes="GBE-bc-hmenuOpt" label="&overlay.hmenuOpt.hint;" />
       	<menuitem id="GBE-mb-hmenuGBs" observes="GBE-bc-hmenuGBs" label="&overlay.hmenuGBs.hint;" />
+      	<menuitem id="GBE-mb-hmenuFFbookmark" observes="GBE-bc-hmenuFFbookmark" label="About" />
       	<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" label="About" />
       	<menuitem id="GBE-mb-hmenuLgn" observes="GBE-bc-hmenuLgn" />
       	<menuitem id="GBE-mb-hmenuLgt" observes="GBE-bc-hmenuLgt" />
@@ -154,18 +153,21 @@
 							class="menuitem-iconic" 
 							image="chrome://GBE/skin/images/bkmrk_add_on.png"
 							tooltiptext="&overlay.hmenuAdd.hint;" 
+							disabled="false"
 							oncommand="fGoogleBookmarksExtension.showBookmarkDialog(false);" 
 		/>
 		<broadcaster id="GBE-bc-hmenuEdit" 
 							class="menuitem-iconic" 
 							image="chrome://GBE/skin/images/bkmrk_edit_off.png"
 							tooltiptext="&overlay.hmenuEdit.hint;" 
+							disabled="true"
 							oncommand="fGoogleBookmarksExtension.showBookmarkDialog();" 
 		/>
 		<broadcaster id="GBE-bc-hmenuDel" 
 							class="menuitem-iconic" 
 							image="chrome://GBE/skin/images/bkmrk_delete_off.png"
 							tooltiptext="&overlay.hmenuDel.hint;"
+							disabled="true"
 							oncommand="fGoogleBookmarksExtension.showDeleteDlg(null);"  
 		/>
 		<broadcaster id="GBE-bc-hmenuOpt" 
@@ -179,6 +181,13 @@
 							image="chrome://GBE/skin/images/star.png" 
 							tooltiptext="&overlay.hmenuGBs.hint;"
 							oncommand="fGoogleBookmarksExtension.showURL(fGoogleBookmarksExtension.baseUrl);" 
+		/>		
+		<broadcaster id="GBE-bc-hmenuFFbookmark" 
+							class="menuitem-iconic" 
+							image="chrome://GBE/skin/images/import_export.png" 
+							tooltiptext="&overlay.hmenuFFbookmark.hint;"
+							disabled="true"
+							oncommand="fGoogleBookmarksExtension.showFFbookmarkWindow();" 
 		/>
 		<broadcaster id="GBE-bc-hmenuLgn" 
 							label="Login"

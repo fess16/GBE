@@ -9,6 +9,7 @@
 <!ENTITY overlay.hmenuGBs.hint "Go to Google Bookmarks">
 <!ENTITY overlay.hmenuLgn.hint "Login Google Bookmarks">
 <!ENTITY overlay.hmenuLgt.hint "Logout Google Bookmarks">
+<!ENTITY overlay.hmenuFFbookmark.hint "Import/Export Google Bookmarks">
 
 <!ENTITY overlay.contextMenuShowHere.label "Open in current Tab">
 <!ENTITY overlay.contextMenuEdit.label "Edit">
