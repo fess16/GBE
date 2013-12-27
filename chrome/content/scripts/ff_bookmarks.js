@@ -141,20 +141,18 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 {
 	if (this.selectedFFbookmarkFolderId !== -1)
 	{
-	 	var bmsvc = Components.classes["@mozilla.org/browser/nav-bookmarks-service;1"]
-	                      	.getService(Components.interfaces.nsINavBookmarksService);
+	 	var bmsvc = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Ci.nsINavBookmarksService);
+		var annotationService = Cc["@mozilla.org/browser/annotation-service;1"].getService(Ci.nsIAnnotationService);
+		var annotationName = "bookmarkProperties/description";	                      	
 
 		var GBE_GBlist = this.GBE_menupopup;
 
 		var pm_max = GBE_GBlist.getElementsByClassName("menuitem-iconic google-bookmarks").length + 
 			GBE_GBlist.getElementsByClassName("menu-iconic google-bookmarks").length;
-
 		var PMeter = document.getElementById("GBE-ffBookmark-progressmeter");
 		PMeter.value = 0;
 		PMeter.setAttribute("hidden", false);
-		// this.ErrorLog(GBE_GBlist);
-		// 
-		// var children = GBE_GBlist.childNodes;
+
 		var children = GBE_GBlist.children;
 		var ch_length = children.length;
 		
@@ -178,15 +176,27 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 		var ff_create_bookmark = function (bmsvc, parentNodeId, node)
 		{
 			//TODO: как добавлять заметки? отдельно закладки без метки!!!!
+			//TODO: проверять закладки без URL !!!!!
 			var uri = NetUtil.newURI(node.getAttribute("url"));
 			var newBkmkId = bmsvc.insertBookmark(parentNodeId, uri, bmsvc.DEFAULT_INDEX, "");
 			bmsvc.setItemTitle(newBkmkId, node.getAttribute("label"));
+			var params = {name : "", id : node.getAttribute("id").replace("GBE_",""),	url : "", labels : "", notes : "", sig : self.m_signature};
+			self.getBookmark(params);
+			annotationService.setPageAnnotation(uri, annotationName, params.notes, 0, Ci.nsIAnnotationService.EXPIRE_NEVER);
 			setProgress(++countImport);
 		};
 
-		var ff_create_folder = function(bmsvc, parentNodeId, node)
+		var ff_create_folder = function(bmsvc, parentNodeId, node, isCreate = true)
 		{
-			var newFolderId = bmsvc.createFolder(parentNodeId, node.getAttribute("label"), bmsvc.DEFAULT_INDEX);
+			var newFolderId;
+			if (isCreate)
+			{
+				newFolderId = bmsvc.createFolder(parentNodeId, node.getAttribute("label"), bmsvc.DEFAULT_INDEX);
+			}
+			else
+			{
+				newFolderId = parentNodeId;
+			}
 			setProgress(++countImport);
 			var menuPopup = node.firstChild;
 			var children = menuPopup.children;
@@ -208,17 +218,7 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 		for (var i = 0; i < ch_length; i++)
 		{
 			let nodeId = children[i].getAttribute("id");
-			while(!start_flag && nodeId != GBE_GBlist_separator+"GBlist-StartSeparator")
-			{
-				nodeId = children[i++].getAttribute("id");
-			}
-			start_flag = true;
-			if (nodeId == GBE_GBlist_separator+"GBlist-StartSeparator")
-			{
-				i--;
-				continue;
-			}
-			if (	nodeId == GBE_GBlist_separator+"GBlist-EndSeparator" || nodeId == "GBE-searchResultList")
+			if (nodeId == GBE_GBlist_separator+"GBlist-EndSeparator" || nodeId == "GBE-searchResultList")
 			{
 				break;
 			}
@@ -228,11 +228,19 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 			}
 			if (children[i].nodeName == "menu")
 			{
-				ff_create_folder(bmsvc, this.selectedFFbookmarkFolderId, children[i]);
+				// для закладок без метки папку не создаем
+				if (self.enableLabelUnlabeled && children[i].getAttribute("label") == self.labelUnlabeledName)
+				{
+					ff_create_folder(bmsvc, this.selectedFFbookmarkFolderId, children[i], false);
+				}
+				else
+				{
+					ff_create_folder(bmsvc, this.selectedFFbookmarkFolderId, children[i]);
+				}
 			}
 			
 		}
 		PMeter.value = 0;
-		PMeter.setAttribute("hidden", true);
+		// PMeter.setAttribute("hidden", true);
 	}
 };
