@@ -71,3 +71,11 @@
 <!ENTITY prefWindow.useMenuBar.radio1.label "пункт в Панели меню">
 <!ENTITY prefWindow.useMenuBar.radio2.label "кнопку на Панели навигации">
 <!ENTITY prefWindow.enableLabelUnlabeled.label "Метка для закладок без метки:">
+
+<!ENTITY ffBookmark.form.title "Импорт/экспорт Google Bookmarks">
+<!ENTITY ffBookmark.FFgroupbox.caption.label "Папка в закладках Firefox для импорта/экспорта:">
+<!ENTITY ffBookmark.GBgroupbox.caption.label "Метка в Google Bookmarks для импорта/экспорта:">
+<!ENTITY ffBookmark.Options.caption.label "Параметры импорта/экспорта:">
+<!ENTITY ffBookmark.button-GBtoFB.label "Экспорт из Google Bookmarks">
+<!ENTITY ffBookmark.button-FBtoGB.label "Импорт в Google Bookmarks">
+<!ENTITY ffBookmark.ImportTags.checkbox.label "Импортировать тэги закладок?">

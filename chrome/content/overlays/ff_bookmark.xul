@@ -1,17 +1,70 @@
-<?xml version="1.0"?>
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/"?>
+<!-- Include the places stylesheet to get the XBL bindings -->
+<?xml-stylesheet href="chrome://browser/content/places/places.css"?>
+<!-- You can also include the following stylesheet to apply the default styling (such as icons) to the tree -->
+<?xml-stylesheet href="chrome://browser/skin/places/places.css"?>
+<!-- Load the places overlay to include the required JavaScript files as well as the default commands and context menu -->
+<?xul-overlay href="chrome://browser/content/places/placesOverlay.xul"?>
 
 <!DOCTYPE dialog SYSTEM "chrome://GBE/locale/lang.dtd">
 
 <window
     id="GBE-ffBookmark.window"
-    title="Import/Export bookmarks"
+    title="&ffBookmark.form.title;"
     minheight= "100px" minwidth="400px"  
-    orient="horizontal"
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    
+    autostretch="always"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    onload="fGoogleBookmarksExtension.ff_bookmarks_onLoad();"
+>
+ 	<script src="chrome://GBE/content/scripts/ff_bookmarks.js" type="application/javascript"/>
+ 	<stringbundleset id="stringbundleset">
+ 		<stringbundle id="fGoogleBookmarksExtension.strings" src="chrome://GBE/locale/fessGBE.properties"/>
+ 	</stringbundleset>
+	<vbox>
+		<hbox align="center" flex="1">
+			<label value="WARNING!!!!!!!!!!!!!!!!" />
+		</hbox>
+		<hbox>
+		<groupbox>
+	    <caption label="&ffBookmark.FFgroupbox.caption.label;" />
+			<tree id="GBE-ffBookmark.Tree"
+				type="places"
+				place="place:queryType=1&amp;folder=PLACES_ROOT&amp;excludeItems=true&amp;excludeReadOnlyFolders=true"
+				height="300px"
+				onselect="fGoogleBookmarksExtension.ff_bookmarks_onSelectTreeItem(event);">
+				<treecols>
+				<treecol id="title" flex="1" primary="true"/>
+				</treecols>
+				<treechildren flex="1" id="bookmarks-view-children" view="GBE-ffBookmark.Tree" />
+			</tree>
+		</groupbox>
+		<vbox>
+		<groupbox>
+			<caption label="&ffBookmark.GBgroupbox.caption.label;" />
+			<menulist id="GBE-ffBookmark.GBmenulist">
+				<menupopup>
+			    <menuitem label="без метки" value="/"/>
+			  </menupopup>  
+			 </menulist>
+		</groupbox>
+		<groupbox flex="1">
+			<caption label="&ffBookmark.Options.caption.label;" />
+			<checkbox id="GBE-ffBookmark.ImportTags" label="&ffBookmark.ImportTags.checkbox.label;" checked="false"/>
+		</groupbox>
+		</vbox>
+	</hbox>
 
-  <script src="chrome://GBE/content/scripts/ff_bookmarks.js" type="application/javascript"/>
-
-  <button label="Test" oncommand="fGoogleBookmarksExtension.ff_test();"/>
-
+	<hbox align="center" flex="1">
+			<button flex="1" label="&ffBookmark.button-GBtoFB.label;" oncommand="fGoogleBookmarksExtension.ff_bookmarks_export();"/>
+			<button flex="1" label="&ffBookmark.button-FBtoGB.label;" oncommand="fGoogleBookmarksExtension.ff_bookmarks_import();"/>
+	</hbox>
+	<progressmeter
+    id="GBE-ffBookmark-progressmeter"
+    mode="determined"
+    value="0"
+	/>
+  </vbox>
 </window>
+<!-- orient="vertical" -->

@@ -102,9 +102,9 @@
 					      oncommand="fGoogleBookmarksExtension.filterBookmarks(this);"
 					      />
 					</hbox>
-					<menuseparator/>
+					<menuseparator id="GBE-tb-GBlist-StartSeparator"/>
 
-					<menuseparator id="GBE-tb-GBlist-Separator"/>
+					<menuseparator id="GBE-tb-GBlist-EndSeparator"/>
 					<vbox id="GBE-searchResultList">
 					</vbox>
 					<menuseparator id="GBE-AboutSeparator"/>
@@ -131,7 +131,7 @@
       	<menuitem id="GBE-mb-hmenuLgt" observes="GBE-bc-hmenuLgt" />
       	<menuseparator/>
 
-				<menuseparator id="GBE-mb-GBlist-Separator"/>
+				<menuseparator id="GBE-mb-GBlist-EndSeparator"/>
 <!-- 				<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" /> -->
       </menupopup>
     </menu>

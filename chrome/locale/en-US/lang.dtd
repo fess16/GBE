@@ -70,3 +70,11 @@
 <!ENTITY prefWindow.useMenuBar.radio1.label "item in Menu bar">
 <!ENTITY prefWindow.useMenuBar.radio2.label "button in Navigation bar">
 <!ENTITY prefWindow.enableLabelUnlabeled.label "Label Unlabeled Bookmarks:">
+
+<!ENTITY ffBookmark.form.title "Import/Export google bookmarks">
+<!ENTITY ffBookmark.FFgroupbox.caption.label "Firefox bookmarks folder for import/export:">
+<!ENTITY ffBookmark.GBgroupbox.caption.label "Google Bookmarks label for import/export:">
+<!ENTITY ffBookmark.Options.caption.label "Import/export params:">
+<!ENTITY ffBookmark.button-GBtoFB.label "Export from Google Bookmarks">
+<!ENTITY ffBookmark.button-FBtoGB.label "Import to Google Bookmarks">
+<!ENTITY ffBookmark.ImportTags.checkbox.label "Import bookmarks tags?">

@@ -579,12 +579,14 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 		if (!this.useMenuBar)
 		{
 			var GBE_GBlist = document.getElementById("GBE-ToolBar-popup");
-			var GBE_GBlist_separator = document.getElementById("GBE-tb-GBlist-Separator");
+			this.GBE_menupopup = document.getElementById("GBE-ToolBar-popup");
+			var GBE_GBlist_separator = document.getElementById("GBE-tb-GBlist-EndSeparator");
 		}
 		else
 		{
 			var GBE_GBlist = document.getElementById("GBE-MainMenu-Popup");
-			var GBE_GBlist_separator = document.getElementById("GBE-mb-GBlist-Separator");				
+			this.GBE_menupopup = document.getElementById("GBE-MainMenu-popup");
+			var GBE_GBlist_separator = document.getElementById("GBE-mb-GBlist-EndSeparator");				
 		}
 		var allLabelsStr, i, j;
 
@@ -1884,7 +1886,7 @@ fGoogleBookmarksExtension.showFFbookmarkWindow = function()
 {
 	if (null == this._ffWindow || this._ffWindow.closed) 
 	{
-    let features = "chrome,titlebar,toolbar,centerscreen";
+    let features = "chrome,titlebar,toolbar,centerscreen,resizable";
 		let ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
                    .getService(Components.interfaces.nsIWindowWatcher);
     this._ffWindow =
