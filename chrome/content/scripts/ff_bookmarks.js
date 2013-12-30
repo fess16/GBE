@@ -84,7 +84,7 @@ fGoogleBookmarksExtension.ff_bookmarks_import = function()
 			  {
 			  	process_bookmark(node);
 			  }
-			  // this.ErrorLog("Child: ", node.title, node.itemId, node.type);
+
 			}
 
 			// close a container after using it!
@@ -143,15 +143,20 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 	{
 	 	var bmsvc = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Ci.nsINavBookmarksService);
 		var annotationService = Cc["@mozilla.org/browser/annotation-service;1"].getService(Ci.nsIAnnotationService);
-		var annotationName = "bookmarkProperties/description";	                      	
+		var annotationName = "bookmarkProperties/description";	    
+
+		var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);                  	
 
 		var GBE_GBlist = this.GBE_menupopup;
 
 		var pm_max = GBE_GBlist.getElementsByClassName("menuitem-iconic google-bookmarks").length + 
 			GBE_GBlist.getElementsByClassName("menu-iconic google-bookmarks").length;
-		var PMeter = document.getElementById("GBE-ffBookmark-progressmeter");
+		var PMeter = document.getElementById("GBE-ffBookmark.progressmeter");
 		PMeter.value = 0;
 		PMeter.setAttribute("hidden", false);
+
+		var txtLog = document.getElementById("GBE-ffBookmark.textbox.log");
+		txtLog.value = "";
 
 		var children = GBE_GBlist.children;
 		var ch_length = children.length;
@@ -173,16 +178,72 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 			PMeter.value = parseInt(value*100/pm_max);
 		};
 
+		var check_subfolder = function(folderId, subFolderTitle)
+		{
+			var options = historyService.getNewQueryOptions();
+			var query = historyService.getNewQuery();
+			query.onlyBookmarked = true;
+			query.setFolders([folderId], 1);
+			var queryResult = historyService.executeQuery(query, options);
+			var rootNode = queryResult.root;
+			rootNode.containerOpen = true;
+			var result = 0;
+			for (var i = 0; i < rootNode.childCount; i ++) {
+			  var node = rootNode.getChild(i);
+			  if (node.type == 6)
+			  {
+			  	if (node.title == subFolderTitle)
+			  	{
+			  		result = node.itemId;
+			  	}
+			  }
+			}
+			rootNode.containerOpen = false;
+			return result;
+		};
+
 		var ff_create_bookmark = function (bmsvc, parentNodeId, node)
 		{
 			//TODO: как добавлять заметки? отдельно закладки без метки!!!!
 			//TODO: проверять закладки без URL !!!!!
+			if (node.getAttribute("url") == "")
+			{
+				txtLog.value +=	"!!!Error: bookmark " + node.getAttribute("label") + 
+												" with URL (" + node.getAttribute("url") + ") can't be added!!!\n";
+				return;
+			}
 			var uri = NetUtil.newURI(node.getAttribute("url"));
-			var newBkmkId = bmsvc.insertBookmark(parentNodeId, uri, bmsvc.DEFAULT_INDEX, "");
-			bmsvc.setItemTitle(newBkmkId, node.getAttribute("label"));
-			var params = {name : "", id : node.getAttribute("id").replace("GBE_",""),	url : "", labels : "", notes : "", sig : self.m_signature};
-			self.getBookmark(params);
-			annotationService.setPageAnnotation(uri, annotationName, params.notes, 0, Ci.nsIAnnotationService.EXPIRE_NEVER);
+			if (!historyService.canAddURI(uri))
+			{
+				txtLog.value +=	"!!!Error: bookmark " + node.getAttribute("label") + 
+												" with URL (" + node.getAttribute("url") + ") can't be added!!!\n";
+				return;
+			}
+			else
+			{
+				var idsCoutn = 0;
+				var list = bmsvc.getBookmarkIdsForURI(uri);
+				var newBkmkId = 0;
+				for (var i = 0; i < list.length; i++)
+				{
+					if (bmsvc.getFolderIdForItem(list[i]) == parentNodeId)
+					{
+						newBkmkId = list[i];
+						txtLog.value += "Update bookmark: ";
+						break;
+					}
+				}
+				if (newBkmkId == 0)
+				{
+					newBkmkId = bmsvc.insertBookmark(parentNodeId, uri, bmsvc.DEFAULT_INDEX, "");
+					txtLog.value += "Create bookmark: ";
+				}
+				bmsvc.setItemTitle(newBkmkId, node.getAttribute("label"));
+				var params = {name : "", id : node.getAttribute("id").replace("GBE_",""),	url : "", labels : "", notes : "", sig : self.m_signature};
+				self.getBookmark(params);
+				annotationService.setItemAnnotation(newBkmkId, annotationName, params.notes, 0, Ci.nsIAnnotationService.EXPIRE_NEVER);
+				txtLog.value += "title - " + node.getAttribute("label") + "; url - " + node.getAttribute("url")  + "\n";
+			}
 			setProgress(++countImport);
 		};
 
@@ -191,11 +252,22 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 			var newFolderId;
 			if (isCreate)
 			{
-				newFolderId = bmsvc.createFolder(parentNodeId, node.getAttribute("label"), bmsvc.DEFAULT_INDEX);
+				let subFolderTitle = node.getAttribute("label");
+				newFolderId = check_subfolder(parentNodeId, subFolderTitle);
+				if (newFolderId == 0)
+				{
+					newFolderId = bmsvc.createFolder(parentNodeId, subFolderTitle, bmsvc.DEFAULT_INDEX);
+					txtLog.value += "Create new folder: " + subFolderTitle + "\n";
+				}
+				else
+				{
+					txtLog.value += "Use existing folder: " + subFolderTitle + "\n";
+				}
 			}
 			else
 			{
 				newFolderId = parentNodeId;
+				txtLog.value += "Use existing folder: " + bmsvc.getItemTitle(parentNodeId) + "\n";
 			}
 			setProgress(++countImport);
 			var menuPopup = node.firstChild;
@@ -241,6 +313,5 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 			
 		}
 		PMeter.value = 0;
-		// PMeter.setAttribute("hidden", true);
 	}
 };

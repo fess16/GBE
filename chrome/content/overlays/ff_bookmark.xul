@@ -17,6 +17,7 @@
     autostretch="always"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     onload="fGoogleBookmarksExtension.ff_bookmarks_onLoad();"
+    onresize="fGoogleBookmarksExtension.ff_bookmarks_onResize();"
 >
  	<script src="chrome://GBE/content/scripts/ff_bookmarks.js" type="application/javascript"/>
  	<stringbundleset id="stringbundleset">
@@ -27,50 +28,58 @@
 			<label value="WARNING!!!!!!!!!!!!!!!!" />
 		</hbox>
 		<hbox>
-		<groupbox>
-	    <caption label="&ffBookmark.FFgroupbox.caption.label;" />
-			<tree id="GBE-ffBookmark.Tree"
-				type="places"
-				place="place:queryType=1&amp;folder=PLACES_ROOT&amp;excludeItems=true&amp;excludeReadOnlyFolders=true"
-				height="300px"
-				onselect="fGoogleBookmarksExtension.ff_bookmarks_onSelectTreeItem(event);">
-				<treecols>
-				<treecol id="title" flex="1" primary="true"/>
-				</treecols>
-				<treechildren flex="1" id="bookmarks-view-children" view="GBE-ffBookmark.Tree" />
-			</tree>
-		</groupbox>
-		<vbox>
-		<groupbox>
-			<caption label="&ffBookmark.GBgroupbox.caption.label;" />
-			<menulist id="GBE-ffBookmark.GBmenulist">
-				<menupopup>
-			    <menuitem label="без метки" value="/"/>
-			  </menupopup>  
-			 </menulist>
-		</groupbox>
-		<groupbox flex="1">
-			<caption label="&ffBookmark.Options.caption.label;" />
-			<checkbox id="GBE-ffBookmark.ImportTags" label="&ffBookmark.ImportTags.checkbox.label;" checked="false"/>
-		</groupbox>
-		</vbox>
-	</hbox>
+			<groupbox>
+		    <caption label="&ffBookmark.FFgroupbox.caption.label;" />
+				<tree id="GBE-ffBookmark.Tree"
+					type="places"
+					place="place:queryType=1&amp;folder=PLACES_ROOT&amp;excludeItems=true&amp;excludeReadOnlyFolders=true"
+					height="300px"
+					onselect="fGoogleBookmarksExtension.ff_bookmarks_onSelectTreeItem(event);">
+					<treecols>
+					<treecol id="title" flex="1" primary="true"/>
+					</treecols>
+					<treechildren flex="1" id="bookmarks-view-children" view="GBE-ffBookmark.Tree" />
+				</tree>
+			</groupbox>
+			<vbox>
+				<groupbox>
+					<caption label="&ffBookmark.GBgroupbox.caption.label;" />
+					<menulist id="GBE-ffBookmark.GBmenulist">
+						<menupopup>
+					    <menuitem label="без метки" value="/"/>
+					  </menupopup>  
+					 </menulist>
+				</groupbox>
+				<groupbox flex="1">
+					<caption label="&ffBookmark.Options.caption.label;" />
+					<checkbox id="GBE-ffBookmark.ImportTags" 
+										label="&ffBookmark.ImportTags.checkbox.label;" 
+										checked="false"/>
+				</groupbox>
+			</vbox>
+		</hbox>
 
-	<hbox align="center" flex="1">
-			<button id="GBE-ffBookmark.button.export" 
-				flex="1" label="&ffBookmark.button-GBtoFB.label;" 
-				oncommand="fGoogleBookmarksExtension.ff_bookmarks_export();"
-			/>
-			<button id="GBE-ffBookmark.button.import" 
-				flex="1" label="&ffBookmark.button-FBtoGB.label;" 
-				oncommand="fGoogleBookmarksExtension.ff_bookmarks_import();"
-			/>
-	</hbox>
-	<progressmeter
-    id="GBE-ffBookmark-progressmeter"
-    mode="determined"
-    value="0"
-	/>
+		<hbox align="center" flex="1">
+				<button id="GBE-ffBookmark.button.export" 
+					flex="1" label="&ffBookmark.button-GBtoFB.label;" 
+					oncommand="fGoogleBookmarksExtension.ff_bookmarks_export();"
+				/>
+				<button 	id="GBE-ffBookmark.button.import" 
+									flex="1" label="&ffBookmark.button-FBtoGB.label;" 
+									oncommand="fGoogleBookmarksExtension.ff_bookmarks_import();"
+				/>
+		</hbox>
+		<progressmeter id="GBE-ffBookmark.progressmeter"
+	    mode="determined"
+	    value="0"
+		/>
+		<vbox id="GBE-ffBookmark-logVbox" flex="1" height="100%">
+			<textbox  id="GBE-ffBookmark.textbox.log" 
+	    	        value="" 
+	      	      multiline="true" 
+	        	    flex="1"
+	        	    height="100%"/>
+	  </vbox>
   </vbox>
 </window>
 <!-- orient="vertical" -->

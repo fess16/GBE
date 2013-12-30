@@ -1889,7 +1889,7 @@ fGoogleBookmarksExtension.showFFbookmarkWindow = function()
 {
 	if (null == this._ffWindow || this._ffWindow.closed) 
 	{
-    let features = "chrome,titlebar,toolbar,centerscreen,resizable";
+    let features = "chrome,titlebar,toolbar,centerscreen";
 		let ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
                    .getService(Components.interfaces.nsIWindowWatcher);
     this._ffWindow =
