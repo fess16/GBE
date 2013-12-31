@@ -68,10 +68,13 @@ fGoogleBookmarksExtension.ff_bookmarks_import = function()
 					description = annotationService.getItemAnnotation(node.itemId, annotationName);
 				}
 				var tags = taggingSvc.getTagsForURI(uri);
-				bookmarks[node.uri] = {
-					"title" : node.title,
-					"description": description
-				};
+				if (bookmarks[node.uri] == undefined)
+				{
+					bookmarks[node.uri] = {
+						"title" : node.title,
+						"description": description
+					};
+				}
 				if (bookmarks[node.uri].labels == undefined)
 				{
 					if (flagImportTags)
