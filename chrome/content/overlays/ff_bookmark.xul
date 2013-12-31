@@ -17,7 +17,6 @@
     autostretch="always"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     onload="fGoogleBookmarksExtension.ff_bookmarks_onLoad();"
-    onresize="fGoogleBookmarksExtension.ff_bookmarks_onResize();"
 >
  	<script src="chrome://GBE/content/scripts/ff_bookmarks.js" type="application/javascript"/>
  	<stringbundleset id="stringbundleset">
