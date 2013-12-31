@@ -68,10 +68,6 @@
 									oncommand="fGoogleBookmarksExtension.ff_bookmarks_import();"
 				/>
 		</hbox>
-		<progressmeter id="GBE-ffBookmark.progressmeter"
-	    mode="determined"
-	    value="0"
-		/>
 		<vbox id="GBE-ffBookmark-logVbox" flex="1" height="100%">
 			<textbox  id="GBE-ffBookmark.textbox.log" 
 	    	        value="" 

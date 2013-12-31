@@ -4,9 +4,13 @@ Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
 Components.utils.import('chrome://GBE/content/scripts/module.js');
 
+/**
+ * обработчик onload окна импорта/экспорта
+ */
 fGoogleBookmarksExtension.ff_bookmarks_onLoad = function()
 {
 	var labelsList = this.m_labelsArr;
+	// заполняем список гугл меток
 	if (labelsList !== null)
 	{
 		var menuPopup = document.getElementById("GBE-ffBookmark.GBmenulist");
@@ -20,84 +24,113 @@ fGoogleBookmarksExtension.ff_bookmarks_onLoad = function()
 	}
 };
 
+/**
+ * Импорт ФФ закладок в гугл закладки
+ */
 fGoogleBookmarksExtension.ff_bookmarks_import = function()
 {
 	if (this.selectedFFbookmarkFolderId !== -1)
 	{
-//if (document.getElementById("GBE-ffBookmark.GBmenulist").value == "_GBE-root_ ")
 		var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);
 		var annotationService = Cc["@mozilla.org/browser/annotation-service;1"].getService(Ci.nsIAnnotationService);
 		var taggingSvc = Cc["@mozilla.org/browser/tagging-service;1"].getService(Ci.nsITaggingService);		                          
-                              
-
 		var annotationName = "bookmarkProperties/description";
 		var self = this;
 		var labels = [];
 		var bookmarks = [];
+
+		var txtLog = document.getElementById("GBE-ffBookmark.textbox.log");
+		txtLog.value = "";
+
+		//корневая метка для импортуруемых закладок
+		var gbRootLabel = document.getElementById("GBE-ffBookmark.GBmenulist").value;
+		var flagAddLabel = true;
+		if (gbRootLabel == "_GBE-root_")
+		{
+			flagAddLabel = false;
+		}
+		var flagImportTags = document.getElementById("GBE-ffBookmark.ImportTags").checked;
+
+		// заполняем параметры импортируемой закладки
 		var process_bookmark = function(node)
 		{
-			//TODO: как добавлять заметки?
-			var arr = labels.slice(1);
-			//var arr = labels.slice();
-			var uri = NetUtil.newURI(node.uri);
-			var description = "";
-			if (annotationService.itemHasAnnotation(node.itemId, annotationName))
+			try
 			{
-				description = annotationService.getItemAnnotation(node.itemId, annotationName);
+				var arr = labels.slice(1);
+				if (flagAddLabel) 
+				{
+					arr.unshift(gbRootLabel);
+				}
+				var uri = NetUtil.newURI(node.uri);
+				var description = "";
+				if (annotationService.itemHasAnnotation(node.itemId, annotationName))
+				{
+					description = annotationService.getItemAnnotation(node.itemId, annotationName);
+				}
+				var tags = taggingSvc.getTagsForURI(uri);
+				bookmarks[node.uri] = {
+					"title" : node.title,
+					"description": description
+				};
+				if (bookmarks[node.uri].labels == undefined)
+				{
+					if (flagImportTags)
+					{
+						bookmarks[node.uri].labels = tags;
+					}
+					else
+					{
+						bookmarks[node.uri].labels = [];
+					}
+				}
+				bookmarks[node.uri].labels.push(arr.join(self.nestedLabelSep));
 			}
-			var tags = taggingSvc.getTagsForURI(uri);
-
-
-			bookmarks[node.uri] = {
-				"title" : node.title,
-				"description": description
-			};
-			if (bookmarks[node.uri].labels == undefined)
+			catch(e)
 			{
-				bookmarks[node.uri].labels = tags;
+				self.ErrorLog("bookmark:", node.title, node.itemId, node.uri, tags);
+				self.ErrorLog("labels:", arr.join(self.nestedLabelSep));
+				self.ErrorLog("GBE:ff_bookmarks_import:process_bookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 			}
-			bookmarks[node.uri].labels.push(arr.join(self.nestedLabelSep));
-			//self.ErrorLog(arr.join(self.nestedLabelSep));
-			//self.ErrorLog("bookmark", node.title, node.itemId, node.uri, tags);
 		};
 
 		var query_bookmarks = function(itemId)
 		{
-			var options = historyService.getNewQueryOptions();
-			var query = historyService.getNewQuery();
-			query.onlyBookmarked = true;
-			query.setFolders([itemId], 1);
-			var result = historyService.executeQuery(query, options);
-			var rootNode = result.root;
-			rootNode.containerOpen = true;
-			labels.push(rootNode.title);
+			try
+			{
+				var options = historyService.getNewQueryOptions();
+				var query = historyService.getNewQuery();
+				query.onlyBookmarked = true;
+				query.setFolders([itemId], 1);
+				var result = historyService.executeQuery(query, options);
+				var rootNode = result.root;
+				rootNode.containerOpen = true;
+				labels.push(rootNode.title);
 
-			// iterate over the immediate children of this folder and dump to console
-			for (var i = 0; i < rootNode.childCount; i ++) {
-			  var node = rootNode.getChild(i);
-			  if (node.type == 6)
-			  {
-			  	// self.ErrorLog("folder", node.title, node.itemId);
-			  	query_bookmarks(node.itemId);
-			  }
-			  if (node.type == 0) 
-			  {
-			  	process_bookmark(node);
-			  }
-
+				for (var i = 0; i < rootNode.childCount; i ++) {
+				  var node = rootNode.getChild(i);
+				  if (node.type == 6)
+				  {
+				  	query_bookmarks(node.itemId);
+				  }
+				  if (node.type == 0) 
+				  {
+				  	process_bookmark(node);
+				  }
+				}
+				rootNode.containerOpen = false;
+				labels.pop();
 			}
-
-			// close a container after using it!
-			rootNode.containerOpen = false;
-			labels.pop();
-
+			catch(e)
+			{
+				self.ErrorLog("folder:", rootNode.title);
+				self.ErrorLog("GBE:ff_bookmarks_import:query_bookmarks", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			}
 		};
 
 		query_bookmarks(this.selectedFFbookmarkFolderId);
 
 		for(var uri in bookmarks)
 		{
-			//this.ErrorLog(uri, "|", bookmarks[uri].title, "|", bookmarks[uri].labels);
 			var params = {
 					name : (bookmarks[uri].title || uri),
 					id : null,
@@ -106,8 +139,11 @@ fGoogleBookmarksExtension.ff_bookmarks_import = function()
 					notes : bookmarks[uri].description,
 					sig : this.m_signature
 				};
-
-
+			if (params.uri == "")
+			{
+				txtLog.value +=	"\nError: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n\n";
+			}
+			txtLog.value +=	"Import bookmark: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n";
 			this.doChangeBookmarkJQuery(params);
 		}
 
@@ -128,15 +164,7 @@ fGoogleBookmarksExtension.ff_bookmarks_onSelectTreeItem = function(event)
 	{
 	  var selection = tree.view.selection;
 	  var cellText = tree.view.getCellText(tree.currentIndex, tree.columns.getColumnAt(0));
-	  // this.ErrorLog("cellText:", cellText, tree.currentIndex);
 	  var historyResultNode = tree.view.nodeForTreeIndex(tree.currentIndex);
-	  // this.ErrorLog("type:", historyResultNode.type);
-	  // this.ErrorLog("uri:", historyResultNode.uri);
-	  // this.ErrorLog("parentResult:", historyResultNode.parentResult);
-	  // this.ErrorLog("title:", historyResultNode.title);
-	  // this.ErrorLog("parent:", historyResultNode.parent);
-	  // this.ErrorLog("itemId:", historyResultNode.itemId);
-	  // this.ErrorLog("indentLevel:", historyResultNode.indentLevel);
 	  this.selectedFFbookmarkFolderId = historyResultNode.itemId;
 	}
 };
@@ -156,9 +184,6 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 
 		var GBE_GBlist = this.GBE_menupopup;
 
-		var PMeter = document.getElementById("GBE-ffBookmark.progressmeter");
-		PMeter.value = 0;
-
 		var txtLog = document.getElementById("GBE-ffBookmark.textbox.log");
 		txtLog.value = "";
 
@@ -175,12 +200,6 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 		}
 
 		var self = this;
-		var countImport = 0;
-
-		function setProgress(value)
-		{
-			PMeter.value = parseInt(value*100/pm_max);
-		};
 
 		/*
 		поиск в папке с folderId подпапки с заголовком равным subFolderTitle (в ФФ закладках)
@@ -219,7 +238,6 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 			{
 				txtLog.value +=	"\n!!!Error: bookmark " + node.getAttribute("label") + 
 												" with URL (" + node.getAttribute("url") + ") can't be added!!!\n\n";
-				setProgress(++countImport);
 				return;
 			}
 			var uri = NetUtil.newURI(node.getAttribute("url"));
@@ -256,7 +274,6 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 				annotationService.setItemAnnotation(newBkmkId, annotationName, params.notes, 0, Ci.nsIAnnotationService.EXPIRE_NEVER);
 				txtLog.value += "title - " + node.getAttribute("label") + "; url - " + node.getAttribute("url")  + "\n";
 			}
-			setProgress(++countImport);
 		};
 
 		/*
@@ -285,7 +302,6 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 				newFolderId = parentNodeId;
 				txtLog.value += "Use existing folder: " + bmsvc.getItemTitle(parentNodeId) + "\n";
 			}
-			setProgress(++countImport);
 			var menuPopup = node.firstChild;
 			var children = menuPopup.children;
 			var ch_length = children.length;
@@ -302,12 +318,9 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 			}
 		};		
 
-		if (document.getElementById("GBE-ffBookmark.GBmenulist").value == "_GBE-root_ ")
+		if (document.getElementById("GBE-ffBookmark.GBmenulist").value == "_GBE-root_")
 		{
 			// выбран экспорт всех гугл закладок
-			// общее число папок и закладок для экспорта -  для прогрессбара
-			var pm_max = GBE_GBlist.getElementsByClassName("menuitem-iconic google-bookmarks").length + 
-				GBE_GBlist.getElementsByClassName("menu-iconic google-bookmarks").length;
 			for (var i = 0; i < ch_length; i++)
 			{
 				let nodeId = children[i].getAttribute("id");
@@ -338,12 +351,8 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 		{
 			// выбрана метка для экспорта
 			var exportLabel = GBE_GBlist.getElementsByAttribute("id", "GBE_" + document.getElementById("GBE-ffBookmark.GBmenulist").value)[0];
-			var pm_max = exportLabel.getElementsByClassName("menuitem-iconic google-bookmarks").length + 
-				exportLabel.getElementsByClassName("menu-iconic google-bookmarks").length;
-
 			ff_create_folder(this.selectedFFbookmarkFolderId, exportLabel);
 		}
-		PMeter.value = 0;
 	}
 	else
 	{
