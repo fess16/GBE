@@ -2,7 +2,7 @@
 https://addons.mozilla.org/ru/firefox/addon/fess-google-bookmark-extens/
 
 //TODO: 
-//TODO: добавить импорт/экспорт в файл закладок ФФ и гугла
+//TODO: добавить импорт/экспорт в файл закладок гугла
 
 [06:26:11.393] GBE:getBookmark  TypeError: this.m_bookmarkList[i] is
 undefined(line = 205, col = 0, file =

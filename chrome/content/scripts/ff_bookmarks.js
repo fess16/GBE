@@ -31,6 +31,14 @@ fGoogleBookmarksExtension.ff_bookmarks_import = function()
 {
 	if (this.selectedFFbookmarkFolderId !== -1)
 	{
+		let prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+		if (!prompts.confirm(window, 
+			document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmImport.Title"), 
+			document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmImport.Text"))) 
+		{
+		  return;
+		}
+
 		var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);
 		var annotationService = Cc["@mozilla.org/browser/annotation-service;1"].getService(Ci.nsIAnnotationService);
 		var taggingSvc = Cc["@mozilla.org/browser/tagging-service;1"].getService(Ci.nsITaggingService);		                          
@@ -56,18 +64,18 @@ fGoogleBookmarksExtension.ff_bookmarks_import = function()
 		{
 			try
 			{
-				var arr = labels.slice(1);
+				let arr = labels.slice(1);
 				if (flagAddLabel) 
 				{
 					arr.unshift(gbRootLabel);
 				}
-				var uri = NetUtil.newURI(node.uri);
-				var description = "";
+				let uri = NetUtil.newURI(node.uri);
+				let description = "";
 				if (annotationService.itemHasAnnotation(node.itemId, annotationName))
 				{
 					description = annotationService.getItemAnnotation(node.itemId, annotationName);
 				}
-				var tags = taggingSvc.getTagsForURI(uri);
+				let tags = taggingSvc.getTagsForURI(uri);
 				if (bookmarks[node.uri] == undefined)
 				{
 					bookmarks[node.uri] = {
@@ -100,17 +108,17 @@ fGoogleBookmarksExtension.ff_bookmarks_import = function()
 		{
 			try
 			{
-				var options = historyService.getNewQueryOptions();
-				var query = historyService.getNewQuery();
+				let options = historyService.getNewQueryOptions();
+				let query = historyService.getNewQuery();
 				query.onlyBookmarked = true;
 				query.setFolders([itemId], 1);
-				var result = historyService.executeQuery(query, options);
-				var rootNode = result.root;
+				let result = historyService.executeQuery(query, options);
+				let rootNode = result.root;
 				rootNode.containerOpen = true;
 				labels.push(rootNode.title);
 
-				for (var i = 0; i < rootNode.childCount; i ++) {
-				  var node = rootNode.getChild(i);
+				for (let i = 0; i < rootNode.childCount; i ++) {
+				  let node = rootNode.getChild(i);
 				  if (node.type == 6)
 				  {
 				  	query_bookmarks(node.itemId);
@@ -179,6 +187,15 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 {
 	if (this.selectedFFbookmarkFolderId !== -1)
 	{
+		let prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+		if (!prompts.confirm(window, 
+			document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmExport.Title"), 
+			document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmExport.Text"))) 
+		{
+		  return;
+		}
+
+
 	 	var bmsvc = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Ci.nsINavBookmarksService);
 		var annotationService = Cc["@mozilla.org/browser/annotation-service;1"].getService(Ci.nsIAnnotationService);
 		var annotationName = "bookmarkProperties/description";	    
