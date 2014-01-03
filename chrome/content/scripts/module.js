@@ -209,6 +209,7 @@ var fGoogleBookmarksExtension =
 		  			params.url = this.m_bookmarkList[i].url;
 		  			params.labels = this.m_bookmarkList[i].labels;
 		  			params.notes = this.m_bookmarkList[i].notes;
+		  			params.index = i;
 		  			return;
 		  		}
 		  	}

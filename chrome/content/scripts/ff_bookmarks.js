@@ -254,17 +254,30 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 		 */
 		var ff_create_bookmark = function (parentNodeId, node)
 		{
-			if (node.getAttribute("url") == "")
+			let params = {name : "", id : node.getAttribute("id"),	url : "", labels : "", notes : "", sig : self.m_signature};
+			self.getBookmark(params);
+			if (params.url == "")
 			{
-				txtLog.value +=	"\n!!!Error: bookmark " + node.getAttribute("label") + 
-												" with URL (" + node.getAttribute("url") + ") can't be added!!!\n\n";
-				return;
+				txtLog.value +=	"***Warning: bookmark " + params.name + " has empty (or local) URL!!!\n";
+				txtLog.value +=	"***Warning: Trying obtain its value!!!\n";
+				let url = self.doRequestBookmarkURL(params.id, params.name, params.index);
+				if (url !== "")
+				{
+					params.url = url;
+					txtLog.value +=	"***Warning: Obtained URL is " + url + "\n";
+				}
+				else
+				{	
+					txtLog.value +=	"\n!!!Error: bookmark " + params.name + 
+													" with URL (" + params.url + ") can't be added!!!\n\n";
+					return;
+				}
 			}
-			var uri = NetUtil.newURI(node.getAttribute("url"));
+			var uri = NetUtil.newURI(params.url);
 			if (!historyService.canAddURI(uri))
 			{
-				txtLog.value +=	"\n!!!Error: bookmark " + node.getAttribute("label") + 
-												" with URL (" + node.getAttribute("url") + ") can't be added!!!\n\n";
+				txtLog.value +=	"\n!!!Error: bookmark " + params.name + 
+												" with URL (" + params.url + ") can't be added!!!\n\n";
 			}
 			else
 			{
@@ -288,11 +301,9 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 					newBkmkId = bmsvc.insertBookmark(parentNodeId, uri, bmsvc.DEFAULT_INDEX, "");
 					txtLog.value += "Create bookmark: ";
 				}
-				bmsvc.setItemTitle(newBkmkId, node.getAttribute("label"));
-				var params = {name : "", id : node.getAttribute("id").replace("GBE_",""),	url : "", labels : "", notes : "", sig : self.m_signature};
-				self.getBookmark(params);
+				bmsvc.setItemTitle(newBkmkId, params.name);
 				annotationService.setItemAnnotation(newBkmkId, annotationName, params.notes, 0, Ci.nsIAnnotationService.EXPIRE_NEVER);
-				txtLog.value += "title - " + node.getAttribute("label") + "; url - " + node.getAttribute("url")  + "\n";
+				txtLog.value += "title - " + params.name + "; url - " + params.url  + "\n";
 			}
 		};
 

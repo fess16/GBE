@@ -432,6 +432,53 @@ fGoogleBookmarksExtension.doRequestBookmarkNote = function(id, name, noteCtrl)
 };
 
 
+fGoogleBookmarksExtension.doRequestBookmarkURL = function (id, name, index, asyncMode = false)
+{
+	try
+	{
+		let urlReturn = "";
+		let self = this;
+		jQuery.noConflict();
+		jQuery.ajax({
+			type : "GET",
+			url : this.baseUrl + "find",
+			data : 
+			{
+				zx : (new Date()).getTime(),
+				output : "xml",
+				q : '"' + name + '"'
+			},
+			dataType : "XML",
+			timeout : this.timeOut,
+			async : asyncMode,
+			success: function(responseXML, textStatus) {
+				let ids = responseXML.getElementsByTagName("id");
+				let urls = responseXML.getElementsByTagName("url");
+				if (ids.length && urls.length)
+				{
+					for (let i = 0; i < ids.length; i++)
+					{
+						if (id == ids[i].childNodes[0].nodeValue)
+						{
+							urlReturn = urls[i].childNodes[0].nodeValue;
+							self.m_bookmarkList[index].url = urlReturn;
+							self.GBE_menupopup.getElementsByAttribute('id', id)[0].setAttribute("url", urlReturn);
+							self.ErrorLog("Obtained URL for ", name, "is", urlReturn);
+							return urlReturn;
+						}
+					}
+				}
+			}
+		});
+		return urlReturn;
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doRequestBookmarkURL", "Obtain bookmark URL (", name, ") - error!");
+		this.ErrorLog("GBE:doRequestBookmarkURL", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+};
+
 
 /**
  * удаляет все закладки из указанного меню
@@ -848,6 +895,10 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 		let m_bookmarkListLength = this.m_bookmarkList.length;
 		for (i = 0; i < m_bookmarkListLength; i++) 
 		{
+			if (this.m_bookmarkList[i].url == "")
+			{
+				this.doRequestBookmarkURL(this.m_bookmarkList[i].id, this.m_bookmarkList[i].title, i, true);
+			}
 			var parentContainer,
 					tempMenuitem;
 			// если у закладки есть метки

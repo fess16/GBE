@@ -145,6 +145,10 @@ fGoogleBookmarksExtension.onLoadBookmarkDialog = function()
 			// запрашиваем примечание к закладке
 			this.doRequestBookmarkNote(this.windowsParams.id, this.windowsParams.name, document.getElementById("GBE-bookmark.dialog.notes"));
 		}
+		if (this.windowsParams.url == "")
+		{
+			document.getElementById("GBE-bookmark.dialog.url").value = this.doRequestBookmarkURL(this.windowsParams.id, this.windowsParams.name, this.windowsParams.index);
+		}
 	}
 
 	var searchTextField = document.getElementById("GBE-bookmark.dialog.labels");
