@@ -80,3 +80,6 @@
 <!ENTITY ffBookmark.button-GBtoFB.label "Экспорт из Google Bookmarks">
 <!ENTITY ffBookmark.button-FBtoGB.label "Импорт в Google Bookmarks">
 <!ENTITY ffBookmark.ImportTags.checkbox.label "Импортировать тэги закладок?">
+<!ENTITY ffBookmark.SaveLoad.caption.label "Сохранение/загрузка закладок Google">
+<!ENTITY ffBookmark.button-Save.label "Сохранить в файл">
+<!ENTITY ffBookmark.button-Load.label "Загрузить из файла">

@@ -55,6 +55,19 @@
 										label="&ffBookmark.ImportTags.checkbox.label;" 
 										checked="false"/>
 				</groupbox>
+				<groupbox>
+					<caption label="&ffBookmark.SaveLoad.caption.label;" />
+					<hbox>
+						<button id="GBE-ffBookmark.button.save" 
+							flex="1" label="&ffBookmark.button-Save.label;" 
+							oncommand="fGoogleBookmarksExtension.ff_bookmarks_save();"
+						/>
+						<button id="GBE-ffBookmark.button.load" 
+							flex="1" label="&ffBookmark.button-Load.label;" 
+							oncommand="fGoogleBookmarksExtension.ff_bookmarks_load();"
+						/>
+					</hbox>
+				</groupbox>
 			</vbox>
 		</hbox>
 

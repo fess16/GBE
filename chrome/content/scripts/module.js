@@ -53,7 +53,7 @@ var fGoogleBookmarksExtension =
   // флаг включения автодополнения в адресной строке
   'enableGBautocomplite' : false,
 	// режим без примечаний - формат получения закладок: rss or xml
-	'enableNotes' : false,
+	'enableNotes' : true,
 	// переключатель использования кнопки на панели или пункта в главном меню
 	'useMenuBar' : false,
 	// включить добавление метки к закладкам без метки

@@ -390,3 +390,65 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 		alert("Select FF bookmark folder as export target!");
 	}
 };
+
+fGoogleBookmarksExtension.ff_bookmarks_save = function()
+{
+	let nsIFilePicker = Ci.nsIFilePicker;
+	let fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+	fp.init(window, "Select a File", nsIFilePicker.modeSave);
+	fp.appendFilter("json","*.json");
+	let res = fp.show();
+
+var FileManager =
+{
+Write:
+    function (File, Text)
+    {
+        if (!File) return;
+        const unicodeConverter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
+            .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+
+        unicodeConverter.charset = "UTF-8";
+
+        Text = unicodeConverter.ConvertFromUnicode(Text);
+        const os = Components.classes["@mozilla.org/network/file-output-stream;1"]
+          .createInstance(Components.interfaces.nsIFileOutputStream);
+        os.init(File, 0x02 | 0x08 | 0x20, 0700, 0);
+        os.write(Text, Text.length);
+        os.close();
+    },
+
+Read:
+    function (File)
+    {
+        if (!File) return;
+        var res;
+
+        const is = Components.classes["@mozilla.org/network/file-input-stream;1"]
+            .createInstance(Components.interfaces.nsIFileInputStream);
+        const sis = Components.classes["@mozilla.org/scriptableinputstream;1"]
+            .createInstance(Components.interfaces.nsIScriptableInputStream);
+        is.init(File, 0x01, 0400, null);
+        sis.init(is);
+
+        res = sis.read(sis.available());
+
+        is.close();
+
+        return res;
+    },
+}
+
+// Ошибка: NS_ERROR_XPC_BAD_CONVERT_JS: Could not convert JavaScript argument arg 0 [nsIFileOutputStream.init]
+// Источник: chrome://gbe/content/scripts/ff_bookmarks.js
+// Строка: 416
+
+
+	if (res != nsIFilePicker.returnCancel){
+	  let jsonString = JSON.stringify(this.m_bookmarkList);
+	  // --- do something with the file here ---
+	  // 
+	  let fileName = fp.fileURL.spec + ".json";
+		var x = FileManager.Write(fp.file, jsonString);
+	}
+};
