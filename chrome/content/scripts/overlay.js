@@ -635,6 +635,9 @@ fGoogleBookmarksExtension.doBuildMenu = function(fromFile = false)
 		jQuery.noConflict();
 		var self = this;
 
+		//сохраняем сигнатуру из ответа (необходима при работе с закладками)
+		this.doRequestSignature();
+
 		if (!fromFile)
 		{
 
@@ -646,17 +649,17 @@ fGoogleBookmarksExtension.doBuildMenu = function(fromFile = false)
 			
 
 			// сохраняем сигнатуру из ответа (необходима при работе с закладками)
-			if (!this.enableNotes)
-			{
-				this.doRequestSignature();
-			}
-			else
-			{
-				if (this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig).length)
-				{
-					this.m_signature = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig)[0].childNodes[0].nodeValue;
-				}
-			}
+			// if (!this.enableNotes)
+			// {
+			// 	this.doRequestSignature();
+			// }
+			// else
+			// {
+			// 	if (this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig).length)
+			// 	{
+			// 		this.m_signature = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig)[0].childNodes[0].nodeValue;
+			// 	}
+			// }
 			// если закладок и меток в ответе сервера нет - ничего не делаем
 			if (!labels.length && !bookmarks.length) 
 			{
