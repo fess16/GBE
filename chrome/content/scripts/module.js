@@ -68,7 +68,8 @@ var fGoogleBookmarksExtension =
 
  	'windowsParams' : {},
 
- 	'debugMode' : true,
+ 	'debugMode' : false,
+ 	'debugId' : 0,
 
 
 
@@ -95,11 +96,20 @@ var fGoogleBookmarksExtension =
 		//Application.console.log(s1 + " " + s2);
 	},
 
+	DebugLog : function(message)
+	{
+		if(this.debugMode)
+		{
+			this.ErrorLog(''+this.debugId, message);
+		}
+	},
+
 	  /**
    * проверяет залогинен пользователь в GB или нет
    * @return {bool}
    */
   checkLogin : function () {
+  	this.DebugLog("checkLogin");
 		var	iter = this.cookieManager.enumerator;
 		var domainRegexp = new RegExp(this.googleDomains.join('|'));
 		while (iter.hasMoreElements()) 
@@ -119,6 +129,7 @@ var fGoogleBookmarksExtension =
 	 */
 	removeSIDCookie : function()
 	{
+		this.DebugLog("removeSIDCookie");
 		var	iter = this.cookieManager.enumerator;
 		var domainRegexp = new RegExp(this.googleDomains.join('|'));
 		while (iter.hasMoreElements()) 
@@ -139,6 +150,7 @@ var fGoogleBookmarksExtension =
 	 */
 	readPrefValue : function(prefName, prefType, prefDefValue)
 	{
+		this.DebugLog("readPrefValue");
 		if (this.prefs.getPrefType(prefName) == prefType)
 		{
 			this[prefName] = ((prefType == this.prefs.PREF_STRING) ? this.prefs.getCharPref(prefName) : this.prefs.getBoolPref(prefName));
@@ -164,6 +176,7 @@ var fGoogleBookmarksExtension =
 	 */
 	getPrefsValues : function() 
 	{
+		this.DebugLog("getPrefsValues");
 		this.prefs = Components.classes["@mozilla.org/preferences-service;1"]
      .getService(Components.interfaces.nsIPrefService)
      .getBranch("extensions.fessGBE.");
@@ -188,6 +201,7 @@ var fGoogleBookmarksExtension =
 	 */
 	getBookmark : function(params, findByURL = false)
 	{
+		this.DebugLog("getBookmark");
 		try
 		{
 	  	// по-умолчанию ищем по коду
