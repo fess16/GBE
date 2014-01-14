@@ -82,3 +82,9 @@
 <!ENTITY ffBookmark.SaveLoad.caption.label "Save/load Google Bookmarks">
 <!ENTITY ffBookmark.button-Save.label "Save to file">
 <!ENTITY ffBookmark.button-Load.label "Load from file">
+<!ENTITY ffBookmark.FFWarning.label.value 
+	"Warning! 
+	Before using import/export and load from file is recommended to create Firefox bookmarks backup 
+	(http://kb.mozillazine.org/Backing_up_and_restoring_bookmarks_-_Firefox)
+	and to save Google Bookmarks (Save to file)."
+>

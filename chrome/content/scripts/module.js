@@ -68,6 +68,8 @@ var fGoogleBookmarksExtension =
 
  	'windowsParams' : {},
 
+ 	'debugMode' : true,
+
 
 
   // nsIWebProgressListener
@@ -189,7 +191,7 @@ var fGoogleBookmarksExtension =
 		try
 		{
 	  	// по-умолчанию ищем по коду
-	  	var field = "id", value = params.id;
+	  	let field = "id", value = params.id;
 	  	// если установлен флаг - то по адресу
 	  	if (findByURL)
 	  	{
@@ -198,8 +200,9 @@ var fGoogleBookmarksExtension =
 	  	}
 	  	if ((this.m_bookmarkList !== null) && (this.m_bookmarkList.length))
 	  	{
+		  	let m_bookmarkListLength = this.m_bookmarkList.length;
 		  	// перебираем закладки
-		  	for (var i = 0, m_bookmarkListLength = this.m_bookmarkList.length; i < m_bookmarkListLength; i++)
+		  	for (let i = 0 ; i < m_bookmarkListLength; i++)
 		  	{
 		  		// если нашли заполняем поля и выходим
 		  		if (this.m_bookmarkList[i][field] === value)

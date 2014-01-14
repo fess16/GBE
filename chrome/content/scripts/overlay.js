@@ -583,7 +583,7 @@ fGoogleBookmarksExtension.compareByDate = function (a, b) {
 /**
  * формирует меню закладок
  */
-fGoogleBookmarksExtension.doBuildMenu = function()
+fGoogleBookmarksExtension.doBuildMenu = function(fromFile = false)
 {
 	var bkmkFieldNames = { 
 		"rss" : {
@@ -617,11 +617,7 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 	}
 	try
 	{		
-		// получаем все метки из XML ответа сервера
-		var labels = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].label);
-
-		// получаем все закладки из XML ответа сервера
-		var bookmarks = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].bkmk);
+		var allLabelsStr, i, j;
 		// контейнер в меню, в который будут добавляться закладки
 		//var GBE_GBlist = document.getElementById("GBE-GBlist");
 		if (!this.useMenuBar)
@@ -636,215 +632,226 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 			this.GBE_menupopup = document.getElementById("GBE-MainMenu-popup");
 			var GBE_GBlist_separator = document.getElementById("GBE-mb-GBlist-EndSeparator");				
 		}
-		var allLabelsStr, i, j;
-
-
-		// сохраняем сигнатуру из ответа (необходима при работе с закладками)
-		if (!this.enableNotes)
-		{
-			this.doRequestSignature();
-		}
-		else
-		{
-			if (this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig).length)
-			{
-				this.m_signature = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig)[0].childNodes[0].nodeValue;
-			}
-		}
-		// если закладок и меток в ответе сервера нет - ничего не делаем
-		if (!labels.length && !bookmarks.length) 
-		{
-			this.refreshInProgress = false;
-			this.ErrorLog("GBE:doBuildMenu", "Labels and bookmarks (in server response) are empty!");
-		 	return; 
-		}
-
-		// если закладок и меток в ответе сервера нет - ничего не делаем
-		if (!bookmarks.length) 
-		{
-			this.refreshInProgress = false;
-			this.ErrorLog("GBE:doBuildMenu", "Bookmarks (in server response) are empty!");
-		 	return; 
-		}
-
+		jQuery.noConflict();
 		var self = this;
 
-		// временная строка для группировки и сортировки меток
-		allLabelsStr = this.labelSep;
-
-		var lbs = [];
-		let labelsLength = labels.length;
-		// группируем метки
-		for (i = 0; i < labelsLength; i++) 
+		if (!fromFile)
 		{
-			// название метки
-			var labelVal = labels[i].childNodes[0].nodeValue;
-			// если такой метки во временной строке еще нет - добавляем ее (с разделителем)
-			if (allLabelsStr.indexOf(this.labelSep + labelVal + this.labelSep) === -1)
+
+			// получаем все метки из XML ответа сервера
+			var labels = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].label);
+
+			// получаем все закладки из XML ответа сервера
+			var bookmarks = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].bkmk);
+			
+
+			// сохраняем сигнатуру из ответа (необходима при работе с закладками)
+			if (!this.enableNotes)
 			{
-				allLabelsStr += (labelVal + this.labelSep);
-				lbs.push({"title" : labelVal, "timestamp" : null});
-			}
-		}
-		// добавляем labelUnlabeledName метку в массив меток
-		if (this.enableLabelUnlabeled)
-		{
-			lbs.push({"title" : this.labelUnlabeledName, "timestamp" : null});
-		}
-
-		jQuery.noConflict();
-
-		// сохраняем закладки в поле m_bookmarkList
-		let bookmarksLength = bookmarks.length;
-		// список закладок
-		this.m_bookmarkList = new Array(bookmarksLength);
-		for (i = 0; i < bookmarksLength; i++) 
-		{
-			this.m_bookmarkList[i] = {};
-			try
-			{
-				let errorFlag = '';
-				// read id field
-				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id).length)
-				{
-					this.m_bookmarkList[i].id = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
-				}
-				else
-				{
-					this.m_bookmarkList[i].id = '';
-					errorFlag += " id";
-				}
-
-				// read title field
-				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title).length)
-				{
-					this.m_bookmarkList[i].title = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
-				}
-				else
-				{
-					this.m_bookmarkList[i].title = '';
-					errorFlag += " title";
-				}
-
-				// read url field
-				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url).length && 
-					bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].hasChildNodes()) 
-				{
-    			this.m_bookmarkList[i].url = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].childNodes[0].nodeValue;
-				}
-				else
-				{
-					this.m_bookmarkList[i].url = "";
-					errorFlag += " url";
-				}
-
-				// read timestamp field
-				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date).length)
-				{
-					this.m_bookmarkList[i].timestamp = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
-				}
-				else
-				{
-					this.m_bookmarkList[i].timestamp = '';
-					this.errorFlag += "timestamp";
-				}
-
-				// read label field
-				if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label).length)
-				{
-					var bookmark_labels = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label);
-				}
-				else
-				{
-					var bookmark_labels = [];
-				}
-				if (errorFlag.length)
-				{
-					this.ErrorLog("GBE:doBuildMenu", "Bookmark '" + JSON.stringify(this.m_bookmarkList[i]) + "' do not have such fields (" + 
-						errorFlag + " )!!!");
-					if (errorFlag.indexOf("title") && this.m_bookmarkList[i].title == "" && this.m_bookmarkList[i].url !== "")
-					{
-						this.ErrorLog("GBE:doBuildMenu", "Warning. Bookmark", this.m_bookmarkList[i].url, " - has empty title. Title set to '",
-							this.m_bookmarkList[i].url, "'!");
-						this.m_bookmarkList[i].title = this.m_bookmarkList[i].url;
-					}
-				}
-			}
-			catch(e1)
-			{
-				this.ErrorLog("GBE:doBuildMenu", "Parse bookmark params - error. Last processing bookmark - " + 
-					JSON.stringify(this.m_bookmarkList[i]));
-				this.refreshInProgress = false;
-				throw e1;
-			}
-			var	j;
-			// закладка с метками?
-			if (bookmark_labels.length)
-			{
-				// сохраняем метки в массив
-				this.m_bookmarkList[i].labels = [];
-				for (j = 0; j < bookmark_labels.length; j++)
-				{
-					this.m_bookmarkList[i].labels[j] =  bookmark_labels[j].childNodes[0].nodeValue;
-					let lbl = jQuery.grep(lbs, function(e){ return e.title == bookmark_labels[j].childNodes[0].nodeValue });
-					if (lbl.length)
-					{
-						if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i].timestamp)
-						{
-							lbl[0].timestamp = this.m_bookmarkList[i].timestamp;
-						}
-					}
-				}
+				this.doRequestSignature();
 			}
 			else
 			{
-				this.m_bookmarkList[i].labels = "";
-				// определяем timestamp для закладок без метки
-				if (this.enableLabelUnlabeled)
+				if (this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig).length)
 				{
-					let lbl = jQuery.grep(lbs, function(e){ return e.title == self.labelUnlabeledName });
-					if (lbl.length)
+					this.m_signature = this.m_ganswer.getElementsByTagName(bkmkFieldNames[oType].sig)[0].childNodes[0].nodeValue;
+				}
+			}
+			// если закладок и меток в ответе сервера нет - ничего не делаем
+			if (!labels.length && !bookmarks.length) 
+			{
+				this.refreshInProgress = false;
+				this.ErrorLog("GBE:doBuildMenu", "Labels and bookmarks (in server response) are empty!");
+			 	return false;
+			}
+
+			// если закладок и меток в ответе сервера нет - ничего не делаем
+			if (!bookmarks.length) 
+			{
+				this.refreshInProgress = false;
+				this.ErrorLog("GBE:doBuildMenu", "Bookmarks (in server response) are empty!");
+			 	return false;
+			}
+
+			// временная строка для группировки и сортировки меток
+			allLabelsStr = this.labelSep;
+
+			var lbs = [];
+			let labelsLength = labels.length;
+			// группируем метки
+			for (i = 0; i < labelsLength; i++) 
+			{
+				// название метки
+				var labelVal = labels[i].childNodes[0].nodeValue;
+				// если такой метки во временной строке еще нет - добавляем ее (с разделителем)
+				if (allLabelsStr.indexOf(this.labelSep + labelVal + this.labelSep) === -1)
+				{
+					allLabelsStr += (labelVal + this.labelSep);
+					lbs.push({"title" : labelVal, "timestamp" : null});
+				}
+			}
+			// добавляем labelUnlabeledName метку в массив меток
+			if (this.enableLabelUnlabeled)
+			{
+				lbs.push({"title" : this.labelUnlabeledName, "timestamp" : null});
+			}
+
+			// сохраняем закладки в поле m_bookmarkList
+			let bookmarksLength = bookmarks.length;
+			// список закладок
+			this.m_bookmarkList = new Array(bookmarksLength);
+			for (i = 0; i < bookmarksLength; i++) 
+			{
+				this.m_bookmarkList[i] = {};
+				try
+				{
+					let errorFlag = '';
+					// read id field
+					if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id).length)
 					{
-						if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i].timestamp)
+						this.m_bookmarkList[i].id = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].id)[0].childNodes[0].nodeValue;
+					}
+					else
+					{
+						this.m_bookmarkList[i].id = '';
+						errorFlag += " id";
+					}
+
+					// read title field
+					if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title).length)
+					{
+						this.m_bookmarkList[i].title = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].title)[0].childNodes[0].nodeValue;
+					}
+					else
+					{
+						this.m_bookmarkList[i].title = '';
+						errorFlag += " title";
+					}
+
+					// read url field
+					if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url).length && 
+						bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].hasChildNodes()) 
+					{
+	    			this.m_bookmarkList[i].url = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].url)[0].childNodes[0].nodeValue;
+					}
+					else
+					{
+						this.m_bookmarkList[i].url = "";
+						errorFlag += " url";
+					}
+
+					// read timestamp field
+					if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date).length)
+					{
+						this.m_bookmarkList[i].timestamp = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].date)[0].childNodes[0].nodeValue;
+					}
+					else
+					{
+						this.m_bookmarkList[i].timestamp = '';
+						this.errorFlag += "timestamp";
+					}
+
+					// read label field
+					if (bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label).length)
+					{
+						var bookmark_labels = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].label);
+					}
+					else
+					{
+						var bookmark_labels = [];
+					}
+					if (errorFlag.length)
+					{
+						this.ErrorLog("GBE:doBuildMenu", "Bookmark '" + JSON.stringify(this.m_bookmarkList[i]) + "' do not have such fields (" + 
+							errorFlag + " )!!!");
+						if (errorFlag.indexOf("title") && this.m_bookmarkList[i].title == "" && this.m_bookmarkList[i].url !== "")
 						{
-							lbl[0].timestamp = this.m_bookmarkList[i].timestamp;
+							this.ErrorLog("GBE:doBuildMenu", "Warning. Bookmark", this.m_bookmarkList[i].url, " - has empty title. Title set to '",
+								this.m_bookmarkList[i].url, "'!");
+							this.m_bookmarkList[i].title = this.m_bookmarkList[i].url;
 						}
 					}
 				}
-			}
-			this.m_bookmarkList[i].notes = "";
-			// закладка с примечанием?
-			try 
-			{
-				if (this.enableNotes && bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes).length)
+				catch(e1)
 				{
-					this.m_bookmarkList[i].notes = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes)[0].childNodes[0].nodeValue;
+					this.ErrorLog("GBE:doBuildMenu", "Parse bookmark params - error. Last processing bookmark - " + 
+						JSON.stringify(this.m_bookmarkList[i]));
+					this.refreshInProgress = false;
+					throw e1;
+				}
+				var	j;
+				// закладка с метками?
+				if (bookmark_labels.length)
+				{
+					// сохраняем метки в массив
+					this.m_bookmarkList[i].labels = [];
+					for (j = 0; j < bookmark_labels.length; j++)
+					{
+						this.m_bookmarkList[i].labels[j] =  bookmark_labels[j].childNodes[0].nodeValue;
+						let lbl = jQuery.grep(lbs, function(e){ return e.title == bookmark_labels[j].childNodes[0].nodeValue });
+						if (lbl.length)
+						{
+							if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i].timestamp)
+							{
+								lbl[0].timestamp = this.m_bookmarkList[i].timestamp;
+							}
+						}
+					}
+				}
+				else
+				{
+					this.m_bookmarkList[i].labels = "";
+					// определяем timestamp для закладок без метки
+					if (this.enableLabelUnlabeled)
+					{
+						let lbl = jQuery.grep(lbs, function(e){ return e.title == self.labelUnlabeledName });
+						if (lbl.length)
+						{
+							if (lbl[0].timestamp == null || lbl[0].timestamp < this.m_bookmarkList[i].timestamp)
+							{
+								lbl[0].timestamp = this.m_bookmarkList[i].timestamp;
+							}
+						}
+					}
+				}
+				this.m_bookmarkList[i].notes = "";
+				// закладка с примечанием?
+				try 
+				{
+					if (this.enableNotes && bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes).length)
+					{
+						this.m_bookmarkList[i].notes = bookmarks[i].getElementsByTagName(bkmkFieldNames[oType].notes)[0].childNodes[0].nodeValue;
+					}
+				}
+				catch(e1)
+				{
+					this.ErrorLog("GBE:doBuildMenu", "Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]) );
+					this.refreshInProgress = false;
+					throw e1;
 				}
 			}
-			catch(e1)
+
+
+			// сортируем массив закладок
+			this.m_bookmarkList.sort((this.sortType == "timestamp")? this.compareByDate : this.compareByName);	
+			// сортируем массив меток
+			lbs.sort((this.sortType == "timestamp") ? this.compareByDate : this.compareByName);	
+			allLabelsStr = "";//this.labelSep;
+			lbs.forEach(function(element, index) {
+			  allLabelsStr += element.title + self.labelSep;
+			});
+			if (allLabelsStr.length > 0)
 			{
-				this.ErrorLog("GBE:doBuildMenu", "Obtain bookmark notes - error. Last processing bookmark - " + JSON.stringify(this.m_bookmarkList[i]) );
-				this.refreshInProgress = false;
-				throw e1;
+				allLabelsStr = allLabelsStr.substr(0, allLabelsStr.length-5);
 			}
+
+			// получаем массив меток
+			this.m_labelsArr = allLabelsStr.split(this.labelSep);
 		}
-
-
-		// сортируем массив закладок
-		this.m_bookmarkList.sort((this.sortType == "timestamp")? this.compareByDate : this.compareByName);	
-		// сортируем массив меток
-		lbs.sort((this.sortType == "timestamp") ? this.compareByDate : this.compareByName);	
-		allLabelsStr = "";//this.labelSep;
-		lbs.forEach(function(element, index) {
-		  allLabelsStr += element.title + self.labelSep;
-		});
-		if (allLabelsStr.length > 0)
+		else
 		{
-			allLabelsStr = allLabelsStr.substr(0, allLabelsStr.length-5);
+			allLabelsStr = this.m_labelsArr.join(this.labelSep);
 		}
-
-		// получаем массив меток
-		this.m_labelsArr = allLabelsStr.split(this.labelSep);
 
 		if (this.m_labelsArr.length && allLabelsStr !== "")
 		{
@@ -933,12 +940,14 @@ fGoogleBookmarksExtension.doBuildMenu = function()
 		{
 			this.m_labelsArr = jQuery.grep(this.m_labelsArr, function (a) { return a != self.labelUnlabeledName; });
 		}
+		return true;
 
 	}
 	catch (e)
 	{
 		this.ErrorLog("GBE:doBuildMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		this.refreshInProgress = false;			
+		return false;
 	}
 };
 
@@ -1198,7 +1207,7 @@ fGoogleBookmarksExtension.showURL = function(url, inSameTab = false)
 	}*/
 };
 
-fGoogleBookmarksExtension.refreshBookmarks = function(showMenu = true)
+fGoogleBookmarksExtension.refreshBookmarks = function(showMenu = true, fromFile = false)
 {
 	try
 	{
@@ -1229,7 +1238,14 @@ fGoogleBookmarksExtension.refreshBookmarks = function(showMenu = true)
 				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
 				this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
 			}
-			this.doRequestBookmarksJQuery(showMenu);
+			if (fromFile)
+			{
+				 return this.doBuildMenu(fromFile);
+			}
+			else
+			{
+				this.doRequestBookmarksJQuery(showMenu);
+			}
 		}
 	}
 	catch (e)
@@ -1974,6 +1990,19 @@ fGoogleBookmarksExtension.contextShowQR = function(event)
 		this.ErrorLog("GBE:contextShowQR", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}	
 }
+
+fGoogleBookmarksExtension.parseJsonFile = function(jsonString)
+{
+	jQuery.noConflict();
+	let arr = jQuery.parseJSON(jsonString);
+	if (arr !== null && arr.bookmarks.length && arr.labels.length )
+	{
+		this.m_bookmarkList = arr.bookmarks;
+		this.m_labelsArr = arr.labels;
+		return this.refreshBookmarks(false,true);
+	}
+	return false;
+};
 
 window.addEventListener("load", function() { 
 	// Components.classes["@mozilla.org/moz/jssubscript-loader;1"].getService(

@@ -391,64 +391,123 @@ fGoogleBookmarksExtension.ff_bookmarks_export = function()
 	}
 };
 
+
+fGoogleBookmarksExtension.FileManager = {
+	Write:
+	    function (File, Text)
+	    {
+	        if (!File) return;
+	        const unicodeConverter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
+	            .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+
+	        unicodeConverter.charset = "UTF-8";
+
+	        Text = unicodeConverter.ConvertFromUnicode(Text);
+	        const os = Components.classes["@mozilla.org/network/file-output-stream;1"]
+	          .createInstance(Components.interfaces.nsIFileOutputStream);
+	        os.init(File, 0x02 | 0x08 | 0x20, 0700, 0);
+	        os.write(Text, Text.length);
+	        os.close();
+	    },
+
+	Read:
+	    function (File)
+	    {
+	        if (!File) return;
+	        let res;
+
+	        const is = Components.classes["@mozilla.org/network/file-input-stream;1"]
+	            .createInstance(Components.interfaces.nsIFileInputStream);
+	        const sis = Components.classes["@mozilla.org/scriptableinputstream;1"]
+	            .createInstance(Components.interfaces.nsIScriptableInputStream);
+	        is.init(File, 0x01, 0400, null);
+	        sis.init(is);
+
+	        res = sis.read(sis.available());
+
+	        let utf8Converter = Components.classes["@mozilla.org/intl/utf8converterservice;1"].
+	            getService(Components.interfaces.nsIUTF8ConverterService);
+	        let data = utf8Converter.convertURISpecToUTF8 (res, "UTF-8"); 
+
+	        is.close();
+
+	        return data;
+	    },
+};
+
+// сохранение this.m_bookmarkList и this.m_labelsArr в файл в json формате
 fGoogleBookmarksExtension.ff_bookmarks_save = function()
 {
 	let nsIFilePicker = Ci.nsIFilePicker;
 	let fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
-	fp.init(window, "Select a File", nsIFilePicker.modeSave);
+	fp.init(window, document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.SaveFileDialog.Title"), nsIFilePicker.modeSave);
+	fp.defaultExtension = "json";
 	fp.appendFilter("json","*.json");
 	let res = fp.show();
 
-var FileManager =
-{
-Write:
-    function (File, Text)
-    {
-        if (!File) return;
-        const unicodeConverter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
-            .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
-
-        unicodeConverter.charset = "UTF-8";
-
-        Text = unicodeConverter.ConvertFromUnicode(Text);
-        const os = Components.classes["@mozilla.org/network/file-output-stream;1"]
-          .createInstance(Components.interfaces.nsIFileOutputStream);
-        os.init(File, 0x02 | 0x08 | 0x20, 0700, 0);
-        os.write(Text, Text.length);
-        os.close();
-    },
-
-Read:
-    function (File)
-    {
-        if (!File) return;
-        var res;
-
-        const is = Components.classes["@mozilla.org/network/file-input-stream;1"]
-            .createInstance(Components.interfaces.nsIFileInputStream);
-        const sis = Components.classes["@mozilla.org/scriptableinputstream;1"]
-            .createInstance(Components.interfaces.nsIScriptableInputStream);
-        is.init(File, 0x01, 0400, null);
-        sis.init(is);
-
-        res = sis.read(sis.available());
-
-        is.close();
-
-        return res;
-    },
-}
-
-// Ошибка: NS_ERROR_XPC_BAD_CONVERT_JS: Could not convert JavaScript argument arg 0 [nsIFileOutputStream.init]
-// Источник: chrome://gbe/content/scripts/ff_bookmarks.js
-// Строка: 416
-
-
-	if (res != nsIFilePicker.returnCancel){
-	  let jsonString = JSON.stringify(this.m_bookmarkList);
-	  // --- do something with the file here ---
-	  // 
+	if (res != nsIFilePicker.returnCancel)
+	{
+	  let jsonString = JSON.stringify({bookmarks : this.m_bookmarkList, labels : this.m_labelsArr});
 	  let fileName = fp.fileURL.spec + ".json";
-		var x = FileManager.Write(fp.file, jsonString);
+		var x = this.FileManager.Write(fp.file, jsonString);
+	}
+};
+
+// загрузка закладок из файла
+fGoogleBookmarksExtension.ff_bookmarks_load = function()
+{
+	let nsIFilePicker = Ci.nsIFilePicker;
+	let fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+	fp.init(window, document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.LoadFileDialog.Title"), nsIFilePicker.modeOpen);
+	fp.appendFilter("json","*.json");
+	let res = fp.show();
+
+	if (res != nsIFilePicker.returnCancel)
+	{
+		let x = this.FileManager.Read(fp.file);
+		let parseFlag = this.parseJsonFile(x);
+		var txtLog = document.getElementById("GBE-ffBookmark.textbox.log");
+		if (parseFlag)
+		{
+			txtLog.value = "Bookmarks loaded to addon menu.";
+			let prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+			if (!prompts.confirm(window, 
+				document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.LoadConfirmDialog.Title"),
+				document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.LoadConfirmDialog.Text")
+			))
+			{
+			  txtLog.value = "Saving to Google Bookmarks canceled!!!"
+			  return;
+			}
+			else
+			{
+				if ((this.m_bookmarkList !== null) && (this.m_bookmarkList.length))
+				{
+					let m_bookmarkListLength = this.m_bookmarkList.length;
+					// перебираем закладки
+					for (let i = 0 ; i < m_bookmarkListLength; i++)
+					{
+						let params = {
+								name : (this.m_bookmarkList[i].title || uri),
+								id : this.m_bookmarkList[i].id,
+								url : this.m_bookmarkList[i].url,
+								labels : (this.m_bookmarkList[i].labels.length > 0 ? this.m_bookmarkList[i].labels.join(",") : ""),
+								notes : this.m_bookmarkList[i].notes,
+								sig : this.m_signature
+							};
+						if (params.uri == "")
+						{
+							txtLog.value +=	"\nError: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n\n";
+						}
+						txtLog.value +=	"Import bookmark: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n";
+						this.doChangeBookmarkJQuery(params);
+					}
+				}
+			}
+		}
+		else
+		{
+			txtLog.value = "Parse bookmarks file - error!!!"
+		}
 	}
 };

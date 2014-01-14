@@ -23,8 +23,14 @@
  		<stringbundle id="fGoogleBookmarksExtension.strings" src="chrome://GBE/locale/fessGBE.properties"/>
  	</stringbundleset>
 	<vbox>
-		<hbox align="center" flex="1">
-			<label value="WARNING!!!!!!!!!!!!!!!!" />
+		<hbox align="center" >
+			<textbox 
+				flex="1"
+				multiline="true" 
+				value="&ffBookmark.FFWarning.label.value;"
+				disabled="true"
+				/>
+			<!-- <label value="&ffBookmark.FFWarning.label.value;" /> -->
 		</hbox>
 		<hbox>
 			<groupbox>
