@@ -11,8 +11,8 @@
   buttonlabelaccept="&folderDelete.button-delete.label;"
   buttonlabelcancel="&folderDelete.button-cancel.label;" 
   minheight= "100px" minwidth="300px" flex="1" orient="vertical"
-  onload="fGoogleBookmarksExtension.onLoadFolderDeleteDialog();"
-  ondialogaccept="return fGoogleBookmarksExtension.onAcceptFolderDeleteDlg();" >
+  onload="fessGoogleBookmarksDialogs.onLoadFolderDeleteDialog();"
+  ondialogaccept="return fessGoogleBookmarksDialogs.onAcceptFolderDeleteDlg();" >
   <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
   <groupbox>
     <label value="&folderDelete.label-info.value;" />

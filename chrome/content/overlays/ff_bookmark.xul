@@ -9,15 +9,26 @@
 
 <!DOCTYPE dialog SYSTEM "chrome://GBE/locale/lang.dtd">
 
-<window
+<!-- <window
     id="GBE-ffBookmark.window"
     title="&ffBookmark.form.title;"
     minheight= "100px" minwidth="400px"  
     
     autostretch="always"
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    onload="fGoogleBookmarksExtension.ff_bookmarks_onLoad();"
+    onload="fessGoogleBookmarksFFbookmarks.ff_bookmarks_onLoad();"
 >
+ -->
+<dialog 
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  id="GBE-ffBookmark.window"
+  title="&ffBookmark.form.title;"
+  buttons="cancel"
+  buttonlabelcancel="Close" 
+  minheight= "100px" minwidth="400px" 
+  autostretch="always"
+  onload="fessGoogleBookmarksFFbookmarks.ff_bookmarks_onLoad();" >
+
  	<script src="chrome://GBE/content/scripts/ff_bookmarks.js" type="application/javascript"/>
  	<stringbundleset id="stringbundleset">
  		<stringbundle id="fGoogleBookmarksExtension.strings" src="chrome://GBE/locale/fessGBE.properties"/>
@@ -39,7 +50,7 @@
 					type="places"
 					place="place:queryType=1&amp;folder=PLACES_ROOT&amp;excludeItems=true&amp;excludeReadOnlyFolders=true"
 					height="300px"
-					onselect="fGoogleBookmarksExtension.ff_bookmarks_onSelectTreeItem(event);">
+					onselect="fessGoogleBookmarksFFbookmarks.ff_bookmarks_onSelectTreeItem(event);">
 					<treecols>
 					<treecol id="title" flex="1" primary="true"/>
 					</treecols>
@@ -66,11 +77,11 @@
 					<hbox>
 						<button id="GBE-ffBookmark.button.save" 
 							flex="1" label="&ffBookmark.button-Save.label;" 
-							oncommand="fGoogleBookmarksExtension.ff_bookmarks_save();"
+							oncommand="fessGoogleBookmarksFFbookmarks.ff_bookmarks_save();"
 						/>
 						<button id="GBE-ffBookmark.button.load" 
 							flex="1" label="&ffBookmark.button-Load.label;" 
-							oncommand="fGoogleBookmarksExtension.ff_bookmarks_load();"
+							oncommand="fessGoogleBookmarksFFbookmarks.ff_bookmarks_load();"
 						/>
 					</hbox>
 				</groupbox>
@@ -80,11 +91,11 @@
 		<hbox align="center" flex="1">
 				<button id="GBE-ffBookmark.button.export" 
 					flex="1" label="&ffBookmark.button-GBtoFB.label;" 
-					oncommand="fGoogleBookmarksExtension.ff_bookmarks_export();"
+					oncommand="fessGoogleBookmarksFFbookmarks.ff_bookmarks_export();"
 				/>
 				<button 	id="GBE-ffBookmark.button.import" 
 									flex="1" label="&ffBookmark.button-FBtoGB.label;" 
-									oncommand="fGoogleBookmarksExtension.ff_bookmarks_import();"
+									oncommand="fessGoogleBookmarksFFbookmarks.ff_bookmarks_import();"
 				/>
 		</hbox>
 		<vbox id="GBE-ffBookmark-logVbox" flex="1" height="100%">
@@ -95,5 +106,6 @@
 	        	    height="100%"/>
 	  </vbox>
   </vbox>
-</window>
+<!-- </window> -->
+</dialog>
 <!-- orient="vertical" -->

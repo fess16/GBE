@@ -10,7 +10,7 @@
   buttons="cancel"
   buttonlabelcancel="&bookmark.button-cancel.label;" 
   minheight= "250px" minwidth="250px" flex="1" orient="vertical"
-  onload="fGoogleBookmarksExtension.onLoadQrDialog();"
+  onload="fessGoogleBookmarksDialogs.onLoadQrDialog();"
  >
  <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
   <groupbox>

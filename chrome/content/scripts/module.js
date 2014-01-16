@@ -2,6 +2,12 @@ Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
 Components.utils.import("resource://gre/modules/Services.jsm");
 Components.utils.import("resource://gre/modules/FileUtils.jsm");
 
+const Cc = Components.classes;
+const Ci = Components.interfaces;
+const Cr = Components.results;
+const Cu = Components.utils;
+
+
 EXPORTED_SYMBOLS = ['fGoogleBookmarksExtension'];
 
 var fGoogleBookmarksExtension = 
@@ -239,6 +245,467 @@ var fGoogleBookmarksExtension =
 			this.ErrorLog("GBE:getBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
+
+getHwindow : function()
+{
+	return Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService).hiddenDOMWindow;
+},
+
+
+/**
+ * получает сигнатуру для дальнейшей работы с закладками
+ */
+/*fGoogleBookmarksExtension.doRequestSignature = function()
+{
+	try
+	{
+		this.DebugLog("doRequestSignature");
+		this.m_signature = null;
+		var self = this;
+		jQuery.noConflict();
+		jQuery.ajax({
+      type: "GET",
+      url: this.baseUrl + "find",
+      data: 
+      	{
+          zx: (new Date()).getTime(),
+          output: "rss",
+          q: "qB89f6ZAUXXsfrwPdN4t"
+        },
+      dataType : "XML",
+      timeout: this.timeOut,
+      success: function(responseXML, textStatus) {
+      	if (responseXML.getElementsByTagName("smh:signature").length)
+      	{
+      		self.m_signature = responseXML.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
+      	}
+      }
+    });
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doRequestSignature", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+};*/
+doRequestSignature : function()
+{
+	try
+	{
+		this.DebugLog("doRequestSignature");
+		this.m_signature = null;
+		let self = this;
+		let hwindow = this.getHwindow();
+		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		let data = 	"?zx="+((new Date()).getTime()) + "&output=rss&q=qB89f6ZAUXXsfrwPdN4t";
+		request.open("GET", this.baseUrl + "find" + data, true);
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		request.onreadystatechange = function()
+		{
+	  	if (request.readyState != 4) return;
+	  	hwindow.clearTimeout(timeout) // очистить таймаут при наступлении readyState 4
+  		if (request.status == 200) 
+  		{
+      	if (request.responseXML.getElementsByTagName("smh:signature").length)
+      	{
+      		self.m_signature = request.responseXML.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
+      	}
+  		} 
+  	}
+		request.send(null);
+		let timeout = hwindow.setTimeout( 
+			function(){ 
+				request.abort(); 
+				self.ErrorLog("GBE:doRequestSignature", " Error: Time over - while requesting signature");
+			}, 
+			this.timeOut
+		);
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doRequestSignature", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+},
+
+/**
+ * получает примечание закладки
+ * @param  id       id закладки
+ * @param  name     название закладки (параметр для поиска)
+ * @param  noteCtrl текстовое поле для редактирования примечания (в окне редактирования закладки)
+ */
+/*fGoogleBookmarksExtension.doRequestBookmarkNote = function(id, name, noteCtrl)
+{
+	try
+	{
+		this.DebugLog("doRequestBookmarkNote");
+		jQuery.noConflict();
+		jQuery.ajax({
+			type	: "GET",
+			url: this.baseUrl + "find",
+			data: 
+				{
+			    zx: (new Date()).getTime(),
+			    output: "rss",
+			    q: '"' + name + '"'
+			  },
+			dataType : "XML",
+			timeout: this.timeOut,
+			success: function(responseXML, textStatus) {
+				var bookmarks = responseXML.getElementsByTagName("item");
+				if (bookmarks.length)
+				{
+					for (var i = 0; i < bookmarks.length; i++)
+					{
+						if (id == bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue)
+						{
+							if (bookmarks[i].getElementsByTagName("smh:bkmk_annotation").length)
+							{
+								noteCtrl.value = bookmarks[i].getElementsByTagName("smh:bkmk_annotation")[0].childNodes[0].nodeValue;
+								return;
+							}
+						}
+					}
+				}
+			}
+		});
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doRequestBookmarkNote", "Obtain bookmark note (", name, ") - error!");
+		this.ErrorLog("GBE:doRequestBookmarkNote", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+};*/
+
+doRequestBookmarkNote : function(id, name, noteCtrl)
+{
+	try
+	{
+		this.DebugLog("doRequestBookmarkNote");
+		this.m_signature = null;
+		let self = this;
+		let hwindow = this.getHwindow();
+		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		let data = 	"?zx="+((new Date()).getTime()) + "&output=rss&q=" + '"' + encodeURIComponent(name) + '"';
+		request.open("GET", this.baseUrl + "find" + data, true);
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		request.onreadystatechange = function()
+		{
+	  	if (request.readyState != 4) return;
+	  	hwindow.clearTimeout(timeout) // очистить таймаут при наступлении readyState 4
+  		if (request.status == 200) 
+  		{
+  			var bookmarks = request.responseXML.getElementsByTagName("item");
+  			if (bookmarks.length)
+  			{
+  				for (var i = 0; i < bookmarks.length; i++)
+  				{
+  					if (id == bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue)
+  					{
+  						if (bookmarks[i].getElementsByTagName("smh:bkmk_annotation").length)
+  						{
+  							noteCtrl.value = bookmarks[i].getElementsByTagName("smh:bkmk_annotation")[0].childNodes[0].nodeValue;
+  							return;
+  						}
+  					}
+  				}
+  			}
+  		} 
+  	}
+		request.send(null);
+		let timeout = hwindow.setTimeout( 
+			function(){ 
+				request.abort(); 
+				self.ErrorLog("GBE:doRequestBookmarkNote", " Error: Time over - while requesting bookmark notes");
+			}, 
+			this.timeOut
+		);
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doRequestBookmarkNote", "Obtain bookmark note (", name, ") - error!");
+		this.ErrorLog("GBE:doRequestBookmarkNote", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+},
+
+/*fGoogleBookmarksExtension.doRequestBookmarkURL = function (id, name, index, asyncMode = false)
+{
+	try
+	{
+		this.DebugLog("doRequestBookmarkURL");
+		let urlReturn = "";
+		let self = this;
+		jQuery.noConflict();
+		jQuery.ajax({
+			type : "GET",
+			url : this.baseUrl + "find",
+			data : 
+			{
+				zx : (new Date()).getTime(),
+				output : "xml",
+				q : '"' + name + '"'
+			},
+			dataType : "XML",
+			timeout : this.timeOut,
+			async : asyncMode,
+			success: function(responseXML, textStatus) {
+				let ids = responseXML.getElementsByTagName("id");
+				let urls = responseXML.getElementsByTagName("url");
+				if (ids.length && urls.length)
+				{
+					for (let i = 0; i < ids.length; i++)
+					{
+						if (id == ids[i].childNodes[0].nodeValue)
+						{
+							urlReturn = urls[i].childNodes[0].nodeValue;
+							self.m_bookmarkList[index].url = urlReturn;
+							self.GBE_menupopup.getElementsByAttribute('id', id)[0].setAttribute("url", urlReturn);
+							self.ErrorLog("Obtained URL for ", name, "is", urlReturn);
+							return urlReturn;
+						}
+					}
+				}
+			}
+		});
+		return urlReturn;
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doRequestBookmarkURL", "Obtain bookmark URL (", name, ") - error!");
+		this.ErrorLog("GBE:doRequestBookmarkURL", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+};*/
+
+doRequestBookmarkURL : function (id, name, index, GBE_menupopup = null, asyncMode = false)
+{
+	try
+	{
+		this.DebugLog("doRequestBookmarkURL");
+		let urlReturn = "";
+		let self = this;
+		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		let data = 	"?zx="+((new Date()).getTime()) + "&output=xml&q=" + '"' + encodeURIComponent(name) + '"';
+		request.open("GET", this.baseUrl + "find" + data, asyncMode);
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		
+		request.onreadystatechange = function()
+		{
+	  	if (request.readyState != 4) return;
+  		if (request.status == 200) 
+  		{
+  			let ids = request.responseXML.getElementsByTagName("id");
+				let urls = request.responseXML.getElementsByTagName("url");
+				if (ids.length && urls.length)
+				{
+					for (let i = 0; i < ids.length; i++)
+					{
+						if (id == ids[i].childNodes[0].nodeValue)
+						{
+							urlReturn = urls[i].childNodes[0].nodeValue;
+							self.m_bookmarkList[index].url = urlReturn;
+							if (GBE_menupopup !== null)
+							{
+								GBE_menupopup.getElementsByAttribute('id', id)[0].setAttribute("url", urlReturn);
+							}
+							self.ErrorLog("Obtained URL for ", name, "is", urlReturn);
+							return urlReturn;
+						}
+					}
+				}
+  		} 
+  	}
+		request.send(null);
+		return urlReturn;
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doRequestBookmarkURL", "Obtain bookmark URL (", name, ") - error!");
+		this.ErrorLog("GBE:doRequestBookmarkURL", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+},
+
+doDeleteFolderJQuery : function(label, signature)
+{
+	try
+	{
+		this.DebugLog("doDeleteFolderJQuery");
+		let self = this;
+		let hwindow = this.getHwindow();
+		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		let data = 	"?op=modlabel&zx="+((new Date()).getTime()) + "&labels=" + 
+								encodeURIComponent(label) + "&sig=" + signature;
+		request.open("GET", this.baseUrl2 + data, true);
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		request.onreadystatechange = function()
+		{
+	  	if (request.readyState != 4) return;
+	  	hwindow.clearTimeout(timeout) // очистить таймаут при наступлении readyState 4
+  		if (request.status == 200) 
+  		{
+				self.needRefresh = true;  
+  		} 
+  		else 
+  		{
+        self.ErrorLog("GBE:doDeleteFolderJQuery", " An error occurred while deleting label (" + label + ").");
+  		}
+  	}
+		request.send(null);
+		this.windowsParams = {};
+		let timeout = hwindow.setTimeout( 
+			function(){ 
+				request.abort(); 
+				self.ErrorLog("GBE:doDeleteFolderJQuery", " Error: Time over - while deleting label (" + label + ").");
+			}, 
+			this.timeOut
+		);
+	}
+	catch (e)
+	{
+		this.ErrorLog("GBE:doDeleteFolderJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+},
+
+doChangeFolderJQuery : function(oldLabel, label, signature)
+{
+	try
+	{
+		this.DebugLog("doChangeFolderJQuery");
+		let self = this;
+		let hwindow = this.getHwindow();
+		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		request.open("POST", this.baseUrl2, true);
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		let data = 	"op=modlabel&zx="+((new Date()).getTime()) + "&labels=" + 
+								encodeURIComponent(oldLabel + "," + label) + "&sig=" + signature;
+		request.onreadystatechange = function()
+		{
+	  	if (request.readyState != 4) return;
+	  	hwindow.clearTimeout(timeout) // очистить таймаут при наступлении readyState 4
+  		if (request.status == 200) 
+  		{
+				self.needRefresh = true;  
+  		} 
+  		else 
+  		{
+        self.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
+  		}
+  	}
+		request.send(data);
+		this.windowsParams = {};	
+		let timeout = hwindow.setTimeout( 
+			function(){ 
+				request.abort(); 
+				self.ErrorLog("GBE:doChangeFolderJQuery", " Error: Time over - while renaming label (" + 	oldLabel + " to " + label + ").");
+			}, 
+			this.timeOut
+		);
+	}
+  catch (e)
+	{
+		this.ErrorLog("GBE:doChangeFolderJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+},
+
+doChangeBookmarkJQuery : function(params, overlay = null)
+{
+	try
+	{
+		this.DebugLog("doChangeBookmarkJQuery");
+		let self = this;
+		let hwindow = this.getHwindow();
+		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		request.open("POST", this.baseUrl2, true);
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		let data = 	"zx="+((new Date()).getTime()) + "&bkmk=" + encodeURIComponent(params.url) + 
+								"&title=" + encodeURIComponent(params.name) + "&labels=" + encodeURIComponent(params.labels) +
+								"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + params.sig;
+		// this.ErrorLog(data);
+		request.onreadystatechange = function()
+		{
+	  	if (request.readyState != 4) return;
+	  	hwindow.clearTimeout(timeout) // очистить таймаут при наступлении readyState 4
+  		if (request.status == 200) 
+  		{
+				self.needRefresh = true;  
+				if (overlay !== null) overlay.changeButtonIcon(params.url, params.id, false); 
+  		} 
+  		else 
+  		{
+        self.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
+  		}
+  		self.windowsParams = {};
+  	}
+
+		request.send(data);
+
+		let timeout = hwindow.setTimeout( 
+			function(){ 
+				request.abort(); 
+				self.ErrorLog("GBE:doChangeBookmarkJQuery", " Error: Time over - while saving bookmark (" + params.url + ").");
+			}, 
+			this.timeOut
+		);
+	}
+  catch (e)
+	{
+		this.windowsParams = {};
+		this.ErrorLog("GBE:doChangeBookmarkJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+},
+
+doDeleteBookmarkJQuery : function(params, overlay = null)
+{
+	try
+	{
+		this.DebugLog("doDeleteBookmarkJQuery");
+		let self = this;
+		let hwindow = this.getHwindow();
+		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		let data = 	"?zx="+((new Date()).getTime()) + "&dlq=" + params.id + "&sig=" + params.sig;
+		request.open("GET", this.baseUrl2 + data, true);
+		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		request.onreadystatechange = function()
+		{
+	  	if (request.readyState != 4) return;
+	  	hwindow.clearTimeout(timeout) // очистить таймаут при наступлении readyState 4
+  		if (request.status == 200) 
+  		{
+				self.needRefresh = true;  
+				if (overlay !== null) overlay.changeButtonIcon(params.url, params.id); 
+  		} 
+  		else 
+  		{
+        self.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
+  		}
+  	}
+		request.send(null);
+		this.windowsParams = {};
+		let timeout = hwindow.setTimeout( 
+			function(){ 
+				request.abort(); 
+				self.ErrorLog("GBE:doDeleteBookmarkJQuery", " Error: Time over - while deleting bookmark (" + params.url + ").");
+			}, 
+			this.timeOut
+		);
+	}
+  catch (e)
+	{
+		this.windowsParams = {};
+		this.ErrorLog("GBE:doDeleteBookmarkJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+	}
+},
 
 
 	"googleDomains" : [

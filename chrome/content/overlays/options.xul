@@ -8,8 +8,8 @@
 	id="fessGBE-prefs"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   title="&prefWindow.form.title;"
-  onload="fGoogleBookmarksExtension.onLoadPrefWindow();"
-	ondialogaccept="return fGoogleBookmarksExtension.onAcceptPrefWindow(event);"
+  onload="fessGoogleBookmarksDialogs.onLoadPrefWindow();"
+	ondialogaccept="return fessGoogleBookmarksDialogs.onAcceptPrefWindow(event);"
 >
   <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
  
@@ -41,7 +41,7 @@
       <checkbox
         preference="pref_enableLabelUnlabeled"
         id="fessGBE-prefs-enableLabelUnlabeled-Ctrl"
-        oncommand="fGoogleBookmarksExtension.onCheckboxStateChange();"/>
+        oncommand="fessGoogleBookmarksDialogs.onCheckboxStateChange();"/>
       <textbox
         preference="pref_labelUnlabeledName"
         id="fessGBE-prefs-labelUnlabeledName-Ctrl"
