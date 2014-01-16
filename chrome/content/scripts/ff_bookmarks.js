@@ -93,7 +93,7 @@ var fessGoogleBookmarksFFbookmarks = {
 
 	parseJsonFile : function(jsonString)
 	{
-		jQuery.noConflict();
+		// jQuery.noConflict();
 		// let arr = jQuery.parseJSON(jsonString);
 		let arr = JSON.parse(jsonString);
 		if (arr !== null && arr.bookmarks.length && arr.labels.length )

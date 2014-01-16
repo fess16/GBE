@@ -361,7 +361,7 @@ var fessGoogleBookmarks = {
 				}
 				if (fromFile)
 				{
-					 return this._M.doBuildMenu(fromFile); 
+					 return this.doBuildMenu(fromFile); 
 				}
 				else
 				{
