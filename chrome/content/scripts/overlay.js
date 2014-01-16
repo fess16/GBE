@@ -827,7 +827,7 @@ var fessGoogleBookmarks = {
 	        this
 	      );
 		}
-		this._M._preferencesWindow.focus();		
+		this._M._ffWindow.focus();		
 	},
 
 	/**
