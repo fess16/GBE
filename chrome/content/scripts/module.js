@@ -8,9 +8,9 @@ const Cr = Components.results;
 const Cu = Components.utils;
 
 
-EXPORTED_SYMBOLS = ['fGoogleBookmarksExtension'];
+EXPORTED_SYMBOLS = ['fGoogleBookmarksModule'];
 
-var fGoogleBookmarksExtension = 
+var fGoogleBookmarksModule = 
 {
 	// адрес для получения списка закладок
 	'baseUrl' : "https://www.google.com/bookmarks/",

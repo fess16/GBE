@@ -206,7 +206,7 @@ GbookmarksAutoCompleteSearch.prototype = {
         if (tempString.length >= 1)
         {
           mySearchString = tempString[0];
-          var bkmrkList = fGoogleBookmarksExtension.m_bookmarkList;
+          var bkmrkList = fGoogleBookmarksModule.m_bookmarkList;
 
           if (bkmrkList && bkmrkList.length > 0 && 
             mySearchString.length > 0

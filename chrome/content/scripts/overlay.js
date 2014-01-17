@@ -101,7 +101,7 @@ Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(
 
 var fessGoogleBookmarks = {
 
-	"_M" : fGoogleBookmarksExtension,
+	"_M" : fGoogleBookmarksModule,
 	'needRefresh'	: false,
 
 	/**
@@ -111,7 +111,7 @@ var fessGoogleBookmarks = {
 	compareByName : function (a, b) {
 		if (a instanceof Array && b instanceof Array) 
 		{
-			if (fGoogleBookmarksExtension.sortOrder == "asc") 
+			if (fGoogleBookmarksModule.sortOrder == "asc") 
 			{
 				return String(a[0]).toLowerCase() < String(b[0]).toLowerCase() ? -1 : 1;
 			}
@@ -122,7 +122,7 @@ var fessGoogleBookmarks = {
 		}
 		if (a instanceof Object && b instanceof Object) 
 		{
-			if (fGoogleBookmarksExtension.sortOrder == "asc") 
+			if (fGoogleBookmarksModule.sortOrder == "asc") 
 			{
 				return String(a.title).toLowerCase() < String(b.title).toLowerCase() ? -1 : 1;
 			}
@@ -139,7 +139,7 @@ var fessGoogleBookmarks = {
 	compareByDate : function (a, b) {		
 		if (a instanceof Array && b instanceof Array) 
 		{
-			if (fGoogleBookmarksExtension.sortOrder == "asc") 
+			if (fGoogleBookmarksModule.sortOrder == "asc") 
 			{
 				return new Date(a[5]) < new Date(b[5]) ? -1 : 1;
 			}
@@ -150,7 +150,7 @@ var fessGoogleBookmarks = {
 		}
 		if (a instanceof Object && b instanceof Object) 
 		{
-			if (fGoogleBookmarksExtension.sortOrder == "asc") 
+			if (fGoogleBookmarksModule.sortOrder == "asc") 
 			{
 				return new Date(a.timestamp) < new Date(b.timestamp) ? -1 : 1;
 			}
@@ -604,7 +604,7 @@ var fessGoogleBookmarks = {
 						if ((e.target.getAttribute("class") == "menuitem-iconic google-bookmarks") || 
 								(e.target.getAttribute("class") == "menuitem-iconic google-bookmarks-filter"))
 						{
-							fessGoogleBookmarks.showURL(e.target.getAttribute("url"), !fGoogleBookmarksExtension.reverseBkmrkLeftClick);
+							fessGoogleBookmarks.showURL(e.target.getAttribute("url"), !fGoogleBookmarksModule.reverseBkmrkLeftClick);
 							e.stopPropagation();
 							break;
 						}
@@ -614,7 +614,7 @@ var fessGoogleBookmarks = {
 		}
 		catch(error)
 		{
-			fGoogleBookmarksExtension.ErrorLog("GBE:folderClick", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+			fGoogleBookmarksModule.ErrorLog("GBE:folderClick", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 

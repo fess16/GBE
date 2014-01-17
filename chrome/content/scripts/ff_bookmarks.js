@@ -7,7 +7,7 @@ Components.utils.import('chrome://GBE/content/scripts/module.js');
 
 var fessGoogleBookmarksFFbookmarks = {
 
-	"_M" : fGoogleBookmarksExtension,
+	"_M" : fGoogleBookmarksModule,
 	"overlay" : null,
 
 	/**

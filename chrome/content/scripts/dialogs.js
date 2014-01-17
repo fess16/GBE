@@ -7,7 +7,7 @@ Components.utils.import('chrome://GBE/content/scripts/module.js');
 
 var fessGoogleBookmarksDialogs = {
 
-	"_M" : fGoogleBookmarksExtension,
+	"_M" : fGoogleBookmarksModule,
 	"overlay" : null,
 	"windowsParams" : null,
 
