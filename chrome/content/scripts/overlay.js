@@ -983,9 +983,9 @@ var fessGoogleBookmarks = {
 				else
 				{
 					// иначе - поиск по всем закладкам
-					for (var i = 0; i < this.m_bookmarkList.length; i++)
+					for (var i = 0; i < this._M.m_bookmarkList.length; i++)
 					{
-						if (this.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1 )//||
+						if (this._M.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1 )//||
 							// this.m_bookmarkList[i].url.toLowerCase().indexOf(search) !== -1)
 						{
 							tempMenuitem = document.createElement('menuitem');
