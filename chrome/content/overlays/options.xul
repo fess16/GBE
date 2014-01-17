@@ -27,8 +27,10 @@
       <preference id="pref_useMenuBar" name="extensions.fessGBE.useMenuBar" type="bool"/>
       <preference id="pref_enableLabelUnlabeled" name="extensions.fessGBE.enableLabelUnlabeled" type="bool"/>
       <preference id="pref_labelUnlabeledName" name="extensions.fessGBE.labelUnlabeledName" type="string"/>
+      <preference id="pref_showToolbarAddBtn" name="extensions.fessGBE.showToolbarAddBtn" type="bool"/>
+      <preference id="pref_showToolbarQuickAddBtn" name="extensions.fessGBE.showToolbarQuickAddBtn" type="bool"/>
     </preferences>
-   
+
     <hbox align="center" flex="1">
       <label control="fessGBE-prefs-nestedLabelSep-Ctrl" value="&prefWindow.nestedLabelSep.label;"/>
       <textbox 
@@ -95,6 +97,7 @@
         id="fessGBE-prefs-enableNotes-Ctrl" 
         label="&prefWindow.enableNotes.label;"/>
     </hbox> 
+
     <groupbox>
       <caption label="&prefWindow.useMenuBar.caption.label;" />
       <radiogroup
@@ -107,5 +110,20 @@
         </hbox>
       </radiogroup>
     </groupbox>
+
+    <groupbox>
+      <vbox flex="1">
+        <caption label="&prefWindow.additionalButtons.groupbox.caption;" />
+        <checkbox           
+                  preference="pref_showToolbarAddBtn" 
+                  id="fessGBE-prefs-showToolbarAddBtn-Ctrl" 
+                  label="&prefWindow.showToolbarAddBtn.label;"/>
+        <checkbox           
+          preference="pref_showToolbarQuickAddBtn" 
+          id="fessGBE-prefs-showToolbarQuickAddBtn-Ctrl" 
+          label="&prefWindow.showToolbarQuickAddBtn.label;"/>
+      </vbox>
+    </groupbox>
+
   </prefpane>
 </prefwindow>

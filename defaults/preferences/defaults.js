@@ -9,3 +9,5 @@ pref("extensions.fessGBE.enableNotes", false);
 pref("extensions.fessGBE.useMenuBar", false);
 pref("extensions.fessGBE.enableLabelUnlabeled", false);
 pref("extensions.fessGBE.labelUnlabeledName", "Unlabeled");
+pref("extensions.fessGBE.showToolbarAddBtn", false);
+pref("extensions.fessGBE.showToolbarQuickAddBtn", false);

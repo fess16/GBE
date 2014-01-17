@@ -1,9 +1,13 @@
 <!ENTITY	overlay.toolbarbutton.label	"Fess Google Bookmarks">
 <!ENTITY	overlay.toolbarbutton.hint	"Fess Google Bookmarks">
 
+<!ENTITY	overlay.btnAddBookmark.label	"Add Google Bookmark">
+<!ENTITY	overlay.btnQuickAddBookmark.label	"Quick Add GBookmark">
+<!ENTITY	overlay.btnQuickAddBookmark.hint	"Quick Add Google Bookmark (bypass add bookmark window)">
+
 <!ENTITY overlay.hmenuRefresh.hint "Refresh Bookmarks">
-<!ENTITY overlay.hmenuAdd.hint "Add current page to Bookmarks">
-<!ENTITY overlay.hmenuEdit.hint "Edit Bookmark for current page">
+<!ENTITY overlay.hmenuAdd.hint "Add current page to Google Bookmarks">
+<!ENTITY overlay.hmenuEdit.hint "Edit Google Bookmark for current page">
 <!ENTITY overlay.hmenuDel.hint "Delete current page from Bookmarks">
 <!ENTITY overlay.hmenuOpt.hint "Settings">
 <!ENTITY overlay.hmenuGBs.hint "Go to Google Bookmarks">
@@ -71,6 +75,11 @@
 <!ENTITY prefWindow.useMenuBar.radio1.label "item in Menu bar">
 <!ENTITY prefWindow.useMenuBar.radio2.label "button in Navigation bar">
 <!ENTITY prefWindow.enableLabelUnlabeled.label "Label Unlabeled Bookmarks:">
+
+<!ENTITY prefWindow.additionalButtons.groupbox.caption "Show additional toolbar buttons:">
+<!ENTITY prefWindow.showToolbarAddBtn.label "Add Google Bookmark">
+<!ENTITY prefWindow.showToolbarQuickAddBtn.label "Quick Add GBookmark">
+
 
 <!ENTITY ffBookmark.form.title "Import/Export google bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Firefox bookmarks folder for import/export:">

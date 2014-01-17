@@ -112,6 +112,24 @@
 			</toolbarbutton>
 
 		</toolbaritem>
+
+		<toolbarbutton
+      id="GBE-btnAddBookmark"
+      observes="GBE-bc-hmenuAdd"
+      label="&overlay.btnAddBookmark.label;"
+		/>
+
+		<toolbarbutton
+      id="GBE-btnQuickAddBookmark"
+      label="&overlay.btnQuickAddBookmark.label;"
+      tooltiptext="&overlay.btnQuickAddBookmark.hint;"
+      oncommand="fessGoogleBookmarks.quickAddBookmark()"
+      image="chrome://GBE/skin/images/bkmrk_add_quick_on.png"
+		>
+			<observes element="GBE-bc-hmenuAdd" attribute="disabled"/>
+		</toolbarbutton>
+	
+
 	</toolbarpalette>
 
 

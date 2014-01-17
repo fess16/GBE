@@ -198,6 +198,8 @@ var fGoogleBookmarksExtension =
     this.readPrefValue("useMenuBar", this.prefs.PREF_BOOL, false);
     this.readPrefValue("enableLabelUnlabeled", this.prefs.PREF_BOOL, false);
     this.readPrefValue("labelUnlabeledName", this.prefs.PREF_STRING, "Unlabeled");
+    this.readPrefValue("showToolbarAddBtn", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("showToolbarQuickAddBtn", this.prefs.PREF_BOOL, false);
 	},
 
 	/**

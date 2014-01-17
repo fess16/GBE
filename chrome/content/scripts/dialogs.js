@@ -89,6 +89,9 @@ var fessGoogleBookmarksDialogs = {
 			}
 			this._M.prefs.setBoolPref("enableLabelUnlabeled", document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked);
 			this._M.prefs.setCharPref("labelUnlabeledName", document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value);
+			this._M.prefs.setBoolPref("showToolbarAddBtn", document.getElementById("fessGBE-prefs-showToolbarAddBtn-Ctrl").checked);
+			this._M.prefs.setBoolPref("showToolbarQuickAddBtn", document.getElementById("fessGBE-prefs-showToolbarQuickAddBtn-Ctrl").checked);
+
 
 			this._M.needRefresh = true;
 			this._M.nestedLabelSep = document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value;
@@ -273,6 +276,10 @@ var fessGoogleBookmarksDialogs = {
 		if (this.windowsParams.id !== null ) 
 		{
 			this._M.doDeleteBookmarkJQuery(this.windowsParams, this.overlay); 
+			if (this.overlay !== null)
+			{
+				this.overlay.needRefresh = true;
+			}
 			this.windowsParams = null;
 		}
 	},
@@ -282,6 +289,10 @@ var fessGoogleBookmarksDialogs = {
 	 */
 	onLoadFolderkDialog : function()
 	{
+		if (window !== null && window.arguments !== undefined && window.arguments[0] !== undefined ) 
+		{
+			this.overlay = window.arguments[0];
+		}
 		this.windowsParams = JSON.parse(JSON.stringify(this._M.windowsParams)); 
 		// Заполняем поле с названием метки
 		document.getElementById("GBE-folder.dialog.name").value = this.windowsParams.name;
@@ -310,19 +321,24 @@ var fessGoogleBookmarksDialogs = {
 		if (name && this._M.m_bookmarkList && this._M.m_bookmarkList.length)
 		{
 			var old_nested_labels = oldName.split(this._M.nestedLabelSep);
-		if (old_nested_labels.length == 1)
+			if (old_nested_labels.length == 1)
 			{
 				this._M.doChangeFolderJQuery(oldName, name, this._M.m_signature);
 			}
 			else
 			{
-			var labelsList = this._M.m_labelsArr;
-			for (var i = 0; i < labelsList.length; i++) {
-				if (labelsList[i].indexOf(oldName) == 0)
+				var labelsList = this._M.m_labelsArr;
+				for (var i = 0; i < labelsList.length; i++) 
 				{
-					this._M.doChangeFolderJQuery(labelsList[i], labelsList[i].replace(oldName, name), this._M.m_signature);
-				}
-			};
+					if (labelsList[i].indexOf(oldName) == 0)
+					{
+						this._M.doChangeFolderJQuery(labelsList[i], labelsList[i].replace(oldName, name), this._M.m_signature);
+					}
+				};
+			}
+			if (this.overlay !== null)
+			{
+				this.overlay.needRefresh = true;
 			}
 		}
 		this.windowsParams = null;
@@ -334,6 +350,10 @@ var fessGoogleBookmarksDialogs = {
 	onLoadFolderDeleteDialog : function()
 	{
 		this.windowsParams = JSON.parse(JSON.stringify(this._M.windowsParams)); 
+		if (window !== null && window.arguments !== undefined && window.arguments[0] !== undefined ) 
+		{
+			this.overlay = window.arguments[0];
+		}
 		document.getElementById("GBE-folderDelete.dialog.title").value = this.windowsParams.name + "?";
 	},
 
@@ -376,6 +396,10 @@ var fessGoogleBookmarksDialogs = {
 							sig : this._M.m_signature
 						};
 						this._M.doDeleteBookmarkJQuery(params); 
+						if (this.overlay !== null)
+						{
+							this.overlay.needRefresh = true;
+						}
 					}
 				}
 			}

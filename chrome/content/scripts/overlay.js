@@ -202,13 +202,38 @@ var fessGoogleBookmarks = {
 		  case "useMenuBar":
 		  	this.switchInteface(this._M.prefs.getBoolPref(aData));
 		    break;
+		  case "showToolbarAddBtn":
+		  	this.setAdditionalButton("GBE-btnAddBookmark", this._M.prefs.getBoolPref(aData));
+		  	break;
+		  case "showToolbarQuickAddBtn":
+		  	this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.prefs.getBoolPref(aData));
+	    	break;		  
 		}
 	},
 
-	installButton : function()
+	setAdditionalButton : function(id, prefValue)
+	{
+  	if (prefValue)
+  	{
+  		if (!document.getElementById(id))
+  		{
+	  		this.installButton(id);
+  		}
+  		document.getElementById(id).setAttribute("hidden", false);
+  	}
+  	else
+  	{
+  		if (document.getElementById(id))
+  		{
+  			document.getElementById(id).setAttribute("hidden", true);
+  		}
+  	}
+	},
+
+	installButton : function(id)
 	{
 		this._M.DebugLog("installButton");
-		var id = "GBE-toolbaritem";
+		// var id = "GBE-toolbaritem";
 		var toolbarId = "nav-bar";
 	 	var toolbar = document.getElementById(toolbarId);
 		//add the button at the end of the navigation toolbar	
@@ -226,7 +251,7 @@ var fessGoogleBookmarks = {
 	    var extension = extensions.get("GBE@fess16.blogspot.com");
 	    if (extension.firstRun)
 	    {
-	    	this.installButton();	
+	    	this.installButton("GBE-toolbaritem");	
 	    }
 	},
 
@@ -243,6 +268,8 @@ var fessGoogleBookmarks = {
 			this._M.prefs.addObserver("", this, false);
 
 			this.switchInteface(this._M.useMenuBar);
+			this.setAdditionalButton("GBE-btnAddBookmark", this._M.showToolbarAddBtn);
+			this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.showToolbarQuickAddBtn);
 			 if(this._M.checkLogin() && (document.getElementById("GBE-toolbarbutton") || (document.getElementById("GBE-MainMenu") ) ) )
 			{
 				this.refreshBookmarks(false);
@@ -290,7 +317,7 @@ var fessGoogleBookmarks = {
 			{
 				try
 				{
-					this.installButton();	
+					this.installButton("GBE-toolbaritem");	
 					this.switchInteface(this._M.useMenuBar);
 				}
 				catch(e)
@@ -397,6 +424,11 @@ var fessGoogleBookmarks = {
 					document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "false");
 
 					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "true");
+
+					if (document.getElementById("GBE-btnQuickAddBookmark"))
+					{
+						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/skin/images/bkmrk_add_quick_off.png");
+					}
 				}
 				else
 				{
@@ -409,6 +441,11 @@ var fessGoogleBookmarks = {
 					document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "true");
 
 					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "false");
+
+					if (document.getElementById("GBE-btnQuickAddBookmark"))
+					{
+						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/skin/images/bkmrk_add_quick_on.png");
+					}
 
 				}
 			}
@@ -1103,7 +1140,7 @@ var fessGoogleBookmarks = {
 				let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
 			           .getService(Components.interfaces.nsIWindowMediator)
 			           .getMostRecentWindow("navigator:browser");
-				win.openDialog("chrome://GBE/content/overlays/delete.xul", "","chrome,centerscreen,modal");
+				win.openDialog("chrome://GBE/content/overlays/delete.xul", "","chrome,centerscreen,modal",this);
 			}
 		}
 		catch (e) {
@@ -1165,7 +1202,7 @@ var fessGoogleBookmarks = {
 			let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
 		           .getService(Components.interfaces.nsIWindowMediator)
 		           .getMostRecentWindow("navigator:browser");
-			win.openDialog("chrome://GBE/content/overlays/folder.xul", "","chrome,centerscreen,modal");
+			win.openDialog("chrome://GBE/content/overlays/folder.xul", "","chrome,centerscreen,modal",this);
 			this._M.currentFolderId = "";
 		}
 		catch (e)
@@ -1187,7 +1224,7 @@ var fessGoogleBookmarks = {
 			let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
 		           .getService(Components.interfaces.nsIWindowMediator)
 		           .getMostRecentWindow("navigator:browser");
-			win.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","chrome,centerscreen,modal");
+			win.openDialog("chrome://GBE/content/overlays/folder_del.xul", "","chrome,centerscreen,modal",this);
 			this._M.currentFolderId = "";
 		}
 		catch (e)
@@ -1777,6 +1814,45 @@ var fessGoogleBookmarks = {
 			this._M.refreshInProgress = false;			
 			return false;
 		}
+	},
+
+	quickAddBookmark : function()
+	{
+			try
+			{
+				this._M.DebugLog("quickAddBookmark");
+				// адрес текущей страницы
+				var cUrl = window.content.location.href;
+				// если список закладок и адрес не пустые 
+				//if ((GBE.m_bookmarkList.length) && (cUrl !== ""))
+				if (cUrl !== "")
+				{
+					// если у документа нет заголовка, то название закладки = адрес без протокола (например, без http://)
+					var myRe = /(?:.*?:\/\/?)(.*)(?:\/$)/ig;
+					var trimUrlAr = myRe.exec(cUrl);
+					var trimUrl = cUrl;
+					if (trimUrlAr && trimUrlAr.length > 1)
+					{
+						trimUrl = trimUrlAr[1];
+					}
+
+					// параметры закладки
+					let windowsParams = {
+							name : (window.content.document.title || trimUrl),
+							id : null,
+							url : cUrl,
+							labels : "",
+							notes : "",
+							sig : this._M.m_signature
+						};
+
+					this._M.doChangeBookmarkJQuery(windowsParams, this); 
+				}
+			}
+			catch (e)
+			{
+				this._M.ErrorLog("GBE:quickAddBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			}
 	},
 
 

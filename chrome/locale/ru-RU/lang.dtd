@@ -1,8 +1,12 @@
 <!ENTITY	overlay.toolbarbutton.label	"Fess Google Bookmarks">
 <!ENTITY	overlay.toolbarbutton.hint	"Fess Google Bookmarks">
 
+<!ENTITY	overlay.btnAddBookmark.label	"Добавить закладку Google">
+<!ENTITY	overlay.btnQuickAddBookmark.label	"Быстрое добавление закладки">
+<!ENTITY	overlay.btnQuickAddBookmark.hint	"Быстрое добавление закладки Google (с пропуском окна редактирования закладки)">
+
 <!ENTITY overlay.hmenuRefresh.hint "Обновить закладки">
-<!ENTITY overlay.hmenuAdd.hint "Добавить текущую страницу в закладки">
+<!ENTITY overlay.hmenuAdd.hint "Добавить текущую страницу в закладки Google">
 <!ENTITY overlay.hmenuEdit.hint "Изменить закладку текущей страницы">
 <!ENTITY overlay.hmenuDel.hint "Удалить текущую страницу из закладок">
 <!ENTITY overlay.hmenuOpt.hint "Настройки">
@@ -72,6 +76,10 @@
 <!ENTITY prefWindow.useMenuBar.radio1.label "пункт в Панели меню">
 <!ENTITY prefWindow.useMenuBar.radio2.label "кнопку на Панели навигации">
 <!ENTITY prefWindow.enableLabelUnlabeled.label "Метка для закладок без метки:">
+
+<!ENTITY prefWindow.additionalButtons.groupbox.caption "Показывать дополнительные кнопки:">
+<!ENTITY prefWindow.showToolbarAddBtn.label "Добавить закладку Google">
+<!ENTITY prefWindow.showToolbarQuickAddBtn.label "Быстрое добавление закладки">
 
 <!ENTITY ffBookmark.form.title "Импорт/экспорт Google Bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Папка в закладках Firefox для импорта/экспорта:">
