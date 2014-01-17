@@ -257,38 +257,6 @@ getHwindow : function()
 /**
  * получает сигнатуру для дальнейшей работы с закладками
  */
-/*fGoogleBookmarksExtension.doRequestSignature = function()
-{
-	try
-	{
-		this.DebugLog("doRequestSignature");
-		this.m_signature = null;
-		var self = this;
-		jQuery.noConflict();
-		jQuery.ajax({
-      type: "GET",
-      url: this.baseUrl + "find",
-      data: 
-      	{
-          zx: (new Date()).getTime(),
-          output: "rss",
-          q: "qB89f6ZAUXXsfrwPdN4t"
-        },
-      dataType : "XML",
-      timeout: this.timeOut,
-      success: function(responseXML, textStatus) {
-      	if (responseXML.getElementsByTagName("smh:signature").length)
-      	{
-      		self.m_signature = responseXML.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
-      	}
-      }
-    });
-	}
-	catch (e)
-	{
-		this.ErrorLog("GBE:doRequestSignature", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-	}
-};*/
 doRequestSignature : function()
 {
 	try
@@ -336,49 +304,6 @@ doRequestSignature : function()
  * @param  name     название закладки (параметр для поиска)
  * @param  noteCtrl текстовое поле для редактирования примечания (в окне редактирования закладки)
  */
-/*fGoogleBookmarksExtension.doRequestBookmarkNote = function(id, name, noteCtrl)
-{
-	try
-	{
-		this.DebugLog("doRequestBookmarkNote");
-		jQuery.noConflict();
-		jQuery.ajax({
-			type	: "GET",
-			url: this.baseUrl + "find",
-			data: 
-				{
-			    zx: (new Date()).getTime(),
-			    output: "rss",
-			    q: '"' + name + '"'
-			  },
-			dataType : "XML",
-			timeout: this.timeOut,
-			success: function(responseXML, textStatus) {
-				var bookmarks = responseXML.getElementsByTagName("item");
-				if (bookmarks.length)
-				{
-					for (var i = 0; i < bookmarks.length; i++)
-					{
-						if (id == bookmarks[i].getElementsByTagName("smh:bkmk_id")[0].childNodes[0].nodeValue)
-						{
-							if (bookmarks[i].getElementsByTagName("smh:bkmk_annotation").length)
-							{
-								noteCtrl.value = bookmarks[i].getElementsByTagName("smh:bkmk_annotation")[0].childNodes[0].nodeValue;
-								return;
-							}
-						}
-					}
-				}
-			}
-		});
-	}
-	catch (e)
-	{
-		this.ErrorLog("GBE:doRequestBookmarkNote", "Obtain bookmark note (", name, ") - error!");
-		this.ErrorLog("GBE:doRequestBookmarkNote", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-	}
-};*/
-
 doRequestBookmarkNote : function(id, name, noteCtrl)
 {
 	try
@@ -431,54 +356,6 @@ doRequestBookmarkNote : function(id, name, noteCtrl)
 		this.ErrorLog("GBE:doRequestBookmarkNote", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}
 },
-
-/*fGoogleBookmarksExtension.doRequestBookmarkURL = function (id, name, index, asyncMode = false)
-{
-	try
-	{
-		this.DebugLog("doRequestBookmarkURL");
-		let urlReturn = "";
-		let self = this;
-		jQuery.noConflict();
-		jQuery.ajax({
-			type : "GET",
-			url : this.baseUrl + "find",
-			data : 
-			{
-				zx : (new Date()).getTime(),
-				output : "xml",
-				q : '"' + name + '"'
-			},
-			dataType : "XML",
-			timeout : this.timeOut,
-			async : asyncMode,
-			success: function(responseXML, textStatus) {
-				let ids = responseXML.getElementsByTagName("id");
-				let urls = responseXML.getElementsByTagName("url");
-				if (ids.length && urls.length)
-				{
-					for (let i = 0; i < ids.length; i++)
-					{
-						if (id == ids[i].childNodes[0].nodeValue)
-						{
-							urlReturn = urls[i].childNodes[0].nodeValue;
-							self.m_bookmarkList[index].url = urlReturn;
-							self.GBE_menupopup.getElementsByAttribute('id', id)[0].setAttribute("url", urlReturn);
-							self.ErrorLog("Obtained URL for ", name, "is", urlReturn);
-							return urlReturn;
-						}
-					}
-				}
-			}
-		});
-		return urlReturn;
-	}
-	catch (e)
-	{
-		this.ErrorLog("GBE:doRequestBookmarkURL", "Obtain bookmark URL (", name, ") - error!");
-		this.ErrorLog("GBE:doRequestBookmarkURL", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
-	}
-};*/
 
 doRequestBookmarkURL : function (id, name, index, GBE_menupopup = null, asyncMode = false)
 {
