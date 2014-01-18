@@ -28,9 +28,13 @@
 @namespace
 url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 
+#GBE-ToolBar-popup > menu {
+  margin-right: 10px;
+}
+
 #GBE-ToolBar-popup > menuitem, #GBE-ToolBar-popup > menu, #GBE-searchResultList > menuitem { 
   max-width: 400px; 
-  min-width: 300px;
+  min-width: 400px;
 }
 
 
