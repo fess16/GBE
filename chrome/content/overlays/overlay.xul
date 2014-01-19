@@ -75,7 +75,8 @@
 										observes="GBE-bc-popup"
 										ignorekeys="true" 
 										position="after_start"
-										onpopupshown="fessGoogleBookmarks.onPopupShown(event);">
+										onpopupshown="fessGoogleBookmarks.onPopupShown(event);"
+										onpopuphiding="fessGoogleBookmarks.onPopupHiding(event);">
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-tb-hmenuRefresh" observes="GBE-bc-hmenuRefresh" />
 							<menuitem id="GBE-tb-hmenuAdd" observes="GBE-bc-hmenuAdd" />
@@ -89,6 +90,14 @@
 							<menuitem id="GBE-tb-hmenuLgt" observes="GBE-bc-hmenuLgt"/>
 					</hbox>
 					<menuseparator/>
+					<hbox id="GBE-loadingHbox" hidden="true">
+						<image id="GBE-loadingImage" src="chrome://GBE/skin/images/ajax-loader.gif" width='18px' height='18px'/>
+						<label value="Loading bookmarks..."/>
+					</hbox>
+					<hbox id="GBE-errorHbox" hidden="true">
+						<image id="GBE-loadingImage" src="chrome://GBE/skin/images/warning.png" width='18px' height='18px'/>
+						<label value="Error retrieving bookmarks list..."/>
+					</hbox>
 					<hbox id="GBE-filterHBox" align="center">					
 							<label id="GBE-filterTextbox-label" control="GBE-filterTextbox" value="&overlay.textboxLabel;"/>
 					    <textbox 

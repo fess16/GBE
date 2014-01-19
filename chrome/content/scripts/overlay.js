@@ -392,6 +392,7 @@ var fessGoogleBookmarks = {
 				}
 				else
 				{
+					if (showMenu) this.preventMenuHiding = true;
 					this.doRequestBookmarksJQuery(showMenu); 
 				}
 			}
@@ -557,6 +558,11 @@ var fessGoogleBookmarks = {
 			// обнуляем значение фильтра
 			document.getElementById("GBE-filterTextbox").value = "";
 		}
+	},
+
+	onPopupHiding : function(event)
+	{
+		if (this.preventMenuHiding) event.preventDefault();
 	},
 
 	hideBookmarks : function(hide)
@@ -1383,6 +1389,9 @@ var fessGoogleBookmarks = {
 		{
 			this._M.DebugLog("doRequestBookmarksJQuery");
 			if (!this._M.useMenuBar) document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
+
+			document.getElementById("GBE-loadingHbox").setAttribute("hidden", false);
+			document.getElementById("GBE-errorHbox").setAttribute("hidden", true);
 			this._M.m_ganswer = null;
 			this._M.m_signature = null;
 			this._M.m_bookmarkList = null;
@@ -1404,24 +1413,30 @@ var fessGoogleBookmarks = {
 	  		{
 		    	self._M.m_ganswer = request.responseXML.documentElement;
 		    	self.doBuildMenu();
-		    	if (showMenu)
-		    	{
-		    		if (self._M.useMenuBar)
-		    		{
-		    			document.getElementById("GBE-MainMenu-Popup").openPopup(document.getElementById("GBE-MainMenu"), "after_start",0,0,false,false);
-						}
-						else
-						{			    			
-		    			document.getElementById("GBE-ToolBar-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
-		    		}
-		    	}
+		    	self.preventMenuHiding = false;
+		    // 	if (showMenu)
+		    // 	{
+		    // 		if (self._M.useMenuBar)
+		    // 		{
+		    // 			document.getElementById("GBE-MainMenu-Popup").openPopup(document.getElementById("GBE-MainMenu"), "after_start",0,0,false,false);
+						// }
+						// else
+						// {			    			
+		    // 			document.getElementById("GBE-ToolBar-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
+		    // 		}
+		    // 	}
 		    	if (!self._M.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
+		    	document.getElementById("GBE-loadingHbox").setAttribute("hidden", true);
+		    	document.getElementById("GBE-errorHbox").setAttribute("hidden", true);
 	  		} 
 	  		else 
 	  		{
 	      	self._M.removeSIDCookie();
 	  			self._M.refreshInProgress = false;
 	    		self._M.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
+	    		document.getElementById("GBE-loadingHbox").setAttribute("hidden", true);
+	    		document.getElementById("GBE-errorHbox").setAttribute("hidden", false);
+	    		self.preventMenuHiding = false;
 	  		}
 	  	}
 			request.send(null);
@@ -1429,6 +1444,9 @@ var fessGoogleBookmarks = {
 				function(){ 
 					request.abort(); 
 					self._M.ErrorLog("GBE:doRequestBookmarkNote", " Error: Time over - while requesting bookmark notes");
+					document.getElementById("GBE-errorHbox").setAttribute("hidden", true);
+					document.getElementById("GBE-errorHbox").setAttribute("hidden", false);
+					self.preventMenuHiding = false;
 				}, 
 				this._M.timeOut
 			);
