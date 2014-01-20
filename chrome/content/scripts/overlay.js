@@ -562,7 +562,11 @@ var fessGoogleBookmarks = {
 
 	onPopupHiding : function(event)
 	{
-		if (this.preventMenuHiding) event.preventDefault();
+		if (this.preventMenuHiding) 
+		{
+			event.preventDefault();
+			this.preventMenuHiding = false;
+		}
 	},
 
 	hideBookmarks : function(hide)
@@ -1413,7 +1417,7 @@ var fessGoogleBookmarks = {
 	  		{
 		    	self._M.m_ganswer = request.responseXML.documentElement;
 		    	self.doBuildMenu();
-		    	self.preventMenuHiding = false;
+		    	// self.preventMenuHiding = false;
 		    // 	if (showMenu)
 		    // 	{
 		    // 		if (self._M.useMenuBar)
@@ -1436,7 +1440,7 @@ var fessGoogleBookmarks = {
 	    		self._M.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
 	    		document.getElementById("GBE-loadingHbox").setAttribute("hidden", true);
 	    		document.getElementById("GBE-errorHbox").setAttribute("hidden", false);
-	    		self.preventMenuHiding = false;
+	    		// self.preventMenuHiding = false;
 	  		}
 	  	}
 			request.send(null);
@@ -1446,7 +1450,7 @@ var fessGoogleBookmarks = {
 					self._M.ErrorLog("GBE:doRequestBookmarkNote", " Error: Time over - while requesting bookmark notes");
 					document.getElementById("GBE-errorHbox").setAttribute("hidden", true);
 					document.getElementById("GBE-errorHbox").setAttribute("hidden", false);
-					self.preventMenuHiding = false;
+					// self.preventMenuHiding = false;
 				}, 
 				this._M.timeOut
 			);
@@ -1501,15 +1505,17 @@ var fessGoogleBookmarks = {
 			if (!this._M.useMenuBar)
 			{
 				var GBE_GBlist = document.getElementById("GBE-ToolBar-popup");
-				this.GBE_menupopup = document.getElementById("GBE-ToolBar-popup"); 
+				var menupopup = document.getElementById("GBE-ToolBar-popup"); 
 				var GBE_GBlist_separator = document.getElementById("GBE-tb-GBlist-EndSeparator");
 			}
 			else
 			{
 				var GBE_GBlist = document.getElementById("GBE-MainMenu-Popup");
-				this.GBE_menupopup = document.getElementById("GBE-MainMenu-popup"); 
+				var menupopup = document.getElementById("GBE-MainMenu-Popup"); 
 				var GBE_GBlist_separator = document.getElementById("GBE-mb-GBlist-EndSeparator");				
 			}
+			this.GBE_menupopup = menupopup;
+
 			jQuery.noConflict();
 			var self = this;
 
