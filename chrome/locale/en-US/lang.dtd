@@ -29,6 +29,9 @@
 
 <!ENTITY overlay.textboxLabel "Filter:">
 
+<!ENTITY overlay.loadingHbox.label.value "Loading bookmarks...">
+<!ENTITY overlay.errorHbox.label.value "Loading bookmarks error...">
+
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
 <!ENTITY about.label-version.about "Version 0.2.0b1">
 <!ENTITY about.label-author.about "fess61@gmail.com">
@@ -88,6 +91,7 @@
 <!ENTITY ffBookmark.button-GBtoFB.label "Export from Google Bookmarks">
 <!ENTITY ffBookmark.button-FBtoGB.label "Import to Google Bookmarks">
 <!ENTITY ffBookmark.ImportTags.checkbox.label "Import bookmarks tags?">
+<!ENTITY ffBookmark.ImportAddFolder.checkbox.label "Import: add folder name?">
 <!ENTITY ffBookmark.SaveLoad.caption.label "Save/load Google Bookmarks">
 <!ENTITY ffBookmark.button-Save.label "Save to file">
 <!ENTITY ffBookmark.button-Load.label "Load from file">
@@ -95,5 +99,5 @@
 	"Warning! 
 	Before using import/export and load from file is recommended to create Firefox bookmarks backup 
 	(http://kb.mozillazine.org/Backing_up_and_restoring_bookmarks_-_Firefox)
-	and to save Google Bookmarks (Save to file)."
+	and to save Google Bookmarks (Save to file). Import/export examples : http://fess16.blogspot.com/p/blog-page_20.html"
 >

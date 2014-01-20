@@ -15,6 +15,10 @@ var fessGoogleBookmarksFFbookmarks = {
 	 */
 	ff_bookmarks_onLoad : function()
 	{
+		let menuPopup = document.getElementById("GBE-ffBookmark.GBmenulist");
+		menuPopup.removeAllItems();
+		menuPopup.appendItem(document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ImportRoot"), "_GBE-root_", "");
+		
 		let labelsList = this._M.m_labelsArr;
 		// заполняем список гугл меток
 		if (labelsList !== null)
@@ -24,15 +28,12 @@ var fessGoogleBookmarksFFbookmarks = {
 				this.overlay = window.arguments[0];//.wrappedJSObject;
 			}
 
-			let menuPopup = document.getElementById("GBE-ffBookmark.GBmenulist");
-			menuPopup.removeAllItems();
-			menuPopup.appendItem(document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ImportRoot"), "_GBE-root_", "");
 			for (let i = 0; i < labelsList.length; i++) 
 			{
 				menuPopup.appendItem(labelsList[i],labelsList[i],"");
 			}
-			menuPopup.selectedIndex = 0;
 		}
+		menuPopup.selectedIndex = 0;
 	},
 
 	ff_bookmarks_onSelectTreeItem : function(event)
@@ -50,45 +51,45 @@ var fessGoogleBookmarksFFbookmarks = {
 
 	FileManager : {
 		Write:
-		    function (File, Text)
-		    {
-		        if (!File) return;
-		        const unicodeConverter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
-		            .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+	    function (File, Text)
+	    {
+        if (!File) return;
+        const unicodeConverter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
+            .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
 
-		        unicodeConverter.charset = "UTF-8";
+        unicodeConverter.charset = "UTF-8";
 
-		        Text = unicodeConverter.ConvertFromUnicode(Text);
-		        const os = Components.classes["@mozilla.org/network/file-output-stream;1"]
-		          .createInstance(Components.interfaces.nsIFileOutputStream);
-		        os.init(File, 0x02 | 0x08 | 0x20, 0700, 0);
-		        os.write(Text, Text.length);
-		        os.close();
-		    },
+        Text = unicodeConverter.ConvertFromUnicode(Text);
+        const os = Components.classes["@mozilla.org/network/file-output-stream;1"]
+          .createInstance(Components.interfaces.nsIFileOutputStream);
+        os.init(File, 0x02 | 0x08 | 0x20, 0700, 0);
+        os.write(Text, Text.length);
+        os.close();
+	    },
 
 		Read:
-		    function (File)
-		    {
-		        if (!File) return;
-		        let res;
+	    function (File)
+	    {
+        if (!File) return;
+        let res;
 
-		        const is = Components.classes["@mozilla.org/network/file-input-stream;1"]
-		            .createInstance(Components.interfaces.nsIFileInputStream);
-		        const sis = Components.classes["@mozilla.org/scriptableinputstream;1"]
-		            .createInstance(Components.interfaces.nsIScriptableInputStream);
-		        is.init(File, 0x01, 0400, null);
-		        sis.init(is);
+        const is = Components.classes["@mozilla.org/network/file-input-stream;1"]
+            .createInstance(Components.interfaces.nsIFileInputStream);
+        const sis = Components.classes["@mozilla.org/scriptableinputstream;1"]
+            .createInstance(Components.interfaces.nsIScriptableInputStream);
+        is.init(File, 0x01, 0400, null);
+        sis.init(is);
 
-		        res = sis.read(sis.available());
+        res = sis.read(sis.available());
 
-		        let utf8Converter = Components.classes["@mozilla.org/intl/utf8converterservice;1"].
-		            getService(Components.interfaces.nsIUTF8ConverterService);
-		        let data = utf8Converter.convertURISpecToUTF8 (res, "UTF-8"); 
+        let utf8Converter = Components.classes["@mozilla.org/intl/utf8converterservice;1"].
+            getService(Components.interfaces.nsIUTF8ConverterService);
+        let data = utf8Converter.convertURISpecToUTF8 (res, "UTF-8"); 
 
-		        is.close();
+        is.close();
 
-		        return data;
-		    },
+        return data;
+	    },
 	},
 
 	parseJsonFile : function(jsonString)
@@ -176,6 +177,8 @@ var fessGoogleBookmarksFFbookmarks = {
 							txtLog.value +=	"Import bookmark: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n";
 							this._M.doChangeBookmarkJQuery(params);
 						}
+						this._M.needRefresh = true;
+						this.overlay.needRefresh = true;
 					}
 				}
 			}
@@ -221,12 +224,14 @@ var fessGoogleBookmarksFFbookmarks = {
 			}
 			var flagImportTags = document.getElementById("GBE-ffBookmark.ImportTags").checked;
 
+			var flagImportAddFolder = document.getElementById("GBE-ffBookmark.ImportAddFolder").checked;
+
 			// заполняем параметры импортируемой закладки
 			var process_bookmark = function(node)
 			{
 				try
 				{
-					let arr = labels.slice(1);
+					let arr = (flagImportAddFolder ? labels.slice(0) : labels.slice(1));
 					if (flagAddLabel) 
 					{
 						arr.unshift(gbRootLabel);
@@ -278,7 +283,6 @@ var fessGoogleBookmarksFFbookmarks = {
 					let rootNode = result.root;
 					rootNode.containerOpen = true;
 					labels.push(rootNode.title);
-
 					for (let i = 0; i < rootNode.childCount; i ++) {
 					  let node = rootNode.getChild(i);
 					  if (node.type == 6)
@@ -319,7 +323,8 @@ var fessGoogleBookmarksFFbookmarks = {
 				txtLog.value +=	"Import bookmark: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n";
 				this._M.doChangeBookmarkJQuery(params);
 			}
-
+			this._M.needRefresh = true;
+			this.overlay.needRefresh = true;
 			bookmarks = [];
 
 		}

@@ -9,7 +9,7 @@
   overflow-y: scroll;
 }
 
-#GBE-filterTextbox-label, #GBE-loadingImage {
+#GBE-filterTextbox-label, .GBE-messageImage {
 	margin-left: 30px;
 }
 

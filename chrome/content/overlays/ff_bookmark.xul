@@ -37,9 +37,10 @@
 		<hbox align="center" >
 			<textbox 
 				flex="1"
+				rows="5"
 				multiline="true" 
 				value="&ffBookmark.FFWarning.label.value;"
-				disabled="true"
+				readonly="true"
 				/>
 			<!-- <label value="&ffBookmark.FFWarning.label.value;" /> -->
 		</hbox>
@@ -70,7 +71,12 @@
 					<caption label="&ffBookmark.Options.caption.label;" />
 					<checkbox id="GBE-ffBookmark.ImportTags" 
 										label="&ffBookmark.ImportTags.checkbox.label;" 
-										checked="false"/>
+										checked="false"
+					/>
+					<checkbox id="GBE-ffBookmark.ImportAddFolder" 
+										label="&ffBookmark.ImportAddFolder.checkbox.label;" 
+										checked="false"
+					/>
 				</groupbox>
 				<groupbox>
 					<caption label="&ffBookmark.SaveLoad.caption.label;" />

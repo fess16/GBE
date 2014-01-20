@@ -75,8 +75,7 @@
 										observes="GBE-bc-popup"
 										ignorekeys="true" 
 										position="after_start"
-										onpopupshown="fessGoogleBookmarks.onPopupShown(event);"
-										onpopuphiding="fessGoogleBookmarks.onPopupHiding(event);">
+										onpopupshown="fessGoogleBookmarks.onPopupShown(event);" >
 					<hbox id="GBE-hmenu">
 							<menuitem id="GBE-tb-hmenuRefresh" observes="GBE-bc-hmenuRefresh" />
 							<menuitem id="GBE-tb-hmenuAdd" observes="GBE-bc-hmenuAdd" />
@@ -90,14 +89,15 @@
 							<menuitem id="GBE-tb-hmenuLgt" observes="GBE-bc-hmenuLgt"/>
 					</hbox>
 					<menuseparator/>
-					<hbox id="GBE-loadingHbox" hidden="true">
-						<image id="GBE-loadingImage" src="chrome://GBE/skin/images/ajax-loader.gif" width='18px' height='18px'/>
-						<label value="Loading bookmarks..."/>
+					<hbox observes="GBE-bc-loadingHbox" >
+						<image observes="GBE-bc-loadingImage" />
+						<label observes="GBE-bc-loadingLabel" />
 					</hbox>
-					<hbox id="GBE-errorHbox" hidden="true">
-						<image id="GBE-loadingImage" src="chrome://GBE/skin/images/warning.png" width='18px' height='18px'/>
-						<label value="Error retrieving bookmarks list..."/>
+					<hbox observes="GBE-bc-errorHbox" >
+						<image observes="GBE-bc-errorImage" />
+						<label observes="GBE-bc-errorLabel" />
 					</hbox>
+
 					<hbox id="GBE-filterHBox" align="center">					
 							<label id="GBE-filterTextbox-label" control="GBE-filterTextbox" value="&overlay.textboxLabel;"/>
 					    <textbox 
@@ -156,6 +156,14 @@
       	<menuitem id="GBE-mb-hmenuLgn" observes="GBE-bc-hmenuLgn" />
       	<menuitem id="GBE-mb-hmenuLgt" observes="GBE-bc-hmenuLgt" />
       	<menuseparator/>
+      	<hbox observes="GBE-bc-loadingHbox" >
+      		<image observes="GBE-bc-loadingImage" />
+      		<label observes="GBE-bc-loadingLabel" />
+      	</hbox>
+      	<hbox observes="GBE-bc-errorHbox" >
+      		<image observes="GBE-bc-errorImage" />
+      		<label observes="GBE-bc-errorLabel" />
+      	</hbox>
 
 				<menuseparator id="GBE-mb-GBlist-EndSeparator"/>
 <!-- 				<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" /> -->
@@ -167,6 +175,7 @@
   	<broadcaster 	id="GBE-bc-popup" 
   							onpopupshowing="fessGoogleBookmarks.onShowMenu(event);" 
   							onpopuphidden="fessGoogleBookmarks.onHideMenu(event);"
+  							onpopuphiding="fessGoogleBookmarks.onPopupHiding(event);"
   							onclick="fessGoogleBookmarks.handleClick(event);"
   	/>
 
@@ -235,6 +244,21 @@
 			tooltiptext="About" 
 			oncommand="fessGoogleBookmarks.showAboutForm(event);"
 		/>
+
+		<broadcaster id="GBE-bc-loadingHbox" hidden="true" />
+		<broadcaster id="GBE-bc-loadingImage" 
+			class="GBE-messageImage" src="chrome://GBE/skin/images/ajax-loader.gif" 
+			width='18px' 
+			height='18px'/>
+		<broadcaster id="GBE-bc-loadingLabel" value="&overlay.loadingHbox.label.value;"/>
+
+		<broadcaster id="GBE-bc-errorHbox" hidden="true" />
+		<broadcaster id="GBE-bc-errorImage" 
+			class="GBE-messageImage" src="chrome://GBE/skin/images/warning.png" 
+			width='18px' 
+			height='18px'/>
+		<broadcaster id="GBE-bc-errorLabel" value="&overlay.errorHbox.label.value;"/>
+
  	</broadcasterset>
 
 
