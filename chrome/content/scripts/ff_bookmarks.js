@@ -96,14 +96,21 @@ var fessGoogleBookmarksFFbookmarks = {
 	{
 		// jQuery.noConflict();
 		// let arr = jQuery.parseJSON(jsonString);
-		let arr = JSON.parse(jsonString);
-		if (arr !== null && arr.bookmarks.length && arr.labels.length )
+		try 
 		{
-			this._M.m_bookmarkList = arr.bookmarks;
-			this._M.m_labelsArr = arr.labels;
-			return this.overlay.refreshBookmarks(false,true);
+			let arr = JSON.parse(jsonString);
+			if (arr !== null && arr.bookmarks.length && arr.labels.length )
+			{
+				this._M.m_bookmarkList = arr.bookmarks;
+				this._M.m_labelsArr = arr.labels;
+				return this.overlay.refreshBookmarks(false,true);
+			}
+			return false;
+		} catch (e) 
+		{
+			this._M.ErrorLog("Parsing error:", e);
+			return false;
 		}
-		return false;
 	},
 
 	// сохранение this.m_bookmarkList и this.m_labelsArr в файл в json формате
