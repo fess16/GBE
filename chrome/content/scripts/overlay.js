@@ -535,7 +535,7 @@ var fessGoogleBookmarks = {
 			}
 			if (!this._M.useMenuBar)
 			{
-				document.getElementById("GBE-filterHBox").setAttribute("hidden","true");
+				// document.getElementById("GBE-filterHBox").setAttribute("hidden","true");
 			}
 		}
 		catch (e)
@@ -943,7 +943,13 @@ var fessGoogleBookmarks = {
 		{
 			// //e.target.sizeTo(300, 700);
 			// e.target.width = 300;
-			document.getElementById("GBE-filterHBox").setAttribute("hidden","false");
+			// jQuery.noConflict();
+			// let max_width = "" + this._M.max_width + "px";
+			// let min_width = "" + this._M.min_width + "px";
+			// jQuery("#GBE-ToolBar-popup > menuitem").css({ "max-width" : max_width, "min-width" : min_width});
+			// jQuery("#GBE-ToolBar-popup > menu").css({ "max-width" : max_width, "min-width" : min_width});
+			// jQuery("#GBE-searchResultList > menuitem").css({ "max-width" : max_width, "min-width" : min_width});
+			// document.getElementById("GBE-filterHBox").setAttribute("hidden","false");
 			e.stopPropagation();
 		}
 	},
@@ -1028,6 +1034,7 @@ var fessGoogleBookmarks = {
 		item.setAttribute("url", value.url);
 		item.setAttribute("tooltiptext", value.url);
 		item.setAttribute("class", "menuitem-iconic google-bookmarks");
+		item.setAttribute("style", "max-width: " + this._M.max_width + "px;min-width: " + this._M.min_width + "px;");
 		this.setFavicon(value, item); 
 		item.setAttribute("context", "GBE-contextMenu");
 		if (parent.nodeName == "menuseparator")
@@ -1047,6 +1054,7 @@ var fessGoogleBookmarks = {
 		item.setAttribute("label", label);
 		item.setAttribute("fullName", ((fullName == "") ? label : fullName));
 		item.setAttribute("class", "menu-iconic google-bookmarks");
+		item.setAttribute("style", "max-width: " + this._M.max_width + "px;min-width: " + this._M.min_width + "px;");
 		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 		item.setAttribute("container", "true");
 		// для метки labelUnlabeledName контекстрое меню не назначаем
@@ -1078,6 +1086,7 @@ var fessGoogleBookmarks = {
 		item.setAttribute("url", url);
 		item.setAttribute("tooltiptext", url);
 		item.setAttribute("class", "menuitem-iconic google-bookmarks-filter");
+		item.setAttribute("style", "max-width: " + this._M.max_width + "px;min-width: " + this._M.min_width + "px;");
 		item.setAttribute("image", favicon);
 		parent.appendChild(item);
 	},
@@ -1397,7 +1406,7 @@ var fessGoogleBookmarks = {
 		try
 		{
 			this._M.DebugLog("doRequestBookmarksJQuery");
-			if (!this._M.useMenuBar) document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
+			//if (!this._M.useMenuBar) document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 
 			document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", false);
 			document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", true);

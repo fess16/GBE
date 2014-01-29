@@ -67,6 +67,9 @@ var fGoogleBookmarksModule =
 	// добавляемая метка
 	'labelUnlabeledName' : "Unlabeled",
 	'prefs' : null,
+	'min_width' : 300,
+	'max_width' : 400,
+
  	/* --------------------*/
 
  	'defAutocompliteList' : "",
