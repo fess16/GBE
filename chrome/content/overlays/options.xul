@@ -29,6 +29,8 @@
       <preference id="pref_labelUnlabeledName" name="extensions.fessGBE.labelUnlabeledName" type="string"/>
       <preference id="pref_showToolbarAddBtn" name="extensions.fessGBE.showToolbarAddBtn" type="bool"/>
       <preference id="pref_showToolbarQuickAddBtn" name="extensions.fessGBE.showToolbarQuickAddBtn" type="bool"/>
+      <preference id="pref_maxMenuWidth" name="extensions.fessGBE.maxMenuWidth" type="int"/>
+      <preference id="pref_minMenuWidth" name="extensions.fessGBE.minMenuWidth" type="int"/>
     </preferences>
 
     <hbox align="center" flex="1">
@@ -124,6 +126,21 @@
           label="&prefWindow.showToolbarQuickAddBtn.label;"/>
       </vbox>
     </groupbox>
+
+    <hbox align="center" flex="1">
+      <label control="fessGBE-prefs-minMenuWidth-Ctrl" value="&prefWindow.minMenuWidth.label;"/>
+      <textbox 
+        preference="pref_minMenuWidth" 
+        id="fessGBE-prefs-minMenuWidth-Ctrl" 
+        width="50px" maxlength="4"/>
+    </hbox>
+    <hbox align="center" flex="1">
+      <label control="fessGBE-prefs-maxMenuWidth-Ctrl" value="&prefWindow.maxMenuWidth.label;"/>
+      <textbox 
+        preference="pref_maxMenuWidth" 
+        id="fessGBE-prefs-maxMenuWidth-Ctrl" 
+        width="50px" maxlength="4"/>
+    </hbox>
 
   </prefpane>
 </prefwindow>

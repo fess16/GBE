@@ -83,6 +83,8 @@
 <!ENTITY prefWindow.additionalButtons.groupbox.caption "Показывать дополнительные кнопки:">
 <!ENTITY prefWindow.showToolbarAddBtn.label "Добавить закладку Google">
 <!ENTITY prefWindow.showToolbarQuickAddBtn.label "Быстрое добавление закладки">
+<!ENTITY prefWindow.minMenuWidth.label "Минимальная ширина меню закладок (px):">
+<!ENTITY prefWindow.maxMenuWidth.label "Максимальная ширина меню закладок (px):">
 
 <!ENTITY ffBookmark.form.title "Импорт/экспорт Google Bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Папка в закладках Firefox для импорта/экспорта:">

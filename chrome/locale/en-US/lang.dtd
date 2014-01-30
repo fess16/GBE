@@ -83,6 +83,9 @@
 <!ENTITY prefWindow.showToolbarAddBtn.label "Add Google Bookmark">
 <!ENTITY prefWindow.showToolbarQuickAddBtn.label "Quick Add GBookmark">
 
+<!ENTITY prefWindow.minMenuWidth.label "Min popup width (px):">
+<!ENTITY prefWindow.maxMenuWidth.label "Max popup width (px):">
+
 
 <!ENTITY ffBookmark.form.title "Import/Export google bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Firefox bookmarks folder for import/export:">

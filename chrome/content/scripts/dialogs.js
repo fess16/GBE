@@ -69,7 +69,24 @@ var fessGoogleBookmarksDialogs = {
 				document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").focus();
 				return false;
 			}	
-			
+			let minMenuWidth = parseInt(document.getElementById("fessGBE-prefs-minMenuWidth-Ctrl").value);
+			let maxMenuWidth = parseInt(document.getElementById("fessGBE-prefs-maxMenuWidth-Ctrl").value);
+
+			if (isNaN(minMenuWidth) || minMenuWidth < 300 || minMenuWidth > 950)
+			{
+				document.getElementById("fessGBE-prefs-minMenuWidth-Ctrl").value = 300;
+				minMenuWidth = 300;
+				return false;
+			}
+
+			if (isNaN(maxMenuWidth) || maxMenuWidth < minMenuWidth || maxMenuWidth == '' || maxMenuWidth > 1000)
+			{
+				maxMenuWidth = 50 + minMenuWidth;
+				document.getElementById("fessGBE-prefs-maxMenuWidth-Ctrl").value = maxMenuWidth;
+				return false;
+			}
+
+		
 			this._M.prefs.setCharPref("nestedLabelSep", document.getElementById("fessGBE-prefs-nestedLabelSep-Ctrl").value);
 			this._M.prefs.setBoolPref("showFavicons", document.getElementById("fessGBE-prefs-showFavicons-Ctrl").checked);
 			this._M.prefs.setBoolPref("reverseBkmrkLeftClick", document.getElementById("fessGBE-prefs-reverseBkmrkLeftClick-Ctrl").checked);
@@ -91,6 +108,8 @@ var fessGoogleBookmarksDialogs = {
 			this._M.prefs.setCharPref("labelUnlabeledName", document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value);
 			this._M.prefs.setBoolPref("showToolbarAddBtn", document.getElementById("fessGBE-prefs-showToolbarAddBtn-Ctrl").checked);
 			this._M.prefs.setBoolPref("showToolbarQuickAddBtn", document.getElementById("fessGBE-prefs-showToolbarQuickAddBtn-Ctrl").checked);
+			this._M.prefs.setIntPref("minMenuWidth", minMenuWidth);
+			this._M.prefs.setIntPref("maxMenuWidth", maxMenuWidth);
 
 
 			this._M.needRefresh = true;
@@ -106,6 +125,9 @@ var fessGoogleBookmarksDialogs = {
 			this._M.useMenuBar = this._M.prefs.getBoolPref("useMenuBar");
 			this._M.enableLabelUnlabeled = document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked;
 			this._M.labelUnlabeledName = document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value;
+			this._M.minMenuWidth = minMenuWidth;
+			this._M.maxMenuWidth = maxMenuWidth;
+
 
 			if (oldValGBautocomplite !== this._M.enableGBautocomplite && this.overlay !== null)
 			{

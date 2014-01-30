@@ -67,8 +67,8 @@ var fGoogleBookmarksModule =
 	// добавляемая метка
 	'labelUnlabeledName' : "Unlabeled",
 	'prefs' : null,
-	'min_width' : 300,
-	'max_width' : 400,
+	'minMenuWidth' : 300,
+	'maxMenuWidth' : 400,
 
  	/* --------------------*/
 
@@ -162,7 +162,19 @@ var fGoogleBookmarksModule =
 		this.DebugLog("readPrefValue");
 		if (this.prefs.getPrefType(prefName) == prefType)
 		{
-			this[prefName] = ((prefType == this.prefs.PREF_STRING) ? this.prefs.getCharPref(prefName) : this.prefs.getBoolPref(prefName));
+			// this[prefName] = ((prefType == this.prefs.PREF_STRING) ? this.prefs.getCharPref(prefName) : this.prefs.getBoolPref(prefName));
+			if (prefType == this.prefs.PREF_STRING)
+			{
+				this[prefName] = this.prefs.getCharPref(prefName);
+			}
+			if (prefType == this.prefs.PREF_BOOL)
+			{
+				this[prefName] = this.prefs.getBoolPref(prefName);
+			}
+			if (prefType == this.prefs.PREF_INT)
+			{
+				this[prefName] = this.prefs.getIntPref(prefName);
+			}		
 		}
 		else
 		{
@@ -171,9 +183,14 @@ var fGoogleBookmarksModule =
 				this.prefs.setCharPref(prefName, prefDefValue);
 				this[prefName] = prefDefValue;
 			}
-			else
+			if (prefType == this.prefs.PREF_BOOL)
 			{
 				this.prefs.setBoolPref(prefName, prefDefValue);
+				this[prefName] = prefDefValue;
+			}
+			if (prefType == this.prefs.PREF_INT)
+			{
+				this.prefs.setIntPref(prefName, prefDefValue);
 				this[prefName] = prefDefValue;
 			}
 		}		
@@ -203,6 +220,8 @@ var fGoogleBookmarksModule =
     this.readPrefValue("labelUnlabeledName", this.prefs.PREF_STRING, "Unlabeled");
     this.readPrefValue("showToolbarAddBtn", this.prefs.PREF_BOOL, false);
     this.readPrefValue("showToolbarQuickAddBtn", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("minMenuWidth", this.prefs.PREF_INT, 300);
+    this.readPrefValue("maxMenuWidth", this.prefs.PREF_INT, 400);
 	},
 
 	/**
