@@ -128,18 +128,26 @@
     </groupbox>
 
     <hbox align="center" flex="1">
-      <label control="fessGBE-prefs-minMenuWidth-Ctrl" value="&prefWindow.minMenuWidth.label;"/>
+      <label 
+        control="fessGBE-prefs-minMenuWidth-Ctrl" 
+        value="&prefWindow.minMenuWidth.label;" 
+        tooltiptext="300 &lt;= value &lt;= 950" />
       <textbox 
         preference="pref_minMenuWidth" 
         id="fessGBE-prefs-minMenuWidth-Ctrl" 
-        width="50px" maxlength="4"/>
+        width="50px" maxlength="4"
+        tooltiptext="300 &lt;= value &lt;= 950"/>
     </hbox>
     <hbox align="center" flex="1">
-      <label control="fessGBE-prefs-maxMenuWidth-Ctrl" value="&prefWindow.maxMenuWidth.label;"/>
+      <label 
+        control="fessGBE-prefs-maxMenuWidth-Ctrl" 
+        value="&prefWindow.maxMenuWidth.label;"
+        tooltiptext="300 &lt;= value &lt;= 1000" />
       <textbox 
         preference="pref_maxMenuWidth" 
         id="fessGBE-prefs-maxMenuWidth-Ctrl" 
-        width="50px" maxlength="4"/>
+        width="50px" maxlength="4"
+        tooltiptext="300 &lt;= value &lt;= 1000" />
     </hbox>
 
   </prefpane>
