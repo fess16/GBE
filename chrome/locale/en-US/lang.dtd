@@ -81,7 +81,7 @@
 
 <!ENTITY prefWindow.additionalButtons.groupbox.caption "Show additional toolbar buttons:">
 <!ENTITY prefWindow.showToolbarAddBtn.label "Add Google Bookmark">
-<!ENTITY prefWindow.showToolbarQuickAddBtn.label "Quick Add GBookmark">
+<!ENTITY prefWindow.showToolbarQuickAddBtn.label "Quick Add Google Bookmark">
 
 <!ENTITY prefWindow.minMenuWidth.label "Min popup width (px):">
 <!ENTITY prefWindow.maxMenuWidth.label "Max popup width (px):">
