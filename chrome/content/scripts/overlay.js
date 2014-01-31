@@ -212,7 +212,7 @@ var fessGoogleBookmarks = {
 		  	break;
 		  case "showToolbarQuickAddBtn":
 		  	this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.prefs.getBoolPref(aData));
-	    	break;		  
+	    	break;	
 		}
 	},
 

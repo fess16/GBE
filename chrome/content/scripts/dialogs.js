@@ -47,6 +47,27 @@ var fessGoogleBookmarksDialogs = {
 		}
 	}, 
 
+	onChangeWidthValue : function(event)
+	{
+		let value = parseInt(event.target.value);
+		let id = event.target.getAttribute('id');
+		if (id == "fessGBE-prefs-minMenuWidth-Ctrl")
+		{
+			if (isNaN(value) || value < 300 || value > 950)
+			{
+				event.target.value = 300;
+			}
+		}
+		if (id == "fessGBE-prefs-maxMenuWidth-Ctrl")
+		{
+			if (isNaN(value) || value < 300 || value > 1000 || value < parseInt(document.getElementById("fessGBE-prefs-minMenuWidth-Ctrl").value))
+			{
+				event.target.value = parseInt(document.getElementById("fessGBE-prefs-minMenuWidth-Ctrl").value);
+			}
+		}
+
+	},
+
 	/**
 	 * Сохранение настроек
 	 */
@@ -81,7 +102,7 @@ var fessGoogleBookmarksDialogs = {
 
 			if (isNaN(maxMenuWidth) || maxMenuWidth < minMenuWidth || maxMenuWidth == '' || maxMenuWidth > 1000)
 			{
-				maxMenuWidth = 50 + minMenuWidth;
+				maxMenuWidth = minMenuWidth;
 				document.getElementById("fessGBE-prefs-maxMenuWidth-Ctrl").value = maxMenuWidth;
 				return false;
 			}

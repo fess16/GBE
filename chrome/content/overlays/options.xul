@@ -136,7 +136,8 @@
         preference="pref_minMenuWidth" 
         id="fessGBE-prefs-minMenuWidth-Ctrl" 
         width="50px" maxlength="4"
-        tooltiptext="300 &lt;= value &lt;= 950"/>
+        tooltiptext="300 &lt;= value &lt;= 950"
+        onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
     </hbox>
     <hbox align="center" flex="1">
       <label 
@@ -147,7 +148,8 @@
         preference="pref_maxMenuWidth" 
         id="fessGBE-prefs-maxMenuWidth-Ctrl" 
         width="50px" maxlength="4"
-        tooltiptext="300 &lt;= value &lt;= 1000" />
+        tooltiptext="300 &lt;= value &lt;= 1000" 
+        onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
     </hbox>
 
   </prefpane>
