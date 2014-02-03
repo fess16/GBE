@@ -6,6 +6,7 @@
 <?xml-stylesheet href="chrome://browser/skin/places/places.css"?>
 <!-- Load the places overlay to include the required JavaScript files as well as the default commands and context menu -->
 <?xul-overlay href="chrome://browser/content/places/placesOverlay.xul"?>
+<?xml-stylesheet href="chrome://GBE/skin/styles/overlay.css" type="text/css"?>
 
 <!DOCTYPE dialog SYSTEM "chrome://GBE/locale/lang.dtd">
 
@@ -35,9 +36,9 @@
  	</stringbundleset>
 	<vbox>
 		<hbox align="center" >
-			<textbox 
+			<textbox id="GBE-ffBookmarks-warning"
 				flex="1"
-				rows="5"
+				rows="4"
 				multiline="true" 
 				value="&ffBookmark.FFWarning.label.value;"
 				readonly="true"

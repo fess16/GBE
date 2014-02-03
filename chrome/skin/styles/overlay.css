@@ -45,3 +45,9 @@ url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
 #GBE-ToolBar-popup scrollbox, #GBE-MainMenu-Popup scrollbox {
     overflow-y: auto !important; 
 }
+
+#GBE-ffBookmarks-warning{
+  color: red;
+  -moz-appearance: none;
+  background-color: #FDF5E3;
+}
