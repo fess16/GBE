@@ -9,9 +9,10 @@ Version 0.2.0b
 + форма для импорта/экспорта закладок, сохранения/загрузки закладок в/из файла
 + изменена структура дополнения: для работы в нескольких окнах браузера
 + кнопки на панели для обычного и быстрого добавления закладок
++ параметры для задания минимальной и максимальной ширины списка закладок
 ! при нажатии на кнопку Обновить список закладок не закрывается, а отображается loadingHbox (при ошибке загрузки errorHbox)
 ! не сбрасывался флаг refreshInProgress при ошибках в doBuildMenu
-! обновлена jquery
+! удалена jquery
 
 Version 0.1.9
 + перешел на использование модуля (module.js) для хранения общих данных
@@ -101,8 +102,8 @@ Cu.import("resource://gre/modules/FileUtils.jsm");
 
 Cu.import('chrome://GBE/content/scripts/module.js');
 
-Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(
-	Ci.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
+// Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(
+// 	Ci.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
 var fessGoogleBookmarks = {
 
@@ -310,34 +311,49 @@ var fessGoogleBookmarks = {
 	switchInteface : function(useMenuBar)
 	{
 		this._M.DebugLog("switchInteface");
-		jQuery.noConflict();
-		if (!useMenuBar)
+
+		let toolbarElement = document.getElementById('GBE-toolbaritem');
+		let menuElement = document.getElementById('GBE-MainMenu');
+		try
 		{
-			if (jQuery("#GBE-toolbaritem").length)
+			if (!useMenuBar)
 			{
-				jQuery("#GBE-toolbaritem").show();
-				jQuery("#GBE-MainMenu").hide();
+				if (typeof(toolbarElement) != 'undefined' && toolbarElement != null)
+				{
+					toolbarElement.setAttribute("hidden", false);
+					menuElement.setAttribute("hidden", true);
+				}
+				else
+				{
+					try
+					{
+						this.installButton("GBE-toolbaritem");	
+						this.switchInteface(this._M.useMenuBar);
+					}
+					catch(e)
+					{
+						this._M.ErrorLog("GBE:switchInteface ", "Can't use toolbar button! Try switch to menubar item.");
+						this._M.useMenuBar = true;
+						this._M.prefs.setBoolPref("useMenuBar", true);
+						this.switchInteface(this._M.useMenuBar);
+					}
+				}
 			}
 			else
 			{
-				try
+				if (typeof(menuElement) != 'undefined' && menuElement != null)
 				{
-					this.installButton("GBE-toolbaritem");	
-					this.switchInteface(this._M.useMenuBar);
+					menuElement.setAttribute("hidden", false);
 				}
-				catch(e)
+				if (typeof(toolbarElement) != 'undefined' && toolbarElement != null)
 				{
-					this._M.ErrorLog("GBE:switchInteface ", "Can't use toolbar button! Try switch to menubar item.");
-					this._M.useMenuBar = true;
-					this._M.prefs.setBoolPref("useMenuBar", true);
-					this.switchInteface(this._M.useMenuBar);
+					toolbarElement.setAttribute("hidden", true);
 				}
 			}
 		}
-		else
+		catch(e)
 		{
-			jQuery("#GBE-toolbaritem").hide();
-			jQuery("#GBE-MainMenu").show();			
+			this._M.ErrorLog("GBE:switchInteface", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -577,14 +593,20 @@ var fessGoogleBookmarks = {
 	hideBookmarks : function(hide)
 	{
 		this._M.DebugLog("hideBookmarks");
-		jQuery.noConflict();
+		let items = document.getElementById("GBE-ToolBar-popup").getElementsByClassName('google-bookmarks');
 		if (hide)
 		{
-			jQuery("#GBE-ToolBar-popup").find(".google-bookmarks").hide();
+			for(let i = 0; i < items.length; i++) 
+			{
+			  items[i].setAttribute("hidden", true);
+			}
 		}
 		else
 		{
-			jQuery("#GBE-ToolBar-popup").find(".google-bookmarks").show();
+			for(let i = 0; i < items.length; i++) 
+			{
+			  items[i].setAttribute("hidden", false);
+			}
 		}
 	},
 
@@ -706,37 +728,36 @@ var fessGoogleBookmarks = {
 					var uniqueWords = [];
 					var labels = [];
 					var self = this;
-					jQuery.noConflict();
 					// проходим по всем словам
-					jQuery.each(words, function(i, el){
+					words.forEach(function(el, i, array)
+					{
 						// пропускаем повторяющиеся и слова из одного символа
-				    if(jQuery.inArray(el, uniqueWords) === -1 && el.length > 1) 
+				    if(uniqueWords.indexOf(el) === -1 && el.length > 1) 
 				    {
 				    	uniqueWords.push(el);
 				    	// регулярка для поиска
 				    	// ищем с начала строки/после nestedLabelSep до конца строки/nestedLabelSep 
-						  var SearchString = new RegExp("(^|" + self.nestedLabelSep + ")" 
-						  																		+ el 
-						  																		+ "($|" + self.nestedLabelSep + ")", "i");
+						  let SearchString = new RegExp("(^|" + self._M.nestedLabelSep + ")" 
+						  	+ el + "($|" + self._M.nestedLabelSep + ")", "i");
 						  // просматриваем массив меток
-				      for (var i=0; i<labelsList.length; i++) 
+				      for (let i=0; i<labelsList.length; i++) 
 				      {
 				      	// результат поиска
-				      	var position = labelsList[i].search(SearchString);
+				      	let position = labelsList[i].search(SearchString);
 				      	// нашли совпадение
 				        if (position != -1) 
 				        {
 				          // ограничиваем уровень вложенности метки
 				          // например: ищем chrome, есть закладка Browsers/Chrome/test
 				          // newLabel будет Browsers/Chrome/
-				          var newLabel = labelsList[i].substring(0,position + el.length+1);
+				          let newLabel = labelsList[i].substring(0,position + el.length+1);
 				          // если последний символ равен разделителю вложенных меток - удаляем его
 				          if (newLabel.charAt(newLabel.length - 1) == self.nestedLabelSep)
 				          {
 				          	newLabel = newLabel.substr(0, newLabel.length-1);
 				          }
 				          // если такой метки еще не было, добавляем ее в массив
-				          if (jQuery.inArray(newLabel, labels) === -1)
+				          if (labels.indexOf(newLabel) === -1)
 				          {
 				          	labels.push(newLabel);
 				          }
@@ -759,7 +780,7 @@ var fessGoogleBookmarks = {
 					// для закладок, у которых уже есть метки
 					if (this._M.windowsParams.labels.length)
 					{
-						if (jQuery.inArray(addLabel, this._M.windowsParams.labels) === -1) this._M.windowsParams.labels.push(addLabel);
+						if (this._M.windowsParams.labels.indexOf(addLabel === -1)) this._M.windowsParams.labels.push(addLabel);
 					}
 					// для закладок без меток и новых закладок
 					else
@@ -1531,7 +1552,6 @@ var fessGoogleBookmarks = {
 			}
 			this.GBE_menupopup = menupopup;
 
-			jQuery.noConflict();
 			var self = this;
 
 			//сохраняем сигнатуру из ответа (необходима при работе с закладками)
@@ -1690,7 +1710,7 @@ var fessGoogleBookmarks = {
 						for (j = 0; j < bookmark_labels.length; j++)
 						{
 							this._M.m_bookmarkList[i].labels[j] =  bookmark_labels[j].childNodes[0].nodeValue;
-							let lbl = jQuery.grep(lbs, function(e){ return e.title == bookmark_labels[j].childNodes[0].nodeValue });
+							let lbl = lbs.filter(function(val, i, ar){ return ar[i].title == bookmark_labels[j].childNodes[0].nodeValue});
 							if (lbl.length)
 							{
 								if (lbl[0].timestamp == null || lbl[0].timestamp < this._M.m_bookmarkList[i].timestamp)
@@ -1706,7 +1726,7 @@ var fessGoogleBookmarks = {
 						// определяем timestamp для закладок без метки
 						if (this._M.enableLabelUnlabeled)
 						{
-							let lbl = jQuery.grep(lbs, function(e){ return e.title == self.labelUnlabeledName });
+							let lbl = lbs.filter(function(val, i, ar){ return ar[i].title == self._M.labelUnlabeledName});
 							if (lbl.length)
 							{
 								if (lbl[0].timestamp == null || lbl[0].timestamp < this._M.m_bookmarkList[i].timestamp)
@@ -1842,7 +1862,7 @@ var fessGoogleBookmarks = {
 			// удаляем метку labelUnlabeledName из массива меток
 			if (this._M.enableLabelUnlabeled)
 			{
-				this._M.m_labelsArr = jQuery.grep(this._M.m_labelsArr, function (a) { return a != self.labelUnlabeledName; });
+				this._M.m_labelsArr = this._M.m_labelsArr.filter(function(val, i, ar){ return val != self._M.labelUnlabeledName});
 			}
 			return true;
 
