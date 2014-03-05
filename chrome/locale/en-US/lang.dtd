@@ -33,7 +33,7 @@
 <!ENTITY overlay.errorHbox.label.value "Loading bookmarks error...">
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
-<!ENTITY about.label-version.about "Version 0.2.0">
+<!ENTITY about.label-version.about "Version 0.2.1b1">
 <!ENTITY about.label-author.about "fess61@gmail.com">
 <!ENTITY about.label-donation.title "Donate to the project :)">
 

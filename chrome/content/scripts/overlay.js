@@ -3,6 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /* 
+Version 0.2.1b
++ фильтр по примечаниям (в настройка должна быть выбрана опция "Показывать примечания к закладкам")
+
+
 Version 0.2.0
 + добавлены проверки при парсинге закладки
 + QR-код для закладок
@@ -414,7 +418,7 @@ var fessGoogleBookmarks = {
 				else
 				{
 					if (showMenu) this.preventMenuHiding = true;
-					this.doRequestBookmarksJQuery(showMenu); 
+					this.doRequestBookmarks(showMenu); 
 				}
 			}
 		}
@@ -996,6 +1000,14 @@ var fessGoogleBookmarks = {
 		}
 		else
 		{
+			let checkBookmark = function (bookmark, search) 
+			{
+				if (bookmark.title.toLowerCase().indexOf(search) !== -1) return true;
+				//if (bookmark.url.toLowerCase().indexOf(search) !== -1) return true;
+				if (bookmark.notes.toLowerCase().indexOf(search) !== -1) return true;
+				return false;
+			};
+
 			// прячем основной список
 			// GBE_GBlist.setAttribute("hidden", true);
 			this.hideBookmarks(true);
@@ -1012,13 +1024,16 @@ var fessGoogleBookmarks = {
 					// то ищем только среди ранее отфильтрованных закладок
 					for(var i = 0; i < tempArray.length; i++)
 					{
-						if (tempArray[i][0].toLowerCase().indexOf(search) !== -1 )//||
-							// tempArray[i][1].toLowerCase().indexOf(search) !== -1)
+						if (checkBookmark(tempArray[i], search))
+						//if (tempArray[i].title.toLowerCase().indexOf(search) !== -1 )
 						{
 							tempMenuitem = document.createElement('menuitem');
-							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i][0], tempArray[i][1], tempArray[i][2]);
+							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i].title, tempArray[i].url, tempArray[i].favicon);
 							// и формируем this.tempFilterArray заново
-							this._M.tempFilterArray.push([ tempArray[i][0], tempArray[i][1], tempArray[i][2] ]);
+							this._M.tempFilterArray.push({
+								"title" : tempArray[i].title, "url" : tempArray[i].url, 
+								"favicon" : tempArray[i].favicon, "notes" : tempArray[i].notes
+							});
 						}
 					}
 				}
@@ -1027,12 +1042,15 @@ var fessGoogleBookmarks = {
 					// иначе - поиск по всем закладкам
 					for (var i = 0; i < this._M.m_bookmarkList.length; i++)
 					{
-						if (this._M.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1 )//||
-							// this.m_bookmarkList[i].url.toLowerCase().indexOf(search) !== -1)
+						if (checkBookmark(this._M.m_bookmarkList[i], search))
+						//if (this._M.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1 )
 						{
 							tempMenuitem = document.createElement('menuitem');
 							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this._M.m_bookmarkList[i].title, this._M.m_bookmarkList[i].url, this._M.m_bookmarkList[i].favicon);
-							this._M.tempFilterArray.push([this._M.m_bookmarkList[i].title, this._M.m_bookmarkList[i].url, this._M.m_bookmarkList[i].favicon]);
+							this._M.tempFilterArray.push({
+								"title" : this._M.m_bookmarkList[i].title, "url" : this._M.m_bookmarkList[i].url, 
+								"favicon" : this._M.m_bookmarkList[i].favicon, "notes" : this._M.m_bookmarkList[i].notes
+							});
 						}
 					}
 				}
@@ -1422,11 +1440,11 @@ var fessGoogleBookmarks = {
 	// 	return false;
 	// },
 
-	doRequestBookmarksJQuery : function(showMenu)
+	doRequestBookmarks : function(showMenu)
 	{
 		try
 		{
-			this._M.DebugLog("doRequestBookmarksJQuery");
+			this._M.DebugLog("doRequestBookmarks");
 			//if (!this._M.useMenuBar) document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 
 			document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", false);
@@ -1472,7 +1490,7 @@ var fessGoogleBookmarks = {
 	  		{
 	      	self._M.removeSIDCookie();
 	  			self._M.refreshInProgress = false;
-	    		self._M.ErrorLog("GBE:doRequestBookmarksJQuery", "Ошибка при получении списка закладок");
+	    		self._M.ErrorLog("GBE:doRequestBookmarks", "Ошибка при получении списка закладок");
 	    		document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 	    		document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", false);
 	    		self.preventMenuHiding = false;
@@ -1492,7 +1510,7 @@ var fessGoogleBookmarks = {
 		}
 		catch (e)
 		{
-			this._M.ErrorLog("GBE:doRequestBookmarksJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			this._M.ErrorLog("GBE:doRequestBookmarks", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 			self.preventMenuHiding = false;
 		}
 	},
