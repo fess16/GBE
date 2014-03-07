@@ -5,7 +5,7 @@
 /* 
 Version 0.2.1b
 + фильтр по примечаниям (в настройка должна быть выбрана опция "Показывать примечания к закладкам")
-+ добавление в закладки открытых вкладок
++ добавление в закладки открытых вкладок (только из активной группы вкладок)
 
 
 Version 0.2.0
@@ -1961,7 +1961,7 @@ var fessGoogleBookmarks = {
 			for (let i = 0, len = tabs.length; i < len; i++) 
 			{
 			  let t = tabs[i];
-			  if (t.label == "" && t.linkedBrowser.currentURI.spec == "" || t.linkedBrowser.currentURI.spec == "about:blank")
+			  if (t.hidden || t.label == "" && t.linkedBrowser.currentURI.spec == "" || t.linkedBrowser.currentURI.spec == "about:blank")
 			  {
 			  	continue;
 			  }
