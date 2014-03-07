@@ -457,5 +457,90 @@ var fessGoogleBookmarksDialogs = {
 			document.getElementById("GBE-qr.dialog.image").src = "https://chart.googleapis.com/chart?cht=qr&chl=" +
 				this._M.windowsParams.url + "&choe=UTF-8&chs=200x200";
 		}
-	}
+	},
+
+	onLoadAddOpenTabsDialog : function()
+	{
+		if (window !== null && window.arguments !== undefined && window.arguments[0] !== undefined ) 
+		{
+			this.overlay = window.arguments[0];
+		}
+		let searchTextField = document.getElementById("GBE-addOpenTabs.dialog.labelName");
+		// формируем список для автодополнения меток
+		let labelsList = this._M.m_labelsArr;
+		if (labelsList !== null)
+		{
+			paramsToSet = "{\"delimiter\" : \""+ this._M.nestedLabelSep + "\", \"labels\" : [";
+			for (let i = 0; i < labelsList.length; i++) {
+				paramsToSet += "{\"value\" : \"" + labelsList[i] + "\"},";
+			};
+			paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
+			paramsToSet += "]}";
+			searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
+		}
+
+		this.windowsParams = JSON.parse(JSON.stringify(this._M.windowsParams)); 
+		searchTextField.value = this.windowsParams.label;
+
+		let treechildren = document.getElementById("GBE-addOpenTabs_dialog_tree");
+		while (treechildren.firstChild) {
+		  treechildren.removeChild(treechildren.firstChild);
+		}
+
+		for (let i = 0; i < this.windowsParams.tabs.length; i++)
+		{
+			let t = this.windowsParams.tabs[i];
+
+			let treeitem = document.createElement('treeitem');
+			let treerow = document.createElement('treerow');
+
+			let treecell_1 = document.createElement('treecell');
+			let treecell_2 = document.createElement('treecell');
+			let treecell_3 = document.createElement('treecell');
+
+			treecell_1.setAttribute('value', true);
+			treecell_2.setAttribute('label', t.title);
+			treecell_3.setAttribute('label', t.uri);
+
+			treerow.appendChild(treecell_1);
+			treerow.appendChild(treecell_2);
+			treerow.appendChild(treecell_3);
+
+			treeitem.appendChild(treerow);
+
+			treechildren.appendChild(treeitem);
+		}
+	},
+
+	onAcceptAddOpenTabsDialog : function()
+	{
+		let treechildren = document.getElementById("GBE-addOpenTabs_dialog_tree");
+		let label = document.getElementById("GBE-addOpenTabs.dialog.labelName").value;
+
+		let rows = treechildren.querySelectorAll("treerow");
+		for (let i=0; i<rows.length; i++)
+		{
+			let cells = rows[i].childNodes;
+			let flag = cells[0].getAttribute("value");
+			let title = cells[1].getAttribute("label");
+			let uri = cells[2].getAttribute("label");
+
+			if (flag=="true")
+			{
+				// параметры закладки
+				let windowsParams = {
+						name : title,
+						id : null,
+						url : uri,
+						labels : label,
+						notes : "",
+						sig : this._M.m_signature
+					};
+
+				this._M.doChangeBookmarkJQuery(windowsParams, this.overlay); 
+			}
+		}
+
+	},
+
 }

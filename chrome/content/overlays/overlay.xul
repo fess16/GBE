@@ -58,6 +58,11 @@
 				image="chrome://GBE/skin/images/folder_add.png"
 				label="&overlay.folderMenuAddHere.label;"
 				oncommand="fessGoogleBookmarks.folderMenuAddHere();"/>
+			<menuitem id="GBE-folderMenuAddAllTabs" 
+				class="menuitem-iconic" 
+				image="chrome://GBE/skin/images/add_open_tabs.png"
+				label="&overlay.folderMenuAddAllTabs.label;"
+				oncommand="fessGoogleBookmarks.folderMenuAddAllTabs();"/>
 		</menupopup>
 	</popupset>	
 
@@ -81,6 +86,7 @@
 							<menuitem id="GBE-tb-hmenuAdd" observes="GBE-bc-hmenuAdd" />
 							<menuitem id="GBE-tb-hmenuEdit" observes="GBE-bc-hmenuEdit" />
 							<menuitem id="GBE-tb-hmenuDel" observes="GBE-bc-hmenuDel" />
+							<menuitem id="GBE-tb-hmenuAddOpenTabs" observes="GBE-bc-hmenuAddOpenTabs" />
 							<menuitem id="GBE-tb-hmenuOpt" observes="GBE-bc-hmenuOpt" />
 							<menuitem id="GBE-tb-hmenuGBs" observes="GBE-bc-hmenuGBs" />
 							<menuitem id="GBE-tb-hmenuFFbookmark" observes="GBE-bc-hmenuFFbookmark" />
@@ -149,6 +155,7 @@
       	<menuitem id="GBE-mb-hmenuAdd" observes="GBE-bc-hmenuAdd" label="&overlay.hmenuAdd.hint;" />
       	<menuitem id="GBE-mb-hmenuEdit" observes="GBE-bc-hmenuEdit" label="&overlay.hmenuEdit.hint;" />
       	<menuitem id="GBE-mb-hmenuDel" observes="GBE-bc-hmenuDel" label="&overlay.hmenuDel.hint;" />
+      	<menuitem id="GBE-mb-hmenuAddOpenTabs" observes="GBE-bc-hmenuAddOpenTabs" label="&overlay.hmenuAddOpenTabs.hint;" />
       	<menuitem id="GBE-mb-hmenuOpt" observes="GBE-bc-hmenuOpt" label="&overlay.hmenuOpt.hint;" />
       	<menuitem id="GBE-mb-hmenuGBs" observes="GBE-bc-hmenuGBs" label="&overlay.hmenuGBs.hint;" />
       	<menuitem id="GBE-mb-hmenuFFbookmark" observes="GBE-bc-hmenuFFbookmark" label="Import/Export" />
@@ -206,6 +213,14 @@
 							disabled="true"
 							oncommand="fessGoogleBookmarks.showDeleteDlg(null);"  
 		/>
+		<broadcaster id="GBE-bc-hmenuAddOpenTabs" 
+							class="menuitem-iconic" 
+							image="chrome://GBE/skin/images/add_open_tabs.png"
+							tooltiptext="&overlay.hmenuAddOpenTabs.hint;" 
+							disabled="false"
+							oncommand="fessGoogleBookmarks.showAddAllTabsDialog();" 
+		/>
+
 		<broadcaster id="GBE-bc-hmenuOpt" 
 							class="menuitem-iconic" 
 							image="chrome://GBE/skin/images/setting_tools.png" 

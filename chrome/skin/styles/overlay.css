@@ -51,3 +51,14 @@ url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
   -moz-appearance: none;
   background-color: #FDF5E3;
 }
+
+#GBE-addOpenTabs_dialog_tree::-moz-tree-checkbox {
+  /* unchecked checkbox treecells. This style MUST come before treechildren::-moz-tree-checkbox(checked) otherwise it won't take effect.  */
+  list-style-image: none;
+}
+
+#GBE-addOpenTabs_dialog_tree::-moz-tree-checkbox(checked){
+  /* css for checked cells. cbox-check.gif isn't available in Firefox 1, 2, and 3 on Mac OS X, so you should specify a URL to an image
+     in your extension or elsewhere. */
+  list-style-image: url("chrome://global/skin/checkbox/cbox-check.gif");
+}

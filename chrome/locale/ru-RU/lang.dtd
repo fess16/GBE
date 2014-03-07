@@ -15,6 +15,8 @@
 <!ENTITY overlay.hmenuLgt.hint "Выйти из Google Bookmarks">
 <!ENTITY overlay.hmenuFFbookmark.hint "Импорт/экспорт Google Bookmarks">
 
+<!ENTITY overlay.hmenuAddOpenTabs.hint "Добавить в закладки все открытые вкладки">
+
 <!ENTITY overlay.contextMenuShowHere.label "Открыть на месте">
 <!ENTITY overlay.contextMenuEdit.label "Редактировать">
 <!ENTITY overlay.contextMenuRemove.label "Удалить">
@@ -24,6 +26,7 @@
 <!ENTITY overlay.folderMenuRemove.label "Удалить">
 <!ENTITY overlay.folderMenuOpenAll.label "Открыть все">
 <!ENTITY overlay.folderMenuAddHere.label "Добавить закладку здесь">
+<!ENTITY overlay.folderMenuAddAllTabs.label "Добавить в закладки открытые вкладки">
 
 <!ENTITY overlay.contextMenuAddBookmark.label "Добавить страницу в Google Bookmarks">
 
@@ -33,10 +36,9 @@
 <!ENTITY overlay.errorHbox.label.value "Ошибка при получении закладок...">
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
-<!ENTITY about.label-version.about "Версия 0.2.1b1">
+<!ENTITY about.label-version.about "Версия 0.2.1b2">
 <!ENTITY about.label-author.about "fess61@gmail.com">
 <!ENTITY about.label-donation.title "Поддержите проект :)">
-
 
 <!ENTITY bookmark.form.title "Редактирование закладки">
 <!ENTITY bookmark.button-save.label "Сохранить">
@@ -102,3 +104,11 @@
 	Перед использованием импорта/экспорта и загрузки из файла рекомендуется сделать резервную копию закладок Firefox (Ctrl+Shift+B - Импорт и резервные копии - Создать резервную копию...)
 	и сохранить закладки Google (Сохранить в файл). Примеры импорта/экспорта : http://fess16.blogspot.com/p/blog-page_20.html"
 >
+
+<!ENTITY addOpenTabs.form.title "Добавление в закладки открытых вкладок">
+<!ENTITY addOpenTabs.LabelName.label "Название закладки:">
+<!ENTITY addOpenTabs.button-save.label "Добавить">
+<!ENTITY addOpenTabs.button-cancel.label "Отмена">
+<!ENTITY addOpenTabs.treecol.select.label "Выбор">
+<!ENTITY addOpenTabs.treecol.Title.label "Заголовок">
+<!ENTITY addOpenTabs.treecol.URL.label "Адрес">

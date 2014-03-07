@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://GBE/skin/styles/overlay.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
+
+<dialog 
+  id="GBE-addOpenTabs.dialog"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  title="&addOpenTabs.form.title;"
+  buttons="accept,cancel"
+  buttonlabelaccept="&addOpenTabs.button-save.label;"
+  buttonlabelcancel="&addOpenTabs.button-cancel.label;" 
+  minheight= "300px" minwidth="400px" flex="1" orient="vertical"
+  onload="fessGoogleBookmarksDialogs.onLoadAddOpenTabsDialog();"
+  ondialogaccept="return fessGoogleBookmarksDialogs.onAcceptAddOpenTabsDialog();" >
+  <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
+    <label control="GBE-addOpenTabs.dialog.labelName" value="&addOpenTabs.LabelName.label;" />
+    <textbox id="GBE-addOpenTabs.dialog.labelName" value="_OpenTabs" 
+      type="autocomplete" autocompletesearch="simple-autocomplete"   
+      autocompletesearchparam='[]' 
+      onsearchcomplete="fessGoogleBookmarksDialogs.onSearchCompliteAutocomplite(this);"
+      ontextentered="fessGoogleBookmarksDialogs.onTextEnteredAutocomplite(this);" />
+    <separator class="thin"/>
+    <tree flex="1" editable="true">
+      <treecols>
+        <treecol label="&addOpenTabs.treecol.select.label;" type="checkbox" editable="true"/>
+        <treecol label="&addOpenTabs.treecol.Title.label;" flex="1" />
+        <treecol label="&addOpenTabs.treecol.URL.label;" flex="1" />
+      </treecols>
+      <treechildren id="GBE-addOpenTabs_dialog_tree">
+      </treechildren>
+
+    </tree>
+</dialog>

@@ -5,6 +5,7 @@
 /* 
 Version 0.2.1b
 + фильтр по примечаниям (в настройка должна быть выбрана опция "Показывать примечания к закладкам")
++ добавление в закладки открытых вкладок
 
 
 Version 0.2.0
@@ -1930,6 +1931,59 @@ var fessGoogleBookmarks = {
 			{
 				this._M.ErrorLog("GBE:quickAddBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 			}
+	},
+
+	folderMenuAddAllTabs : function()
+	{
+		try
+		{	
+			// название метки
+			let label = document.getElementById(this._M.currentFolderId).getAttribute("fullName");
+			this.showAddAllTabsDialog(label);
+			this._M.currentFolderId = "";
+		}
+		catch (e)
+		{
+			this._M.ErrorLog("GBE:folderMenuAddAllTabs", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+	showAddAllTabsDialog : function(labelName = "_OpenTabs")
+	{
+		try
+		{
+			let tabs = gBrowser.tabs;
+			this._M.windowsParams = {
+				label : labelName,
+				tabs : []
+			};
+			let myRe = /(?:.*?:\/\/?)(.*)(?:\/$)/ig;
+			for (let i = 0, len = tabs.length; i < len; i++) 
+			{
+			  let t = tabs[i];
+			  if (t.label == "" && t.linkedBrowser.currentURI.spec == "" || t.linkedBrowser.currentURI.spec == "about:blank")
+			  {
+			  	continue;
+			  }
+		  	let trimUrlAr = myRe.exec(t.linkedBrowser.currentURI.spec);
+		  	let trimUrl = t.linkedBrowser.currentURI.spec;
+		  	if (trimUrlAr && trimUrlAr.length > 1)
+		  	{
+		  		trimUrl = trimUrlAr[1];
+		  	}
+
+			  this._M.windowsParams.tabs.push({title : (t.label || trimUrl), uri : t.linkedBrowser.currentURI.spec})
+			}
+
+			let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+		           .getService(Components.interfaces.nsIWindowMediator)
+		           .getMostRecentWindow("navigator:browser");
+			win.openDialog("chrome://GBE/content/overlays/opentabs.xul", "","chrome,centerscreen,resizable,modal",this);
+		}
+		catch (e)
+		{
+			this._M.ErrorLog("GBE:showAddAllTabsDialog", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
 
 

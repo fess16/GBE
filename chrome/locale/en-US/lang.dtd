@@ -15,6 +15,8 @@
 <!ENTITY overlay.hmenuLgt.hint "Logout Google Bookmarks">
 <!ENTITY overlay.hmenuFFbookmark.hint "Import/Export Google Bookmarks">
 
+<!ENTITY overlay.hmenuAddOpenTabs.hint "Bookmark all open tabs">
+
 <!ENTITY overlay.contextMenuShowHere.label "Open in current Tab">
 <!ENTITY overlay.contextMenuEdit.label "Edit">
 <!ENTITY overlay.contextMenuRemove.label "Delete">
@@ -24,6 +26,7 @@
 <!ENTITY overlay.folderMenuRemove.label "Delete">
 <!ENTITY overlay.folderMenuOpenAll.label "Open all">
 <!ENTITY overlay.folderMenuAddHere.label "Add Bookmark Here">
+<!ENTITY overlay.folderMenuAddAllTabs.label "Bookmark all tabs here">
 
 <!ENTITY overlay.contextMenuAddBookmark.label "Add page to Google Bookmarks">
 
@@ -33,7 +36,7 @@
 <!ENTITY overlay.errorHbox.label.value "Loading bookmarks error...">
 
 <!ENTITY about.label-title.about "Fess Google Bookmarks">
-<!ENTITY about.label-version.about "Version 0.2.1b1">
+<!ENTITY about.label-version.about "Version 0.2.1b2">
 <!ENTITY about.label-author.about "fess61@gmail.com">
 <!ENTITY about.label-donation.title "Donate to the project :)">
 
@@ -104,3 +107,11 @@
 	(http://kb.mozillazine.org/Backing_up_and_restoring_bookmarks_-_Firefox)
 	and to save Google Bookmarks (Save to file). Import/export examples : http://fess16.blogspot.com/p/blog-page_20.html"
 >
+
+<!ENTITY addOpenTabs.form.title "Bookmark open tabs">
+<!ENTITY addOpenTabs.LabelName.label "Label name:">
+<!ENTITY addOpenTabs.button-save.label "Ok">
+<!ENTITY addOpenTabs.button-cancel.label "Cancel">
+<!ENTITY addOpenTabs.treecol.select.label "Select">
+<!ENTITY addOpenTabs.treecol.Title.label "Title">
+<!ENTITY addOpenTabs.treecol.URL.label "URL">
