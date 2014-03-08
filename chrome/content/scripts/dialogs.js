@@ -459,14 +459,17 @@ var fessGoogleBookmarksDialogs = {
 		}
 	},
 
+	/*
+	При открытии диалога добавления в закладки открытых вкладок
+	*/
 	onLoadAddOpenTabsDialog : function()
 	{
 		if (window !== null && window.arguments !== undefined && window.arguments[0] !== undefined ) 
 		{
 			this.overlay = window.arguments[0];
 		}
+		// автодополнение названия метки
 		let searchTextField = document.getElementById("GBE-addOpenTabs.dialog.labelName");
-		// формируем список для автодополнения меток
 		let labelsList = this._M.m_labelsArr;
 		if (labelsList !== null)
 		{
@@ -480,8 +483,9 @@ var fessGoogleBookmarksDialogs = {
 		}
 
 		this.windowsParams = JSON.parse(JSON.stringify(this._M.windowsParams)); 
+		// название метки
 		searchTextField.value = this.windowsParams.label;
-
+		// формируем дерево добавляемых закладок
 		let treechildren = document.getElementById("GBE-addOpenTabs_dialog_tree");
 		while (treechildren.firstChild) {
 		  treechildren.removeChild(treechildren.firstChild);
@@ -512,11 +516,12 @@ var fessGoogleBookmarksDialogs = {
 		}
 	},
 
+	// подтверждение добавления вкладок в закладки
 	onAcceptAddOpenTabsDialog : function()
 	{
 		let treechildren = document.getElementById("GBE-addOpenTabs_dialog_tree");
 		let label = document.getElementById("GBE-addOpenTabs.dialog.labelName").value;
-
+		// перебираем все вкладки из дерева
 		let rows = treechildren.querySelectorAll("treerow");
 		for (let i=0; i<rows.length; i++)
 		{
@@ -524,7 +529,7 @@ var fessGoogleBookmarksDialogs = {
 			let flag = cells[0].getAttribute("value");
 			let title = cells[1].getAttribute("label");
 			let uri = cells[2].getAttribute("label");
-
+			// добавляем только выбранные
 			if (flag=="true")
 			{
 				// параметры закладки
@@ -532,13 +537,36 @@ var fessGoogleBookmarksDialogs = {
 						name : title,
 						id : null,
 						url : uri,
-						labels : label,
+						labels : "",
 						notes : "",
 						sig : this._M.m_signature
 					};
+				// если такая закладка с таким адресом уже есть,
+				this._M.getBookmark(windowsParams, true);
+				if (windowsParams.id)
+				{
+					// добавляем новую метку + к предыдущим
+					if (windowsParams.labels.length)
+					{
+						if (windowsParams.labels.indexOf(label === -1)) windowsParams.labels.push(label);
+					}
+					else
+					{
+						windowsParams.labels += label;
+					}
+				}
+				else
+				{
+					// иначе - просто новая закладка
+					windowsParams.labels = label;
+				}
 
 				this._M.doChangeBookmarkJQuery(windowsParams, this.overlay); 
 			}
+		}
+		if (this.overlay !== null)
+		{
+			this.overlay.needRefresh = true;
 		}
 
 	},
