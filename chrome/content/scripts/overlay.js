@@ -107,6 +107,11 @@ Cu.import("resource://gre/modules/FileUtils.jsm");
 
 Cu.import('chrome://GBE/content/scripts/module.js');
 
+// if (fGoogleBookmarksModule.above29)
+// {
+// 	Cu.import("resource:///modules/CustomizableUI.jsm");
+// }
+
 // Cc["@mozilla.org/moz/jssubscript-loader;1"].getService(
 // 	Ci.mozIJSSubScriptLoader).loadSubScript("chrome://GBE/content/scripts/jquery.min.js"); 
 
@@ -224,37 +229,95 @@ var fessGoogleBookmarks = {
 
 	setAdditionalButton : function(id, prefValue)
 	{
-  	if (prefValue)
+  	if (this._M.above29)
   	{
-  		if (!document.getElementById(id))
-  		{
+  		if (prefValue)
+	  	{
 	  		this.installButton(id);
-  		}
-  		document.getElementById(id).setAttribute("hidden", false);
+	  	}
+	  	else
+	  	{
+	  		this.removeButton(id);
+	  	}
   	}
-  	else
-  	{
-  		if (document.getElementById(id))
-  		{
-  			document.getElementById(id).setAttribute("hidden", true);
-  		}
-  	}
+	  else	
+	  {
+	  	if (prefValue)
+	  	{
+	  		if (!document.getElementById(id))
+	  		{
+		  		this.installButton(id);
+	  		}
+	  		document.getElementById(id).setAttribute("hidden", false);
+	  	}
+	  	else
+	  	{
+	  		if (document.getElementById(id))
+	  		{
+	  			document.getElementById(id).setAttribute("hidden", true);
+	  		}
+	  	}
+	  }
 	},
 
 	installButton : function(id)
 	{
 		this._M.DebugLog("installButton");
-		// var id = "GBE-toolbaritem";
-		var toolbarId = "nav-bar";
-	 	var toolbar = document.getElementById(toolbarId);
-		//add the button at the end of the navigation toolbar	
-		toolbar.insertItem(id, toolbar.lastChild);
-		toolbar.setAttribute("currentset", toolbar.currentSet);
-		document.persist(toolbar.id, "currentset");
+		try 
+		{
+			if (this._M.above29)
+			{
+				let position = this._M.prefs.getIntPref(id.replace("-","_")+ "Position");
+				let place = this._M.prefs.getCharPref(id.replace("-","_")+ "Place");
+				if (position == -1)
+				{
+					position = CustomizableUI.getWidgetIdsInArea(place).length;
+				}
+				CustomizableUI.addWidgetToArea(id, place,	position);
 
-		//if the navigation toolbar is hidden, 
-		//show it, so the user can see your button
-		toolbar.collapsed = false;
+				// CustomizableUI.ensureWidgetPlacedInWindow(id,window);
+				// toolbar.customizationTarget.insertItem(id, toolbar.customizationTarget.lastChild);
+				// let toolbarHbox = document.getElementById("nav-bar-customization-target");
+				// let toolbarHbox = CustomizableUI.getCustomizeTargetForArea(CustomizableUI.AREA_NAVBAR, window);
+				// if (toolbarHbox)
+				// {
+				// 	toolbarHbox.insertItem(id, toolbarHbox.lastChild);
+				// }
+			}
+			else
+			{
+				let toolbarId = "nav-bar";
+				let toolbar = document.getElementById(toolbarId);
+				//add the button at the end of the navigation toolbar	
+				toolbar.insertItem(id, toolbar.lastChild);
+				toolbar.setAttribute("currentset", toolbar.currentSet);
+				document.persist(toolbar.id, "currentset");
+
+				//if the navigation toolbar is hidden, 
+				//show it, so the user can see your button
+				toolbar.collapsed = false;
+			}
+		}
+		catch(e)
+		{
+			this._M.ErrorLog("GBE:installButton", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+	removeButton : function(id)
+	{
+		try 
+		{
+			if (this._M.above29)
+			{
+				CustomizableUI.removeWidgetFromArea(id);
+			}
+		}
+		catch(e)
+		{
+			this._M.ErrorLog("GBE:removeButton", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+
 	},
 	 
 	firstRun : function (extensions) 
@@ -264,6 +327,44 @@ var fessGoogleBookmarks = {
 	    {
 	    	this.installButton("GBE-toolbaritem");	
 	    }
+	},
+
+	onWidgetMoved : function(aWidgetId, aArea, aOldPosition, aNewPosition)
+	{
+		if (aWidgetId == "GBE-toolbaritem")
+		{
+			this._M.prefs.setCharPref("GBE_toolbaritemPlace", aArea);
+			this._M.prefs.setIntPref("GBE_toolbaritemPosition", aNewPosition);
+		}
+		if (aWidgetId == "GBE-btnAddBookmark")
+		{
+			this._M.prefs.setCharPref("GBE_btnAddBookmarkPlace", aArea);
+			this._M.prefs.setIntPref("GBE_btnAddBookmarkPosition", aNewPosition);
+		}
+		if (aWidgetId == "GBE-btnQuickAddBookmark")
+		{
+			this._M.prefs.setCharPref("GBE_btnQuickAddBookmarkPlace", aArea);
+			this._M.prefs.setIntPref("GBE_btnQuickAddBookmarkPosition", aNewPosition);
+		}
+	},
+
+	onWidgetAdded : function(aWidgetId, aArea, aPosition)
+	{
+		if (aWidgetId == "GBE-toolbaritem")
+		{
+			this._M.prefs.setCharPref("GBE_toolbaritemPlace", aArea);
+			this._M.prefs.setIntPref("GBE_toolbaritemPosition", aPosition);
+		}
+		if (aWidgetId == "GBE-btnAddBookmark")
+		{
+			this._M.prefs.setCharPref("GBE_btnAddBookmarkPlace", aArea);
+			this._M.prefs.setIntPref("GBE_btnAddBookmarkPosition", aPosition);
+		}
+		if (aWidgetId == "GBE-btnQuickAddBookmark")
+		{
+			this._M.prefs.setCharPref("GBE_btnQuickAddBookmarkPlace", aArea);
+			this._M.prefs.setIntPref("GBE_btnQuickAddBookmarkPosition", aPosition);
+		}
 	},
 
 	init : function()
@@ -277,11 +378,29 @@ var fessGoogleBookmarks = {
 		{
 			// добавляем обработчик изменения настроек
 			this._M.prefs.addObserver("", this, false);
+			if (this._M.above29)
+			{
+				CustomizableUI.addListener(this);
+				// this._M.ErrorLog(this.AppVersion);
+				// this._M.ErrorLog(JSON.stringify( CustomizableUI.getWidgetIdsInArea(CustomizableUI.AREA_MENUBAR)));
+				// // this._M.ErrorLog(CustomizableUI.getCustomizeTargetForArea(CustomizableUI.AREA_NAVBAR, window).id);
+				//  this._M.ErrorLog(JSON.stringify(CustomizableUI.getPlacementOfWidget("GBE-toolbaritem")));
+				// // areaType = toolbar || menu-panel
+				// this._M.ErrorLog(CustomizableUI.getWidget("GBE-toolbaritem").areaType);
+				// this._M.ErrorLog(CustomizableUI.getWidget("GBE-toolbaritem").instances[0].node.getAttribute("hidden"));
+				// // this._M.ErrorLog(CustomizableUI.getPlacementOfWidget("GBE-toolbaritem").area);
+				// // this._M.ErrorLog(JSON.stringify(CustomizableUI.isSpecialWidget("GBE-toolbaritem")));
+				// // CustomizableUI.addWidgetToArea("GBE-toolbaritem", CustomizableUI.AREA_NAVBAR);
+			}
 
 			this.switchInteface(this._M.useMenuBar);
 			this.setAdditionalButton("GBE-btnAddBookmark", this._M.showToolbarAddBtn);
 			this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.showToolbarQuickAddBtn);
-			 if(this._M.checkLogin() && (document.getElementById("GBE-toolbarbutton") || (document.getElementById("GBE-MainMenu") ) ) )
+
+			//if (this.AppVersion.indexOf("29.") == 0)
+
+			if(this._M.checkLogin() && (document.getElementById("GBE-toolbarbutton") 
+				|| (document.getElementById("GBE-MainMenu") && !document.getElementById("GBE-MainMenu").getAttribute("hidden") ) ) )
 			{
 				this.refreshBookmarks(false);
 			}
@@ -309,6 +428,10 @@ var fessGoogleBookmarks = {
 			{
 				this.setURLBarAutocompleteList("off");
 			}
+			if (this._M.above29)
+			{
+				CustomizableUI.removeListener(this);
+			}
 		}
 	},
 
@@ -316,49 +439,82 @@ var fessGoogleBookmarks = {
 	switchInteface : function(useMenuBar)
 	{
 		this._M.DebugLog("switchInteface");
-
-		let toolbarElement = document.getElementById('GBE-toolbaritem');
 		let menuElement = document.getElementById('GBE-MainMenu');
-		try
+		let id = 'GBE-toolbaritem';
+		if (this._M.above29)
 		{
-			if (!useMenuBar)
+			try
 			{
-				if (typeof(toolbarElement) != 'undefined' && toolbarElement != null)
+				if (!useMenuBar)
 				{
-					toolbarElement.setAttribute("hidden", false);
-					menuElement.setAttribute("hidden", true);
+					this.installButton(id);
+					if (typeof(menuElement) != 'undefined' && menuElement != null)
+					{
+						menuElement.setAttribute("hidden", true);
+					}
 				}
 				else
 				{
-					try
+					this.removeButton(id);
+					if (typeof(menuElement) != 'undefined' && menuElement != null)
 					{
-						this.installButton("GBE-toolbaritem");	
-						this.switchInteface(this._M.useMenuBar);
+						menuElement.setAttribute("hidden", false);
 					}
-					catch(e)
-					{
-						this._M.ErrorLog("GBE:switchInteface ", "Can't use toolbar button! Try switch to menubar item.");
-						this._M.useMenuBar = true;
-						this._M.prefs.setBoolPref("useMenuBar", true);
-						this.switchInteface(this._M.useMenuBar);
-					}
+
 				}
 			}
-			else
+			catch(e)
 			{
-				if (typeof(menuElement) != 'undefined' && menuElement != null)
-				{
-					menuElement.setAttribute("hidden", false);
-				}
-				if (typeof(toolbarElement) != 'undefined' && toolbarElement != null)
-				{
-					toolbarElement.setAttribute("hidden", true);
-				}
+				this._M.ErrorLog("GBE:switchInteface", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 			}
 		}
-		catch(e)
+		else
 		{
-			this._M.ErrorLog("GBE:switchInteface", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			let toolbarElement = document.getElementById('GBE-toolbaritem');
+			try
+			{
+				if (!useMenuBar)
+				{
+					if (typeof(toolbarElement) != 'undefined' && toolbarElement != null)
+					{
+						toolbarElement.setAttribute("hidden", false);
+						menuElement.setAttribute("hidden", true);
+					}
+					else
+					{
+						try
+						{
+							this._M.ErrorLog("switchInteface");
+							this._M.ErrorLog(JSON.stringify(CustomizableUI.getPlacementOfWidget("GBE-toolbaritem")));
+
+							this.installButton("GBE-toolbaritem");	
+							this.switchInteface(this._M.useMenuBar);
+						}
+						catch(e)
+						{
+							this._M.ErrorLog("GBE:switchInteface ", "Can't use toolbar button! Try switch to menubar item.");
+							this._M.useMenuBar = true;
+							this._M.prefs.setBoolPref("useMenuBar", true);
+							this.switchInteface(this._M.useMenuBar);
+						}
+					}
+				}
+				else
+				{
+					if (typeof(menuElement) != 'undefined' && menuElement != null)
+					{
+						menuElement.setAttribute("hidden", false);
+					}
+					if (typeof(toolbarElement) != 'undefined' && toolbarElement != null)
+					{
+						toolbarElement.setAttribute("hidden", true);
+					}
+				}
+			}
+			catch(e)
+			{
+				this._M.ErrorLog("GBE:switchInteface", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+			}
 		}
 	},
 
@@ -442,7 +598,11 @@ var fessGoogleBookmarks = {
 			{
 				if (id)
 				{
-					if (!this._M.useMenuBar) document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+					if (!this._M.useMenuBar) 
+					{
+						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star");
+						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+					}
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "true");
 					document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_on.png");
@@ -459,7 +619,11 @@ var fessGoogleBookmarks = {
 				}
 				else
 				{
-					if (!this._M.useMenuBar) document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+					if (!this._M.useMenuBar) 
+					{
+						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star");
+						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+					}
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "false");
 					document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");

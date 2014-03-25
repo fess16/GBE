@@ -10,6 +10,18 @@ const Cu = Components.utils;
 
 EXPORTED_SYMBOLS = ['fGoogleBookmarksModule'];
 
+// assuming we're running under Firefox
+var appInfo = Components.classes["@mozilla.org/xre/app-info;1"]
+    .getService(Components.interfaces.nsIXULAppInfo);
+var versionChecker = Components.classes["@mozilla.org/xpcom/version-comparator;1"]
+    .getService(Components.interfaces.nsIVersionComparator);
+
+var _above29 = (versionChecker.compare(appInfo.version, "29") >= 0);
+if (_above29)
+{
+	Cu.import("resource:///modules/CustomizableUI.jsm");
+}
+
 var fGoogleBookmarksModule = 
 {
 	// адрес для получения списка закладок
@@ -79,6 +91,8 @@ var fGoogleBookmarksModule =
 
  	'debugMode' : false,
  	'debugId' : 0,
+
+ 	'above29' : _above29,
 
 
 
@@ -222,6 +236,17 @@ var fGoogleBookmarksModule =
     this.readPrefValue("showToolbarQuickAddBtn", this.prefs.PREF_BOOL, false);
     this.readPrefValue("minMenuWidth", this.prefs.PREF_INT, 300);
     this.readPrefValue("maxMenuWidth", this.prefs.PREF_INT, 400);
+
+    if (this.above29)
+    {
+    	this.readPrefValue("GBE_btnAddBookmarkPlace", this.prefs.PREF_STRING, CustomizableUI.AREA_NAVBAR);
+    	this.readPrefValue("GBE_btnQuickAddBookmarkPlace", this.prefs.PREF_STRING, CustomizableUI.AREA_NAVBAR);
+    	this.readPrefValue("GBE_toolbaritemPlace", this.prefs.PREF_STRING, CustomizableUI.AREA_NAVBAR);
+    	this.readPrefValue("GBE_btnAddBookmarkPosition", this.prefs.PREF_INT, -1);
+    	this.readPrefValue("GBE_btnQuickAddBookmarkPosition", this.prefs.PREF_INT, -1);
+    	this.readPrefValue("GBE_toolbaritemPosition", this.prefs.PREF_INT, -1);
+    }
+
 	},
 
 	/**

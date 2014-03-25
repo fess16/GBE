@@ -1,3 +1,13 @@
+#GBE-toolbarbutton.GBE-empty-star
+{
+  list-style-image: url(chrome://GBE/skin/images/Star_empty.png);
+}
+
+#GBE-toolbarbutton.GBE-full-star
+{
+  list-style-image: url(chrome://GBE/skin/images/Star_full.png);
+}
+
 #GBE-hmenu > menuitem.menuitem-iconic
 {
 	min-width: 24px;
@@ -62,3 +72,4 @@ url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
      in your extension or elsewhere. */
   list-style-image: url("chrome://global/skin/checkbox/cbox-check.gif");
 }
+

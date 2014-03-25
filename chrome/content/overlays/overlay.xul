@@ -66,14 +66,14 @@
 		</menupopup>
 	</popupset>	
 
-
+<!-- image="chrome://GBE/skin/images/Star_empty.png" -->
 	<toolbarpalette id="BrowserToolbarPalette">
-		<toolbaritem id="GBE-toolbaritem">
+		<toolbaritem id="GBE-toolbaritem" overflows="false">
 
-			<toolbarbutton 	id="GBE-toolbarbutton" 
+			<toolbarbutton 	id="GBE-toolbarbutton" class="GBE-empty-star"
 												type="menu" 
 												insertafter="statusbar-progresspanel"
-												image="chrome://GBE/skin/images/Star_empty.png"
+												
 												label="&overlay.toolbarbutton.label;"
 												tooltiptext="&overlay.toolbarbutton.hint;" >
 				<menupopup 	id="GBE-ToolBar-popup" 
@@ -137,9 +137,9 @@
 		<toolbarbutton
       id="GBE-btnQuickAddBookmark"
       label="&overlay.btnQuickAddBookmark.label;"
+			image="chrome://GBE/skin/images/bkmrk_add_quick_on.png"
       tooltiptext="&overlay.btnQuickAddBookmark.hint;"
       oncommand="fessGoogleBookmarks.quickAddBookmark()"
-      image="chrome://GBE/skin/images/bkmrk_add_quick_on.png"
 		>
 			<observes element="GBE-bc-hmenuAdd" attribute="disabled"/>
 		</toolbarbutton>
@@ -281,9 +281,9 @@
 	<popup id="contentAreaContextMenu">
 		<menuitem 
 			id="GBE-contextMenuAddBookmark" 
+			image="chrome://GBE/skin/images/bkmrk_add_on.png"
 			label="&overlay.contextMenuAddBookmark.label;" 
 			class="menuitem-iconic" 
-			image="chrome://GBE/skin/images/bkmrk_add_on.png"
 			insertbefore="context-selectall" 
 			oncommand="fessGoogleBookmarks.showBookmarkDialog(false);"
 		/> 
