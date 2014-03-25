@@ -2125,7 +2125,9 @@ var fessGoogleBookmarks = {
 			for (let i = 0, len = tabs.length; i < len; i++) 
 			{
 			  let t = tabs[i];
-			  if (t.hidden || t.label == "" && t.linkedBrowser.currentURI.spec == "" || t.linkedBrowser.currentURI.spec == "about:blank")
+			  if (t.hidden || t.label == "" && t.linkedBrowser.currentURI.spec == "" 
+			  	|| t.linkedBrowser.currentURI.spec == "about:blank"
+			  	|| t.linkedBrowser.currentURI.spec == "about:newtab")
 			  {
 			  	continue;
 			  }

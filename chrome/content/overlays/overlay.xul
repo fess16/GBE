@@ -73,8 +73,6 @@
 			<toolbarbutton 	id="GBE-toolbarbutton" class="GBE-empty-star"
 												type="menu" 
 												insertafter="statusbar-progresspanel"
-												
-												label="&overlay.toolbarbutton.label;"
 												tooltiptext="&overlay.toolbarbutton.hint;" >
 				<menupopup 	id="GBE-ToolBar-popup" 
 										observes="GBE-bc-popup"
@@ -131,12 +129,10 @@
 		<toolbarbutton
       id="GBE-btnAddBookmark"
       observes="GBE-bc-hmenuAdd"
-      label="&overlay.btnAddBookmark.label;"
 		/>
 
 		<toolbarbutton
       id="GBE-btnQuickAddBookmark"
-      label="&overlay.btnQuickAddBookmark.label;"
 			image="chrome://GBE/skin/images/bkmrk_add_quick_on.png"
       tooltiptext="&overlay.btnQuickAddBookmark.hint;"
       oncommand="fessGoogleBookmarks.quickAddBookmark()"
