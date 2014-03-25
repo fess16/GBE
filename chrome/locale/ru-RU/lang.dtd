@@ -47,6 +47,7 @@
 <!ENTITY bookmark.label-url.value "Адрес (URL):">
 <!ENTITY bookmark.label-labels.value "Метки:">
 <!ENTITY bookmark.label-notes.value "Заметки:">
+<!ENTITY bookmark.label-tip.value "Можно добавить несколько меток через запятую">
 
 <!ENTITY delete.form.title "Удаление закладки">
 <!ENTITY delete.button-delete.label "Удаление">

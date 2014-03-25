@@ -25,6 +25,7 @@
       autocompletesearchparam='[]' 
       onsearchcomplete="fessGoogleBookmarksDialogs.onSearchCompliteAutocomplite(this);"
       ontextentered="fessGoogleBookmarksDialogs.onTextEnteredAutocomplite(this);" /> 
+    <label value="&bookmark.label-tip.value;" style="font-style:italic;"/>
     <label control="GBE-bookmark.dialog.notes" value="&bookmark.label-notes.value;"/>
     <textbox  id="GBE-bookmark.dialog.notes" 
               value="" 

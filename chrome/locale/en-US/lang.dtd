@@ -47,6 +47,8 @@
 <!ENTITY bookmark.label-url.value "Location (URL):">
 <!ENTITY bookmark.label-labels.value "Labels:">
 <!ENTITY bookmark.label-notes.value "Notes:">
+<!ENTITY bookmark.label-tip.value "You can add more than one label by separating the label with a comma">
+
 
 <!ENTITY delete.form.title "Delete Bookmark">
 <!ENTITY delete.button-delete.label "Delete">
