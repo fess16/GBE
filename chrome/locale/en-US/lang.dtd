@@ -91,6 +91,9 @@
 <!ENTITY prefWindow.minMenuWidth.label "Min popup width (px):">
 <!ENTITY prefWindow.maxMenuWidth.label "Max popup width (px):">
 
+<!ENTITY prefWindow.enable10recentBookmark.label "Show 10 most recent bookmarks">
+<!ENTITY prefWindow.enable10visitedBookmark.label "Show 10 most frequent bookmarks">
+
 
 <!ENTITY ffBookmark.form.title "Import/Export google bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Firefox bookmarks folder for import/export:">

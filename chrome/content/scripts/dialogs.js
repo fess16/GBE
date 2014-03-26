@@ -131,6 +131,8 @@ var fessGoogleBookmarksDialogs = {
 			this._M.prefs.setBoolPref("showToolbarQuickAddBtn", document.getElementById("fessGBE-prefs-showToolbarQuickAddBtn-Ctrl").checked);
 			this._M.prefs.setIntPref("minMenuWidth", minMenuWidth);
 			this._M.prefs.setIntPref("maxMenuWidth", maxMenuWidth);
+			this._M.prefs.setBoolPref("enable10recentBookmark", document.getElementById("fessGBE-prefs-enable10recentBookmark-Ctrl").checked);
+			this._M.prefs.setBoolPref("enable10visitedBookmark", document.getElementById("fessGBE-prefs-enable10visitedBookmark-Ctrl").checked);
 
 
 			this._M.needRefresh = true;
@@ -148,6 +150,8 @@ var fessGoogleBookmarksDialogs = {
 			this._M.labelUnlabeledName = document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value;
 			this._M.minMenuWidth = minMenuWidth;
 			this._M.maxMenuWidth = maxMenuWidth;
+			this._M.enable10recentBookmark = document.getElementById("fessGBE-prefs-enable10recentBookmark-Ctrl").checked;
+			this._M.enable10visitedBookmark = document.getElementById("fessGBE-prefs-enable10visitedBookmark-Ctrl").checked;
 
 
 			if (oldValGBautocomplite !== this._M.enableGBautocomplite && this.overlay !== null)

@@ -81,6 +81,8 @@ var fGoogleBookmarksModule =
 	'prefs' : null,
 	'minMenuWidth' : 300,
 	'maxMenuWidth' : 400,
+	'enable10recentBookmark' :false,
+	'enable10visitedBookmark' :false,
 
  	/* --------------------*/
 
@@ -238,6 +240,9 @@ var fGoogleBookmarksModule =
     this.readPrefValue("minMenuWidth", this.prefs.PREF_INT, 300);
     this.readPrefValue("maxMenuWidth", this.prefs.PREF_INT, 400);
 
+    this.readPrefValue("enable10recentBookmark", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enable10visitedBookmark", this.prefs.PREF_BOOL, false);
+    
     if (this.above29)
     {
     	this.readPrefValue("GBE_btnAddBookmarkPlace", this.prefs.PREF_STRING, CustomizableUI.AREA_NAVBAR);

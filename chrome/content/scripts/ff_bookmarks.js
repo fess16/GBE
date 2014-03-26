@@ -103,6 +103,7 @@ var fessGoogleBookmarksFFbookmarks = {
 			{
 				this._M.m_bookmarkList = arr.bookmarks;
 				this._M.m_labelsArr = arr.labels;
+				this._M.m_recent10bkmrk = arr.recent10bkmrk
 				return this.overlay.refreshBookmarks(false,true);
 			}
 			return false;
@@ -125,7 +126,11 @@ var fessGoogleBookmarksFFbookmarks = {
 
 		if (res != nsIFilePicker.returnCancel)
 		{
-		  let jsonString = JSON.stringify({bookmarks : this._M.m_bookmarkList, labels : this._M.m_labelsArr});
+		  let jsonString = JSON.stringify({
+		  	bookmarks : this._M.m_bookmarkList, 
+		  	labels : this._M.m_labelsArr, 
+		  	recent10bkmrk : this._M.m_recent10bkmrk
+		  });
 		  let fileName = fp.fileURL.spec + ".json";
 			var x = this.FileManager.Write(fp.file, jsonString);
 		}

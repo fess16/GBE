@@ -1954,8 +1954,13 @@ var fessGoogleBookmarks = {
 					}
 				}
 
-				this._M.m_recent10bkmrk = this._M.m_bookmarkList.slice(0,10);
-
+				// запоминаем 10 последних добавленных закладок
+				// (они идут всегда первыми в ответе сервера)
+				if (this._M.enable10recentBookmark)
+				{
+					let sliceLength = (this._M.m_bookmarkList.length < 10 ? this._M.m_bookmarkList.length : 10);
+					this._M.m_recent10bkmrk = this._M.m_bookmarkList.slice(0,sliceLength);
+				}
 
 				// сортируем массив закладок
 				this._M.m_bookmarkList.sort((this._M.sortType == "timestamp")? this.compareByDate : this.compareByName);	
@@ -2062,47 +2067,43 @@ var fessGoogleBookmarks = {
 					}
 					this.appendMenuItem(parentContainer, tempMenuitem, this._M.m_bookmarkList[i]);
 				}
-				let vUri = NetUtil.newURI(this._M.m_bookmarkList[i].url);
 
-				// asyncHistory.isURIVisited(NetUtil.newURI(this._M.m_bookmarkList[i].url),
-				// 	function(uri, aIsVisited)
-				// 	{
-				// 		if (!aIsVisited)
-				// 		{
-				// 			self._M.ErrorLog(uri.spec, aIsVisited);
-				// 		}
-				// 		else
-				// 		if (aIsVisited)
-				// 		{
-				let options = historyService.getNewQueryOptions();
-				let query = historyService.getNewQuery();
-				// query.uri = uri;
-				query.uri = vUri;
-				let result = historyService.executeQuery(query, options);
-				let cont = result.root;
-				cont.containerOpen = true;
-				let visitCount = 0;
-				if (cont.childCount>0)
+				// заполняем 10 самых популярных закладок (из истории браузера)
+				if (this._M.enable10visitedBookmark)
 				{
-					visitCount = cont.getChild(0).accessCount;
-					visitsArray.push({"bkmsrkId" : i, "visits" : visitCount})
-					self._M.ErrorLog(vUri.spec, visitCount);
+					let vUri = NetUtil.newURI(this._M.m_bookmarkList[i].url);
+					let options = historyService.getNewQueryOptions();
+					let query = historyService.getNewQuery();
+					// query.uri = uri;
+					query.uri = vUri;
+					let result = historyService.executeQuery(query, options);
+					let cont = result.root;
+					cont.containerOpen = true;
+					let visitCount = 0;
+					// если нашли в истории запись с данным адресом - добавляем в массив
+					if (cont.childCount>0)
+					{
+						visitCount = cont.getChild(0).accessCount;
+						visitsArray.push({"bkmsrkId" : i, "visits" : visitCount})
+					}
+					cont.containerOpen = false;
 				}
-				
-				cont.containerOpen = false;
-  		// 			}
-				// 	}
-				// );
-
-
 			}
 
-			visitsArray.sort(function(a,b){
-				return a.visits < b.visits ? 1 : -1;
-			});
-
-			if (visitsArray.length)
+			this._M.needRefresh = false;
+			this._M.refreshInProgress = false;
+			// удаляем метку labelUnlabeledName из массива меток
+			if (this._M.enableLabelUnlabeled)
 			{
+				this._M.m_labelsArr = this._M.m_labelsArr.filter(function(val, i, ar){ return val != self._M.labelUnlabeledName});
+			}
+
+			// вставляем 10 самых популярных закладок 
+			if (this._M.enable10visitedBookmark && visitsArray.length)
+			{
+				visitsArray.sort(function(a,b){
+					return a.visits < b.visits ? 1 : -1;
+				});
 				this.appendLabelItem(GBE_GBlist_Start_separator, document.createElement('menu'), "most10visited", 
 					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.VisitedLabel"));
 				let visitsLabel = GBE_GBlist.getElementsByAttribute("id", "GBE_most10visited")[0].childNodes[0];
@@ -2114,21 +2115,12 @@ var fessGoogleBookmarks = {
 			}
 			visitsArray = [];
 
-			this._M.needRefresh = false;
-			this._M.refreshInProgress = false;
-
-			// удаляем метку labelUnlabeledName из массива меток
-			if (this._M.enableLabelUnlabeled)
-			{
-				this._M.m_labelsArr = this._M.m_labelsArr.filter(function(val, i, ar){ return val != self._M.labelUnlabeledName});
-			}
-
-			if (this._M.m_recent10bkmrk.length)
+			// вставляем 10 последних добавленных закладок 
+			if (this._M.enable10recentBookmark && this._M.m_recent10bkmrk.length)
 			{
 				this.appendLabelItem(GBE_GBlist_Start_separator, document.createElement('menu'), "recent10bkmrk", 
 					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.RecentLabel"));
 				let recentLabel = GBE_GBlist.getElementsByAttribute("id", "GBE_recent10bkmrk")[0].childNodes[0];
-								
 				for (let i = 0; i < this._M.m_recent10bkmrk.length; i++)
 				{
 					this.appendMenuItem(recentLabel, document.createElement('menuitem'), this._M.m_recent10bkmrk[i]);

@@ -31,6 +31,8 @@
       <preference id="pref_showToolbarQuickAddBtn" name="extensions.fessGBE.showToolbarQuickAddBtn" type="bool"/>
       <preference id="pref_maxMenuWidth" name="extensions.fessGBE.maxMenuWidth" type="int"/>
       <preference id="pref_minMenuWidth" name="extensions.fessGBE.minMenuWidth" type="int"/>
+      <preference id="pref_enable10recentBookmark" name="extensions.fessGBE.enable10recentBookmark" type="bool"/>
+      <preference id="pref_enable10visitedBookmark" name="extensions.fessGBE.enable10visitedBookmark" type="bool"/>
     </preferences>
 
     <hbox align="center" flex="1">
@@ -126,31 +128,46 @@
           label="&prefWindow.showToolbarQuickAddBtn.label;"/>
       </vbox>
     </groupbox>
+    
+    <groupbox>
+      <vbox>
+        <checkbox           
+          preference="pref_enable10recentBookmark" 
+          id="fessGBE-prefs-enable10recentBookmark-Ctrl" 
+          label="&prefWindow.enable10recentBookmark.label;"/>
+        <checkbox           
+          preference="pref_enable10visitedBookmark" 
+          id="fessGBE-prefs-enable10visitedBookmark-Ctrl" 
+          label="&prefWindow.enable10visitedBookmark.label;"/>
+      </vbox>
+    </groupbox>
 
-    <hbox align="center" flex="1">
-      <label 
-        control="fessGBE-prefs-minMenuWidth-Ctrl" 
-        value="&prefWindow.minMenuWidth.label;" 
-        tooltiptext="300 &lt;= value &lt;= 950" />
-      <textbox 
-        preference="pref_minMenuWidth" 
-        id="fessGBE-prefs-minMenuWidth-Ctrl" 
-        width="50px" maxlength="4"
-        tooltiptext="300 &lt;= value &lt;= 950"
-        onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
-    </hbox>
-    <hbox align="center" flex="1">
-      <label 
-        control="fessGBE-prefs-maxMenuWidth-Ctrl" 
-        value="&prefWindow.maxMenuWidth.label;"
-        tooltiptext="300 &lt;= value &lt;= 1000" />
-      <textbox 
-        preference="pref_maxMenuWidth" 
-        id="fessGBE-prefs-maxMenuWidth-Ctrl" 
-        width="50px" maxlength="4"
-        tooltiptext="300 &lt;= value &lt;= 1000" 
-        onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
-    </hbox>
+    <groupbox>
+      <hbox align="center" flex="1">
+        <label 
+          control="fessGBE-prefs-minMenuWidth-Ctrl" 
+          value="&prefWindow.minMenuWidth.label;" 
+          tooltiptext="300 &lt;= value &lt;= 950" />
+        <textbox 
+          preference="pref_minMenuWidth" 
+          id="fessGBE-prefs-minMenuWidth-Ctrl" 
+          width="50px" maxlength="4"
+          tooltiptext="300 &lt;= value &lt;= 950"
+          onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
+      </hbox>
+      <hbox align="center" flex="1">
+        <label 
+          control="fessGBE-prefs-maxMenuWidth-Ctrl" 
+          value="&prefWindow.maxMenuWidth.label;"
+          tooltiptext="300 &lt;= value &lt;= 1000" />
+        <textbox 
+          preference="pref_maxMenuWidth" 
+          id="fessGBE-prefs-maxMenuWidth-Ctrl" 
+          width="50px" maxlength="4"
+          tooltiptext="300 &lt;= value &lt;= 1000" 
+          onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
+      </hbox>
+    </groupbox>
 
   </prefpane>
 </prefwindow>
