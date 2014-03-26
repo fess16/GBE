@@ -93,6 +93,7 @@ var fGoogleBookmarksModule =
  	'debugId' : 0,
 
  	'above29' : _above29,
+ 	'm_recent10bkmrk' : [],
 
 
 

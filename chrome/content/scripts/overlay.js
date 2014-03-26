@@ -1262,25 +1262,41 @@ var fessGoogleBookmarks = {
 		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
 		item.setAttribute("container", "true");
 		// для метки labelUnlabeledName контекстрое меню не назначаем
-		if (this._M.enableLabelUnlabeled)
-		{
-			if (id !== this._M.labelUnlabeledName)
-			{
-				item.setAttribute("context", "GBE-folderMenu");
-			}
-		}
+		
+		if ((this._M.enableLabelUnlabeled && id == this._M.labelUnlabeledName) || id == "recent10bkmrk" || id == "most10visited") 
+		{}
 		else
 		{
 			item.setAttribute("context", "GBE-folderMenu");
 		}
+
+		// if (this._M.enableLabelUnlabeled)
+		// {
+		// 	if (id !== this._M.labelUnlabeledName && id !== "recent10bkmrk")
+		// 	{
+		// 		item.setAttribute("context", "GBE-folderMenu");
+		// 	}
+		// }
+		// else
+		// {
+		// 	item.setAttribute("context", "GBE-folderMenu");
+		// }
 		item.appendChild(document.createElement('menupopup'));
-		if (parent.nodeName == "menuseparator")
+		if (id == "recent10bkmrk" || id == "most10visited")
 		{
 			parent.parentNode.insertBefore(item, parent);
+			parent.parentNode.insertBefore(parent, item);
 		}
 		else
 		{
-			parent.appendChild(item);
+			if (parent.nodeName == "menuseparator")
+			{
+				parent.parentNode.insertBefore(item, parent);
+			}
+			else
+			{
+				parent.appendChild(item);
+			}
 		}
 	},
 
@@ -1726,12 +1742,14 @@ var fessGoogleBookmarks = {
 				var GBE_GBlist = document.getElementById("GBE-ToolBar-popup");
 				var menupopup = document.getElementById("GBE-ToolBar-popup"); 
 				var GBE_GBlist_separator = document.getElementById("GBE-tb-GBlist-EndSeparator");
+				var GBE_GBlist_Start_separator = document.getElementById("GBE-tb-GBlist-StartSeparator");
 			}
 			else
 			{
 				var GBE_GBlist = document.getElementById("GBE-MainMenu-Popup");
 				var menupopup = document.getElementById("GBE-MainMenu-Popup"); 
 				var GBE_GBlist_separator = document.getElementById("GBE-mb-GBlist-EndSeparator");				
+				var GBE_GBlist_Start_separator = document.getElementById("GBE-mb-GBlist-StartSeparator");				
 			}
 			this.GBE_menupopup = menupopup;
 
@@ -1936,6 +1954,8 @@ var fessGoogleBookmarks = {
 					}
 				}
 
+				this._M.m_recent10bkmrk = this._M.m_bookmarkList.slice(0,10);
+
 
 				// сортируем массив закладок
 				this._M.m_bookmarkList.sort((this._M.sortType == "timestamp")? this.compareByDate : this.compareByName);	
@@ -2005,6 +2025,10 @@ var fessGoogleBookmarks = {
 				}
 			}
 
+			let asyncHistory = Cc["@mozilla.org/browser/history;1"].getService(Ci.mozIAsyncHistory);
+			let historyService = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);
+			let visitsArray = [];
+
 			// добавляем закладки в меню
 			let m_bookmarkListLength = this._M.m_bookmarkList.length;
 			for (i = 0; i < m_bookmarkListLength; i++) 
@@ -2038,7 +2062,58 @@ var fessGoogleBookmarks = {
 					}
 					this.appendMenuItem(parentContainer, tempMenuitem, this._M.m_bookmarkList[i]);
 				}
+				let vUri = NetUtil.newURI(this._M.m_bookmarkList[i].url);
+
+				// asyncHistory.isURIVisited(NetUtil.newURI(this._M.m_bookmarkList[i].url),
+				// 	function(uri, aIsVisited)
+				// 	{
+				// 		if (!aIsVisited)
+				// 		{
+				// 			self._M.ErrorLog(uri.spec, aIsVisited);
+				// 		}
+				// 		else
+				// 		if (aIsVisited)
+				// 		{
+				let options = historyService.getNewQueryOptions();
+				let query = historyService.getNewQuery();
+				// query.uri = uri;
+				query.uri = vUri;
+				let result = historyService.executeQuery(query, options);
+				let cont = result.root;
+				cont.containerOpen = true;
+				let visitCount = 0;
+				if (cont.childCount>0)
+				{
+					visitCount = cont.getChild(0).accessCount;
+					visitsArray.push({"bkmsrkId" : i, "visits" : visitCount})
+					self._M.ErrorLog(vUri.spec, visitCount);
+				}
+				
+				cont.containerOpen = false;
+  		// 			}
+				// 	}
+				// );
+
+
 			}
+
+			visitsArray.sort(function(a,b){
+				return a.visits < b.visits ? 1 : -1;
+			});
+
+			if (visitsArray.length)
+			{
+				this.appendLabelItem(GBE_GBlist_Start_separator, document.createElement('menu'), "most10visited", 
+					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.VisitedLabel"));
+				let visitsLabel = GBE_GBlist.getElementsByAttribute("id", "GBE_most10visited")[0].childNodes[0];
+				let visitsCount = (visitsArray.length < 10 ? visitsArray.length : 10);
+				for (let i = 0; i < visitsCount; i++)
+				{
+					this.appendMenuItem(visitsLabel, document.createElement('menuitem'), this._M.m_bookmarkList[visitsArray[i].bkmsrkId]);
+				}
+			}
+			visitsArray = [];
+
 			this._M.needRefresh = false;
 			this._M.refreshInProgress = false;
 
@@ -2047,6 +2122,19 @@ var fessGoogleBookmarks = {
 			{
 				this._M.m_labelsArr = this._M.m_labelsArr.filter(function(val, i, ar){ return val != self._M.labelUnlabeledName});
 			}
+
+			if (this._M.m_recent10bkmrk.length)
+			{
+				this.appendLabelItem(GBE_GBlist_Start_separator, document.createElement('menu'), "recent10bkmrk", 
+					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.RecentLabel"));
+				let recentLabel = GBE_GBlist.getElementsByAttribute("id", "GBE_recent10bkmrk")[0].childNodes[0];
+								
+				for (let i = 0; i < this._M.m_recent10bkmrk.length; i++)
+				{
+					this.appendMenuItem(recentLabel, document.createElement('menuitem'), this._M.m_recent10bkmrk[i]);
+				}
+			}
+
 			return true;
 
 		}

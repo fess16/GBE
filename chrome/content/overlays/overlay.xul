@@ -158,7 +158,7 @@
       	<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" label="About" />
       	<menuitem id="GBE-mb-hmenuLgn" observes="GBE-bc-hmenuLgn" />
       	<menuitem id="GBE-mb-hmenuLgt" observes="GBE-bc-hmenuLgt" />
-      	<menuseparator/>
+<!--       	<menuseparator/> -->
       	<hbox observes="GBE-bc-loadingHbox" >
       		<image observes="GBE-bc-loadingImage" />
       		<label observes="GBE-bc-loadingLabel" />
@@ -167,6 +167,7 @@
       		<image observes="GBE-bc-errorImage" />
       		<label observes="GBE-bc-errorLabel" />
       	</hbox>
+      	<menuseparator id="GBE-mb-GBlist-StartSeparator"/>
 
 				<menuseparator id="GBE-mb-GBlist-EndSeparator"/>
 <!-- 				<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" /> -->
