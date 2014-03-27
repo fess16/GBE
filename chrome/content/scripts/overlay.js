@@ -600,8 +600,12 @@ var fessGoogleBookmarks = {
 				{
 					if (!this._M.useMenuBar) 
 					{
-						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star");
+						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star toolbarbutton-1");
 						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+					}
+					if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
+					{
+						document.getElementById("GBE-btnAddBookmark").setAttribute("class", "GBE-button-OFF toolbarbutton-1");
 					}
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "true");
@@ -614,15 +618,20 @@ var fessGoogleBookmarks = {
 
 					if (document.getElementById("GBE-btnQuickAddBookmark"))
 					{
-						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/skin/images/bkmrk_add_quick_off.png");
+						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/skin/images/bkmrk_add_quick_off.png");
+						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("class","GBE-button-OFF toolbarbutton-1");
 					}
 				}
 				else
 				{
 					if (!this._M.useMenuBar) 
 					{
-						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star");
+						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star toolbarbutton-1");
 						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+					}
+					if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
+					{
+						document.getElementById("GBE-btnAddBookmark").setAttribute("class", "toolbarbutton-1");
 					}
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "false");
@@ -635,7 +644,8 @@ var fessGoogleBookmarks = {
 
 					if (document.getElementById("GBE-btnQuickAddBookmark"))
 					{
-						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/skin/images/bkmrk_add_quick_on.png");
+						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/skin/images/bkmrk_add_quick_on.png");
+						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("class","toolbarbutton-1");
 					}
 
 				}
@@ -711,6 +721,10 @@ var fessGoogleBookmarks = {
 				btnLgt.setAttribute("hidden", "true");
 				btnLgn.setAttribute("hidden", "false");
 				document.getElementById("GBE-bc-hmenuFFbookmark").setAttribute("disabled", "true");
+				if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
+				{
+					document.getElementById("GBE-btnAddBookmark").setAttribute("class", "toolbarbutton-1 GBE-button-OFF");
+				}
 				document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "true");
 				document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
 				document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
@@ -2071,22 +2085,29 @@ var fessGoogleBookmarks = {
 				// заполняем 10 самых популярных закладок (из истории браузера)
 				if (this._M.enable10visitedBookmark)
 				{
-					let vUri = NetUtil.newURI(this._M.m_bookmarkList[i].url);
-					let options = historyService.getNewQueryOptions();
-					let query = historyService.getNewQuery();
-					// query.uri = uri;
-					query.uri = vUri;
-					let result = historyService.executeQuery(query, options);
-					let cont = result.root;
-					cont.containerOpen = true;
-					let visitCount = 0;
-					// если нашли в истории запись с данным адресом - добавляем в массив
-					if (cont.childCount>0)
+					try
 					{
-						visitCount = cont.getChild(0).accessCount;
-						visitsArray.push({"bkmsrkId" : i, "visits" : visitCount})
+						let vUri = NetUtil.newURI(this._M.m_bookmarkList[i].url);
+						let options = historyService.getNewQueryOptions();
+						let query = historyService.getNewQuery();
+						// query.uri = uri;
+						query.uri = vUri;
+						let result = historyService.executeQuery(query, options);
+						let cont = result.root;
+						cont.containerOpen = true;
+						let visitCount = 0;
+						// если нашли в истории запись с данным адресом - добавляем в массив
+						if (cont.childCount>0)
+						{
+							visitCount = cont.getChild(0).accessCount;
+							visitsArray.push({"bkmsrkId" : i, "visits" : visitCount})
+						}
+						cont.containerOpen = false;
 					}
-					cont.containerOpen = false;
+					catch(e1)
+					{
+						continue;
+					}
 				}
 			}
 

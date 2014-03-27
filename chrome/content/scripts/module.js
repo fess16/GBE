@@ -79,6 +79,8 @@ var fGoogleBookmarksModule =
 	// добавляемая метка
 	'labelUnlabeledName' : "Unlabeled",
 	'prefs' : null,
+	'showToolbarAddBtn' : false,
+	'showToolbarQuickAddBtn' : false,
 	'minMenuWidth' : 300,
 	'maxMenuWidth' : 400,
 	'enable10recentBookmark' :false,
@@ -242,7 +244,7 @@ var fGoogleBookmarksModule =
 
     this.readPrefValue("enable10recentBookmark", this.prefs.PREF_BOOL, false);
     this.readPrefValue("enable10visitedBookmark", this.prefs.PREF_BOOL, false);
-    
+
     if (this.above29)
     {
     	this.readPrefValue("GBE_btnAddBookmarkPlace", this.prefs.PREF_STRING, CustomizableUI.AREA_NAVBAR);

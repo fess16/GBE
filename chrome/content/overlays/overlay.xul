@@ -70,10 +70,12 @@
 	<toolbarpalette id="BrowserToolbarPalette">
 		<toolbaritem id="GBE-toolbaritem" overflows="false">
 
-			<toolbarbutton 	id="GBE-toolbarbutton" class="GBE-empty-star"
-												type="menu" 
-												insertafter="statusbar-progresspanel"
-												tooltiptext="&overlay.toolbarbutton.hint;" >
+			<toolbarbutton 	id="GBE-toolbarbutton" 
+											class="GBE-empty-star toolbarbutton-1"
+											type="menu" 
+											label="&overlay.toolbarbutton.label;"
+											insertafter="statusbar-progresspanel"
+											tooltiptext="&overlay.toolbarbutton.hint;" >
 				<menupopup 	id="GBE-ToolBar-popup" 
 										observes="GBE-bc-popup"
 										ignorekeys="true" 
@@ -128,12 +130,20 @@
 
 		<toolbarbutton
       id="GBE-btnAddBookmark"
-      observes="GBE-bc-hmenuAdd"
-		/>
+      class="toolbarbutton-1"
+      label="&overlay.btnAddBookmark.label;"
+		>
+<!-- 			<observes element="GBE-bc-hmenuAdd" attribute="image"/> -->
+			<observes element="GBE-bc-hmenuAdd" attribute="tooltiptext"/>
+			<observes element="GBE-bc-hmenuAdd" attribute="disabled"/>
+			<observes element="GBE-bc-hmenuAdd" attribute="oncommand"/>
+		</toolbarbutton>
 
+<!-- 			image="chrome://GBE/skin/images/bkmrk_add_quick_on.png" -->
 		<toolbarbutton
       id="GBE-btnQuickAddBookmark"
-			image="chrome://GBE/skin/images/bkmrk_add_quick_on.png"
+			class="toolbarbutton-1"
+			label="&overlay.btnQuickAddBookmark.label;"
       tooltiptext="&overlay.btnQuickAddBookmark.hint;"
       oncommand="fessGoogleBookmarks.quickAddBookmark()"
 		>
