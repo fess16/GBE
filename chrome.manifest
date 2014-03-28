@@ -1,10 +1,14 @@
 content	GBE								chrome/content/
-skin		GBE classic/1.0		chrome/skin/
+skin		GBE classic/1.0		chrome/skin28/
+skin		GBE classic/1.0		chrome/skin/		appversion>=29
+
 
 locale	GBE en-US					chrome/locale/en-US/
 locale	GBE ru-RU					chrome/locale/ru-RU/
 
 overlay	chrome://browser/content/browser.xul	chrome://GBE/content/overlays/overlay.xul
+
+style chrome://global/content/customizeToolbar.xul chrome://GBE/skin/styles/overlay.css
 
 component {c35dda30-b7ce-11e2-9e96-0800200c9a66} components/simpleautocomplete.js
 contract @mozilla.org/autocomplete/search;1?name=simple-autocomplete {c35dda30-b7ce-11e2-9e96-0800200c9a66}

@@ -130,7 +130,7 @@
 
 		<toolbarbutton
       id="GBE-btnAddBookmark"
-      class="toolbarbutton-1"
+      class="toolbarbutton-1 chromeclass-toolbar-additional"
       label="&overlay.btnAddBookmark.label;"
 		>
 <!-- 			<observes element="GBE-bc-hmenuAdd" attribute="image"/> -->
@@ -142,7 +142,7 @@
 <!-- 			image="chrome://GBE/skin/images/bkmrk_add_quick_on.png" -->
 		<toolbarbutton
       id="GBE-btnQuickAddBookmark"
-			class="toolbarbutton-1"
+			class="toolbarbutton-1 chromeclass-toolbar-additional"
 			label="&overlay.btnQuickAddBookmark.label;"
       tooltiptext="&overlay.btnQuickAddBookmark.hint;"
       oncommand="fessGoogleBookmarks.quickAddBookmark()"

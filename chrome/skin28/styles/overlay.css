@@ -1,0 +1,102 @@
+#GBE-toolbarbutton.GBE-empty-star
+{
+  list-style-image: url(chrome://GBE/skin/images/Star_empty.png);
+  -moz-image-region: rect(0px, 16px, 16px, 0px);
+}
+#GBE-toolbarbutton.GBE-full-star
+{
+  list-style-image: url(chrome://GBE/skin/images/Star_full.png);
+  -moz-image-region: rect(0px, 16px, 16px, 0px);
+}
+
+
+#GBE-btnQuickAddBookmark
+{
+  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_quick_on.png);
+  -moz-image-region: rect(0px, 16px, 16px, 0px);
+}
+#GBE-btnQuickAddBookmark.GBE-button-OFF
+{
+  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_quick_off.png);
+  -moz-image-region: rect(0px, 16px, 16px, 0px);
+}
+
+
+#GBE-btnAddBookmark
+{
+  -moz-image-region: rect(0px, 16px, 16px, 0px);
+  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_on.png);
+}
+#GBE-btnAddBookmark.GBE-button-OFF
+{
+  -moz-image-region: rect(0px, 16px, 16px, 0px);
+  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_off.png);
+}
+
+
+
+
+#GBE-hmenu > menuitem.menuitem-iconic
+{
+	min-width: 24px;
+	max-width: 24px;
+	width: 24px;
+}
+
+#fessGBE-prefs-sortType-Ctrl listboxbody {
+  overflow-y: scroll;
+}
+
+#GBE-filterTextbox-label, .GBE-messageImage {
+	margin-left: 30px;
+}
+
+#GBE-filterTextbox {
+  margin-right: 30px;
+}
+
+.ac-result-type-google_bookmark,
+.autocomplete-treebody::-moz-tree-image(google_bookmark, treecolAutoCompleteImage) {
+  list-style-image: url("chrome://GBE/skin/images/bkmrk.png");
+  /* -moz-image-region: rect(0px 48px 16px 32px); */
+  width: 16px;
+  height: 16px;
+}
+
+@namespace
+url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+#GBE-ToolBar-popup > menu {
+  margin-right: 10px;
+}
+
+#GBE-ToolBar-popup > menuitem, #GBE-ToolBar-popup > menu, #GBE-searchResultList > menuitem { 
+/*  max-width: 400px; 
+  min-width: 400px;*/
+}
+
+
+/*#GBE-ToolBar-popup autorepeatbutton {
+   display: none !important;
+}*/ 
+
+#GBE-ToolBar-popup scrollbox, #GBE-MainMenu-Popup scrollbox {
+    overflow-y: auto !important; 
+}
+
+#GBE-ffBookmarks-warning{
+  color: red;
+  -moz-appearance: none;
+  background-color: #FDF5E3;
+}
+
+#GBE-addOpenTabs_dialog_tree::-moz-tree-checkbox {
+  /* unchecked checkbox treecells. This style MUST come before treechildren::-moz-tree-checkbox(checked) otherwise it won't take effect.  */
+  list-style-image: none;
+}
+
+#GBE-addOpenTabs_dialog_tree::-moz-tree-checkbox(checked){
+  /* css for checked cells. cbox-check.gif isn't available in Firefox 1, 2, and 3 on Mac OS X, so you should specify a URL to an image
+     in your extension or elsewhere. */
+  list-style-image: url("chrome://global/skin/checkbox/cbox-check.gif");
+}
