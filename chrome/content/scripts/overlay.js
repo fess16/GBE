@@ -6,6 +6,9 @@
 Version 0.2.1b
 + фильтр по примечаниям (в настройка должна быть выбрана опция "Показывать примечания к закладкам")
 + добавление в закладки открытых вкладок (только из активной группы вкладок)
++ CustomizableUI для Firefox выше 29.0
++ 10 самых популярных закладок
++ 10 последних закладок
 
 
 Version 0.2.0
@@ -269,20 +272,19 @@ var fessGoogleBookmarks = {
 			{
 				let position = this._M.prefs.getIntPref(id.replace("-","_")+ "Position");
 				let place = this._M.prefs.getCharPref(id.replace("-","_")+ "Place");
+
+				let test_place = CustomizableUI.getPlacementOfWidget(id);
+				if (test_place && test_place.area == place)
+				{
+					// this._M.ErrorLog("installButton", id, "already installed in ", place);
+					return;
+				}
+
 				if (position == -1)
 				{
 					position = CustomizableUI.getWidgetIdsInArea(place).length;
 				}
 				CustomizableUI.addWidgetToArea(id, place,	position);
-
-				// CustomizableUI.ensureWidgetPlacedInWindow(id,window);
-				// toolbar.customizationTarget.insertItem(id, toolbar.customizationTarget.lastChild);
-				// let toolbarHbox = document.getElementById("nav-bar-customization-target");
-				// let toolbarHbox = CustomizableUI.getCustomizeTargetForArea(CustomizableUI.AREA_NAVBAR, window);
-				// if (toolbarHbox)
-				// {
-				// 	toolbarHbox.insertItem(id, toolbarHbox.lastChild);
-				// }
 			}
 			else
 			{
@@ -308,7 +310,7 @@ var fessGoogleBookmarks = {
 	{
 		try 
 		{
-			if (this._M.above29)
+			if (this._M.above29 && CustomizableUI.getPlacementOfWidget(id) !== null)
 			{
 				CustomizableUI.removeWidgetFromArea(id);
 			}
@@ -359,11 +361,25 @@ var fessGoogleBookmarks = {
 		{
 			this._M.prefs.setCharPref("GBE_btnAddBookmarkPlace", aArea);
 			this._M.prefs.setIntPref("GBE_btnAddBookmarkPosition", aPosition);
+			this._M.prefs.setBoolPref("showToolbarAddBtn",true);
 		}
 		if (aWidgetId == "GBE-btnQuickAddBookmark")
 		{
 			this._M.prefs.setCharPref("GBE_btnQuickAddBookmarkPlace", aArea);
 			this._M.prefs.setIntPref("GBE_btnQuickAddBookmarkPosition", aPosition);
+			this._M.prefs.setBoolPref("showToolbarQuickAddBtn",true);
+		}
+	},
+
+	onWidgetRemoved : function(aWidgetId, aArea)
+	{
+		if (aWidgetId == "GBE-btnAddBookmark")
+		{
+			this._M.prefs.setBoolPref("showToolbarAddBtn",false);
+		}
+		if (aWidgetId == "GBE-btnQuickAddBookmark")
+		{
+			this._M.prefs.setBoolPref("showToolbarQuickAddBtn",false);
 		}
 	},
 
@@ -1053,22 +1069,6 @@ var fessGoogleBookmarks = {
 
 	showFFbookmarkWindow : function()
 	{
-		// if (null == this._M._ffWindow || this._M._ffWindow.closed) 
-		// {
-	 //    let features = "chrome,titlebar,toolbar,centerscreen";
-		// 	let ww = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
-	 //                   .getService(Components.interfaces.nsIWindowWatcher);
-	 //    this.wrappedJSObject = this;
-	 //    this._M._ffWindow =
-	 //      ww.openWindow(
-	 //      	null, 
-	 //        "chrome://GBE/content/overlays/ff_bookmark.xul",
-	 //        "ffWindow", 
-	 //        features,
-	 //        this
-	 //      );
-		// }
-		// this._M._ffWindow.focus();	
 		this._M.DebugLog("showFFbookmarkWindow");
 		if (null == this._M._ffWindow || this._M._ffWindow.closed) 
 		{
@@ -1145,15 +1145,6 @@ var fessGoogleBookmarks = {
 	{
 		if (e.target.getAttribute("id") == "GBE-ToolBar-popup")
 		{
-			// //e.target.sizeTo(300, 700);
-			// e.target.width = 300;
-			// jQuery.noConflict();
-			// let max_width = "" + this._M.maxMenuWidth + "px";
-			// let min_width = "" + this._M.minMenuWidth + "px";
-			// jQuery("#GBE-ToolBar-popup > menuitem").css({ "max-width" : max_width, "min-width" : min_width});
-			// jQuery("#GBE-ToolBar-popup > menu").css({ "max-width" : max_width, "min-width" : min_width});
-			// jQuery("#GBE-searchResultList > menuitem").css({ "max-width" : max_width, "min-width" : min_width});
-			// document.getElementById("GBE-filterHBox").setAttribute("hidden","false");
 			e.stopPropagation();
 		}
 	},
@@ -1686,6 +1677,7 @@ var fessGoogleBookmarks = {
 	      	self._M.removeSIDCookie();
 	  			self._M.refreshInProgress = false;
 	    		self._M.ErrorLog("GBE:doRequestBookmarks", "Ошибка при получении списка закладок");
+	    		self._M.ErrorLog(request.responseText);
 	    		document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 	    		document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", false);
 	    		self.preventMenuHiding = false;
