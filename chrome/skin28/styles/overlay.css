@@ -1,23 +1,23 @@
 #GBE-toolbarbutton.GBE-empty-star
 {
-  list-style-image: url(chrome://GBE/skin/images/Star_empty.png);
+  list-style-image: url(chrome://GBE/content/images/Star_empty.png);
   -moz-image-region: rect(0px, 16px, 16px, 0px);
 }
 #GBE-toolbarbutton.GBE-full-star
 {
-  list-style-image: url(chrome://GBE/skin/images/Star_full.png);
+  list-style-image: url(chrome://GBE/content/images/Star_full.png);
   -moz-image-region: rect(0px, 16px, 16px, 0px);
 }
 
 
 #GBE-btnQuickAddBookmark
 {
-  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_quick_on.png);
+  list-style-image: url(chrome://GBE/content/images/bkmrk_add_quick_on.png);
   -moz-image-region: rect(0px, 16px, 16px, 0px);
 }
 #GBE-btnQuickAddBookmark.GBE-button-OFF
 {
-  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_quick_off.png);
+  list-style-image: url(chrome://GBE/content/images/bkmrk_add_quick_off.png);
   -moz-image-region: rect(0px, 16px, 16px, 0px);
 }
 
@@ -25,12 +25,12 @@
 #GBE-btnAddBookmark
 {
   -moz-image-region: rect(0px, 16px, 16px, 0px);
-  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_on.png);
+  list-style-image: url(chrome://GBE/content/images/bkmrk_add_on.png);
 }
 #GBE-btnAddBookmark.GBE-button-OFF
 {
   -moz-image-region: rect(0px, 16px, 16px, 0px);
-  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_off.png);
+  list-style-image: url(chrome://GBE/content/images/bkmrk_add_off.png);
 }
 
 
@@ -57,7 +57,7 @@
 
 .ac-result-type-google_bookmark,
 .autocomplete-treebody::-moz-tree-image(google_bookmark, treecolAutoCompleteImage) {
-  list-style-image: url("chrome://GBE/skin/images/bkmrk.png");
+  list-style-image: url("chrome://GBE/content/images/bkmrk.png");
   /* -moz-image-region: rect(0px 48px 16px 32px); */
   width: 16px;
   height: 16px;

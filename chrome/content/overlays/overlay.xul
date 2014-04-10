@@ -14,22 +14,22 @@
 		<menupopup id="GBE-contextMenu" onpopupshowing="fessGoogleBookmarks.onShowContextMenu(event);">
 			<menuitem id="GBE-contextMenuShowHere" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/page_go.png" 
+				image="chrome://GBE/content/images/page_go.png" 
 				label="&overlay.contextMenuShowHere.label;"
 				oncommand="fessGoogleBookmarks.contextShowHere(event);"/>
 			<menuitem id="GBE-contextMenuEdit" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/page_edit.png" 
+				image="chrome://GBE/content/images/page_edit.png" 
 				label="&overlay.contextMenuEdit.label;"
 				oncommand="fessGoogleBookmarks.contextEditBookmark(event);"/>
 			<menuitem id="GBE-contextMenuRemove" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/delete.png"
+				image="chrome://GBE/content/images/delete.png"
 				label="&overlay.contextMenuRemove.label;"
 				oncommand="fessGoogleBookmarks.contextRemoveBookmark(event);"/>
 			<menuitem id="GBE-contextMenuShowQR" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/qr-code-icon.gif"
+				image="chrome://GBE/content/images/qr-code-icon.gif"
 				label="&overlay.contextMenuShowQR.label;"
 				oncommand="fessGoogleBookmarks.contextShowQR(event);"/>
 		</menupopup>
@@ -38,35 +38,35 @@
 		<menupopup id="GBE-folderMenu" onpopupshowing="fessGoogleBookmarks.onShowFolderMenu(event);">
 			<menuitem id="GBE-folderMenuEdit" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/folder_edit.png" 
+				image="chrome://GBE/content/images/folder_edit.png" 
 				label="&overlay.folderMenuEdit.label;"
 				oncommand="fessGoogleBookmarks.showFolderDialog();"/>
 			<menuitem id="GBE-folderMenuRemove" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/folder_delete.png" 
+				image="chrome://GBE/content/images/folder_delete.png" 
 				label="&overlay.folderMenuRemove.label;"
 				oncommand="fessGoogleBookmarks.showRemoveLabelDialog();"/>
 			<menuseparator/>
 			<menuitem id="GBE-folderMenuOpenAll" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/folder_go.png"
+				image="chrome://GBE/content/images/folder_go.png"
 				label="&overlay.folderMenuOpenAll.label;"
 				oncommand="fessGoogleBookmarks.folderMenuOpenAll();"/>
 			<menuseparator/>
 			<menuitem id="GBE-folderMenuAddHere" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/folder_add.png"
+				image="chrome://GBE/content/images/folder_add.png"
 				label="&overlay.folderMenuAddHere.label;"
 				oncommand="fessGoogleBookmarks.folderMenuAddHere();"/>
 			<menuitem id="GBE-folderMenuAddAllTabs" 
 				class="menuitem-iconic" 
-				image="chrome://GBE/skin/images/add_open_tabs.png"
+				image="chrome://GBE/content/images/add_open_tabs.png"
 				label="&overlay.folderMenuAddAllTabs.label;"
 				oncommand="fessGoogleBookmarks.folderMenuAddAllTabs();"/>
 		</menupopup>
 	</popupset>	
 
-<!-- image="chrome://GBE/skin/images/Star_empty.png" -->
+<!-- image="chrome://GBE/content/images/Star_empty.png" -->
 	<toolbarpalette id="BrowserToolbarPalette">
 		<toolbaritem id="GBE-toolbaritem" overflows="false">
 
@@ -139,7 +139,7 @@
 			<observes element="GBE-bc-hmenuAdd" attribute="oncommand"/>
 		</toolbarbutton>
 
-<!-- 			image="chrome://GBE/skin/images/bkmrk_add_quick_on.png" -->
+<!-- 			image="chrome://GBE/content/images/bkmrk_add_quick_on.png" -->
 		<toolbarbutton
       id="GBE-btnQuickAddBookmark"
 			class="toolbarbutton-1 chromeclass-toolbar-additional"
@@ -195,34 +195,34 @@
 
 		<broadcaster id="GBE-bc-hmenuRefresh" 
 							class="menuitem-iconic" 
-							image="chrome://GBE/skin/images/update.png"
+							image="chrome://GBE/content/images/update.png"
 							tooltiptext="&overlay.hmenuRefresh.hint;" 
 							oncommand="fessGoogleBookmarks.refreshBookmarks();"	
 		/>
 		<broadcaster id="GBE-bc-hmenuAdd" 
 							class="menuitem-iconic" 
-							image="chrome://GBE/skin/images/bkmrk_add_on.png"
+							image="chrome://GBE/content/images/bkmrk_add_on.png"
 							tooltiptext="&overlay.hmenuAdd.hint;" 
 							disabled="false"
 							oncommand="fessGoogleBookmarks.showBookmarkDialog(false);" 
 		/>
 		<broadcaster id="GBE-bc-hmenuEdit" 
 							class="menuitem-iconic" 
-							image="chrome://GBE/skin/images/bkmrk_edit_off.png"
+							image="chrome://GBE/content/images/bkmrk_edit_off.png"
 							tooltiptext="&overlay.hmenuEdit.hint;" 
 							disabled="true"
 							oncommand="fessGoogleBookmarks.showBookmarkDialog();" 
 		/>
 		<broadcaster id="GBE-bc-hmenuDel" 
 							class="menuitem-iconic" 
-							image="chrome://GBE/skin/images/bkmrk_delete_off.png"
+							image="chrome://GBE/content/images/bkmrk_delete_off.png"
 							tooltiptext="&overlay.hmenuDel.hint;"
 							disabled="true"
 							oncommand="fessGoogleBookmarks.showDeleteDlg(null);"  
 		/>
 		<broadcaster id="GBE-bc-hmenuAddOpenTabs" 
 							class="menuitem-iconic" 
-							image="chrome://GBE/skin/images/add_open_tabs.png"
+							image="chrome://GBE/content/images/add_open_tabs.png"
 							tooltiptext="&overlay.hmenuAddOpenTabs.hint;" 
 							disabled="false"
 							oncommand="fessGoogleBookmarks.showAddAllTabsDialog();" 
@@ -230,19 +230,19 @@
 
 		<broadcaster id="GBE-bc-hmenuOpt" 
 							class="menuitem-iconic" 
-							image="chrome://GBE/skin/images/setting_tools.png" 
+							image="chrome://GBE/content/images/setting_tools.png" 
 							tooltiptext="&overlay.hmenuOpt.hint;" 
 							oncommand="fessGoogleBookmarks.showPrefWindow();"
 		/>
 		<broadcaster id="GBE-bc-hmenuGBs" 
 							class="menuitem-iconic" 
-							image="chrome://GBE/skin/images/star.png" 
+							image="chrome://GBE/content/images/star.png" 
 							tooltiptext="&overlay.hmenuGBs.hint;"
 							oncommand="fessGoogleBookmarks.showURL(fessGoogleBookmarks._M.baseUrl);" 
 		/>		
 		<broadcaster id="GBE-bc-hmenuFFbookmark" 
 							class="menuitem-iconic" 
-							image="chrome://GBE/skin/images/import_export.png" 
+							image="chrome://GBE/content/images/import_export.png" 
 							tooltiptext="&overlay.hmenuFFbookmark.hint;"
 							disabled="true"
 							oncommand="fessGoogleBookmarks.showFFbookmarkWindow();" 
@@ -262,21 +262,21 @@
 
 		<broadcaster id="GBE-bc-menuAbout" 
 			class="menuitem-iconic" 
-			image="chrome://GBE/skin/images/About_icon.png"
+			image="chrome://GBE/content/images/About_icon.png"
 			tooltiptext="About" 
 			oncommand="fessGoogleBookmarks.showAboutForm(event);"
 		/>
 
 		<broadcaster id="GBE-bc-loadingHbox" hidden="true" />
 		<broadcaster id="GBE-bc-loadingImage" 
-			class="GBE-messageImage" src="chrome://GBE/skin/images/ajax-loader.gif" 
+			class="GBE-messageImage" src="chrome://GBE/content/images/ajax-loader.gif" 
 			width='18px' 
 			height='18px'/>
 		<broadcaster id="GBE-bc-loadingLabel" value="&overlay.loadingHbox.label.value;"/>
 
 		<broadcaster id="GBE-bc-errorHbox" hidden="true" />
 		<broadcaster id="GBE-bc-errorImage" 
-			class="GBE-messageImage" src="chrome://GBE/skin/images/warning.png" 
+			class="GBE-messageImage" src="chrome://GBE/content/images/warning.png" 
 			width='18px' 
 			height='18px'/>
 		<broadcaster id="GBE-bc-errorLabel" value="&overlay.errorHbox.label.value;"/>
@@ -288,7 +288,7 @@
 	<popup id="contentAreaContextMenu">
 		<menuitem 
 			id="GBE-contextMenuAddBookmark" 
-			image="chrome://GBE/skin/images/bkmrk_add_on.png"
+			image="chrome://GBE/content/images/bkmrk_add_on.png"
 			label="&overlay.contextMenuAddBookmark.label;" 
 			class="menuitem-iconic" 
 			insertbefore="context-selectall" 

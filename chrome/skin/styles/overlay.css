@@ -1,68 +1,68 @@
 #GBE-toolbarbutton.GBE-empty-star
 {
-  list-style-image: url(chrome://GBE/skin/images/Star_empty.png);
+  list-style-image: url(chrome://GBE/content/images/Star_empty.png);
 }
 
 /* Added for Australis support */
 #GBE-toolbaritem[cui-areatype="menu-panel"] > #GBE-toolbarbutton.GBE-empty-star,
 toolbarpaletteitem[place="palette"] > #GBE-toolbaritem > #GBE-toolbarbutton 
 {
-  list-style-image: url("chrome://GBE/skin/images/Star_empty32.png");
+  list-style-image: url("chrome://GBE/content/images/Star_empty32.png");
 }
 
 #GBE-toolbarbutton.GBE-full-star
 {
-  list-style-image: url(chrome://GBE/skin/images/Star_full.png);
+  list-style-image: url(chrome://GBE/content/images/Star_full.png);
 }
 
 /* Added for Australis support */
 #GBE-toolbaritem[cui-areatype="menu-panel"] > #GBE-toolbarbutton.GBE-full-star
 {
-  list-style-image: url("chrome://GBE/skin/images/Star_full32.png");
+  list-style-image: url("chrome://GBE/content/images/Star_full32.png");
 }
 
 
 #GBE-btnQuickAddBookmark
 {
-  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_quick_on.png);
+  list-style-image: url(chrome://GBE/content/images/bkmrk_add_quick_on.png);
 }
 /* Added for Australis support */
 #GBE-btnQuickAddBookmark[cui-areatype="menu-panel"],
 toolbarpaletteitem[place="palette"] > #GBE-btnQuickAddBookmark 
 {
-  list-style-image: url("chrome://GBE/skin/images/bkmrk_add_quick_on32.png");
+  list-style-image: url("chrome://GBE/content/images/bkmrk_add_quick_on32.png");
 }
 
 #GBE-btnQuickAddBookmark.GBE-button-OFF
 {
-  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_quick_off.png);
+  list-style-image: url(chrome://GBE/content/images/bkmrk_add_quick_off.png);
 }
 /* Added for Australis support */
 #GBE-btnQuickAddBookmark.GBE-button-OFF[cui-areatype="menu-panel"]
 {
-  list-style-image: url("chrome://GBE/skin/images/bkmrk_add_quick_off32.png");
+  list-style-image: url("chrome://GBE/content/images/bkmrk_add_quick_off32.png");
 }
 
 
 #GBE-btnAddBookmark
 {
-  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_on.png);
+  list-style-image: url(chrome://GBE/content/images/bkmrk_add_on.png);
 }
 /* Added for Australis support */
 #GBE-btnAddBookmark[cui-areatype="menu-panel"],
 toolbarpaletteitem[place="palette"] > #GBE-btnAddBookmark 
 {
-  list-style-image: url("chrome://GBE/skin/images/bkmrk_add_on32.png");
+  list-style-image: url("chrome://GBE/content/images/bkmrk_add_on32.png");
 }
 
 #GBE-btnAddBookmark.GBE-button-OFF
 {
-  list-style-image: url(chrome://GBE/skin/images/bkmrk_add_off.png);
+  list-style-image: url(chrome://GBE/content/images/bkmrk_add_off.png);
 }
 /* Added for Australis support */
 #GBE-btnAddBookmark.GBE-button-OFF[cui-areatype="menu-panel"]
 {
-  list-style-image: url("chrome://GBE/skin/images/bkmrk_add_off32.png");
+  list-style-image: url("chrome://GBE/content/images/bkmrk_add_off32.png");
 }
 
 
@@ -96,7 +96,7 @@ toolbarpaletteitem[place="palette"] > #GBE-btnAddBookmark
 
 .ac-result-type-google_bookmark,
 .autocomplete-treebody::-moz-tree-image(google_bookmark, treecolAutoCompleteImage) {
-  list-style-image: url("chrome://GBE/skin/images/bkmrk.png");
+  list-style-image: url("chrome://GBE/content/images/bkmrk.png");
   /* -moz-image-region: rect(0px 48px 16px 32px); */
   width: 16px;
   height: 16px;

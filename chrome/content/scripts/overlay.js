@@ -617,24 +617,24 @@ var fessGoogleBookmarks = {
 					if (!this._M.useMenuBar) 
 					{
 						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star toolbarbutton-1");
-						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_full.png");
+						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/content/images/Star_full.png");
 					}
 					if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
 					{
 						document.getElementById("GBE-btnAddBookmark").setAttribute("class", "GBE-button-OFF toolbarbutton-1");
 					}
-					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
+					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/content/images/bkmrk_add_off.png");
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "true");
-					document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_on.png");
+					document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/content/images/bkmrk_edit_on.png");
 					document.getElementById("GBE-bc-hmenuEdit").setAttribute("disabled", "false");
-					document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_on.png");
+					document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/content/images/bkmrk_delete_on.png");
 					document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "false");
 
 					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "true");
 
 					if (document.getElementById("GBE-btnQuickAddBookmark"))
 					{
-						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/skin/images/bkmrk_add_quick_off.png");
+						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/content/images/bkmrk_add_quick_off.png");
 						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("class","GBE-button-OFF toolbarbutton-1");
 					}
 				}
@@ -643,24 +643,24 @@ var fessGoogleBookmarks = {
 					if (!this._M.useMenuBar) 
 					{
 						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star toolbarbutton-1");
-						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/skin/images/Star_empty.png");
+						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/content/images/Star_empty.png");
 					}
 					if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
 					{
 						document.getElementById("GBE-btnAddBookmark").setAttribute("class", "toolbarbutton-1");
 					}
-					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
+					document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/content/images/bkmrk_add_on.png");
 					document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "false");
-					document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
+					document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/content/images/bkmrk_edit_off.png");
 					document.getElementById("GBE-bc-hmenuEdit").setAttribute("disabled", "true");
-					document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
+					document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/content/images/bkmrk_delete_off.png");
 					document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "true");
 
 					document.getElementById("GBE-contextMenuAddBookmark").setAttribute("hidden", "false");
 
 					if (document.getElementById("GBE-btnQuickAddBookmark"))
 					{
-						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/skin/images/bkmrk_add_quick_on.png");
+						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/content/images/bkmrk_add_quick_on.png");
 						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("class","toolbarbutton-1");
 					}
 
@@ -722,7 +722,7 @@ var fessGoogleBookmarks = {
 				btnLgt.setAttribute("hidden", "false");
 				document.getElementById("GBE-bc-hmenuFFbookmark").setAttribute("disabled", "false");
 				// document.getElementById("GBE-hmenuAdd").setAttribute("disabled", "false");
-				// document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_on.png");
+				// document.getElementById("GBE-hmenuAdd").setAttribute("image", "chrome://GBE/content/images/bkmrk_add_on.png");
 				// если необходимо - обновляем закладки
 				if(this._M.needRefresh || this.needRefresh)
 				{
@@ -742,10 +742,10 @@ var fessGoogleBookmarks = {
 					document.getElementById("GBE-btnAddBookmark").setAttribute("class", "toolbarbutton-1 GBE-button-OFF");
 				}
 				document.getElementById("GBE-bc-hmenuAdd").setAttribute("disabled", "true");
-				document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/skin/images/bkmrk_add_off.png");
-				document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/skin/images/bkmrk_edit_off.png");
+				document.getElementById("GBE-bc-hmenuAdd").setAttribute("image", "chrome://GBE/content/images/bkmrk_add_off.png");
+				document.getElementById("GBE-bc-hmenuEdit").setAttribute("image", "chrome://GBE/content/images/bkmrk_edit_off.png");
 				document.getElementById("GBE-bc-hmenuEdit").setAttribute("disabled", "true");
-				document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/skin/images/bkmrk_delete_off.png");
+				document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/content/images/bkmrk_delete_off.png");
 				document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "true");
 			}
 			if (!this._M.useMenuBar)
@@ -1264,7 +1264,7 @@ var fessGoogleBookmarks = {
 		item.setAttribute("fullName", ((fullName == "") ? label : fullName));
 		item.setAttribute("class", "menu-iconic google-bookmarks");
 		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
-		item.setAttribute("image", "chrome://GBE/skin/images/folder_blue.png");
+		item.setAttribute("image", "chrome://GBE/content/images/folder_blue.png");
 		item.setAttribute("container", "true");
 		// для метки labelUnlabeledName контекстрое меню не назначаем
 		
@@ -1581,8 +1581,8 @@ var fessGoogleBookmarks = {
 			// var self = this;
 			if (!this._M.showFavicons || bkmrk.url.length == 0)
 			{
-				item.setAttribute("image", "chrome://GBE/skin/images/bkmrk.png");  
-				bkmrk.favicon = "chrome://GBE/skin/images/bkmrk.png";
+				item.setAttribute("image", "chrome://GBE/content/images/bkmrk.png");  
+				bkmrk.favicon = "chrome://GBE/content/images/bkmrk.png";
 				return;
 			}
 			var pageUrl = NetUtil.newURI(bkmrk.url);
@@ -1599,7 +1599,7 @@ var fessGoogleBookmarks = {
 	          }
 	          else
 	          {
-							favUrl = "chrome://GBE/skin/images/bkmrk.png";
+							favUrl = "chrome://GBE/content/images/bkmrk.png";
 						}
 						item.setAttribute("image",favUrl);
 						bkmrk.favicon = favUrl;

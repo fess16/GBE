@@ -137,7 +137,7 @@ GbookmarksAutoCompleteResult.prototype = {
    */    
   getImageAt: function(index)
   {
-    if (this._result[index] && this._result[index].icon !== "" && this._result[index].icon !== "chrome://GBE/skin/images/bkmrk.png")
+    if (this._result[index] && this._result[index].icon !== "" && this._result[index].icon !== "chrome://GBE/content/images/bkmrk.png")
     {
       return this._result[index].icon;
     }

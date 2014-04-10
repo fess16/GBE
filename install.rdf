@@ -18,6 +18,6 @@
             </Description>
         </em:targetApplication>
         <em:aboutURL>chrome://GBE/content/overlays/about.xul</em:aboutURL>
-        <em:iconURL>chrome://GBE/skin/images/logo.png</em:iconURL>
+        <em:iconURL>chrome://GBE/content/images/logo.png</em:iconURL>
     </Description>
 </RDF>
