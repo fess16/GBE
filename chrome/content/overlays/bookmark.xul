@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://GBE/skin/styles/overlay.css" type="text/css"?>
 
 <!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
 
@@ -17,8 +18,14 @@
   <groupbox>
     <label control="GBE-bookmark.dialog.name" value="&bookmark.label-name.value;" />
     <textbox id="GBE-bookmark.dialog.name" value="" />
-    <label control="GBE-bookmark.dialog.url" value="&bookmark.label-url.value;"/>
-    <textbox id="GBE-bookmark.dialog.url" value="" />
+    <label control="GBE-bookmark-dialog-url" value="&bookmark.label-url.value;"/>
+    <hbox>
+      <textbox id="GBE-bookmark-dialog-url" value="" flex="1" />
+      <checkbox
+        hidden="true"
+        id="GBE-bookmark.dialog.enableUrlEdit"
+        oncommand="fessGoogleBookmarksDialogs.onEnableUrlEdit();"/>
+    </hbox>
     <label control="GBE-bookmark.dialog.labels" value="&bookmark.label-labels.value;"/>
     <textbox id="GBE-bookmark.dialog.labels"  
       type="autocomplete" autocompletesearch="simple-autocomplete"   

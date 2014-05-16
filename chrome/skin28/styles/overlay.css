@@ -100,3 +100,10 @@ url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
      in your extension or elsewhere. */
   list-style-image: url("chrome://global/skin/checkbox/cbox-check.gif");
 }
+
+#GBE-bookmark-dialog-url[readonly]{
+  -moz-appearance: none;
+/*  background-color: #EBEBEB;*/
+  background-color: -moz-Dialog;
+  color: GrayText;
+}

@@ -570,6 +570,12 @@ doChangeBookmarkJQuery : function(params, overlay = null)
 	  	hwindow.clearTimeout(timeout) // очистить таймаут при наступлении readyState 4
   		if (request.status == 200) 
   		{
+  			if (params.oldUrl && params.oldUrl != params.url)
+  			{
+  				self.ErrorLog("Changing bookmarks URL from ", params.oldUrl, "to", params.url);
+  				self.doDeleteBookmarkJQuery({"url" : params.oldUrl, "id" : params.id, "sig" : params.sig}, overlay);
+  			}
+
 				self.needRefresh = true;  
 				if (overlay !== null) overlay.changeButtonIcon(params.url, params.id, false); 
   		} 

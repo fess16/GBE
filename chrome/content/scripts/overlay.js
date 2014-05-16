@@ -202,7 +202,7 @@ var fessGoogleBookmarks = {
 			var params = {name : "", id : null,	url : aURI.spec, labels : "", notes : ""};
 			this._M.getBookmark(params, true);
 			this.setButtonIcons(params.id);
-	    this._M.oldURL = aURI.spec;
+	    //this._M.oldURL = aURI.spec;
 	  }
 	  catch (e)
 		{
@@ -1676,7 +1676,7 @@ var fessGoogleBookmarks = {
 	  		{
 	      	self._M.removeSIDCookie();
 	  			self._M.refreshInProgress = false;
-	    		self._M.ErrorLog("GBE:doRequestBookmarks", "Ошибка при получении списка закладок");
+	    		self._M.ErrorLog("GBE:doRequestBookmarks", "Bookmarks loading error!");
 	    		self._M.ErrorLog(request.responseText);
 	    		document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 	    		document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", false);

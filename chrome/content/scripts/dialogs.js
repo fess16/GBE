@@ -204,15 +204,19 @@ var fessGoogleBookmarksDialogs = {
 		{
 			this.overlay = window.arguments[0];
 		}
+		this.windowsParams["oldUrl"] = null;
 		// заполняем поля диалога редактирования
 		document.getElementById("GBE-bookmark.dialog.name").value = this.windowsParams.name;
-		document.getElementById("GBE-bookmark.dialog.url").value = this.windowsParams.url;
+		document.getElementById("GBE-bookmark-dialog-url").value = this.windowsParams.url;
 		document.getElementById("GBE-bookmark.dialog.labels").value = this.windowsParams.labels;
 		document.getElementById("GBE-bookmark.dialog.notes").value = this.windowsParams.notes;
 		// при редактировании поле адреса делаем только для чтения
 		if (this.windowsParams.id)
 		{
-			document.getElementById("GBE-bookmark.dialog.url").setAttribute("readonly", "true");
+			document.getElementById("GBE-bookmark.dialog.enableUrlEdit").hidden = false;
+			document.getElementById("GBE-bookmark.dialog.enableUrlEdit").checked = false;
+			document.getElementById("GBE-bookmark-dialog-url").setAttribute("readonly", "true");
+
 			if (!this._M.enableNotes)
 			{
 				// запрашиваем примечание к закладке
@@ -220,8 +224,11 @@ var fessGoogleBookmarksDialogs = {
 			}
 			if (this.windowsParams.url == "")
 			{
-				document.getElementById("GBE-bookmark.dialog.url").value = this._M.doRequestBookmarkURL(this.windowsParams.id, this.windowsParams.name, this.windowsParams.index);
+				document.getElementById("GBE-bookmark-dialog-url").value = this._M.doRequestBookmarkURL(this.windowsParams.id, this.windowsParams.name, this.windowsParams.index);
 			}
+
+			this.windowsParams.oldUrl = this.windowsParams.url;
+
 		}
 
 		var searchTextField = document.getElementById("GBE-bookmark.dialog.labels");
@@ -239,6 +246,27 @@ var fessGoogleBookmarksDialogs = {
 		}
 	},
 
+	onEnableUrlEdit : function()
+	{
+		try
+		{
+			let urlCtrl = document.getElementById("GBE-bookmark-dialog-url");
+			if (document.getElementById("GBE-bookmark.dialog.enableUrlEdit").checked)
+			{
+				urlCtrl.removeAttribute("readonly");
+			}
+			else
+			{
+				urlCtrl.setAttribute("readonly", "true");
+				urlCtrl.value = this.windowsParams.oldUrl;
+			}
+		}
+		catch(e)
+		{
+			this._M.ErrorLog("GBE:onEnableUrlEdit", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
 	/**
 	 * клик по кнопке сохранить в диалоге редактирования закладки
 	 */
@@ -247,7 +275,7 @@ var fessGoogleBookmarksDialogs = {
 		if (this.windowsParams !== null)
 		{
 			this.windowsParams.name = document.getElementById("GBE-bookmark.dialog.name").value;
-			this.windowsParams.url = document.getElementById("GBE-bookmark.dialog.url").value;
+			this.windowsParams.url = document.getElementById("GBE-bookmark-dialog-url").value;
 			this.windowsParams.labels = document.getElementById("GBE-bookmark.dialog.labels").value;
 			this.windowsParams.notes = document.getElementById("GBE-bookmark.dialog.notes").value;
 			if (this.windowsParams.name == "") {
@@ -255,7 +283,7 @@ var fessGoogleBookmarksDialogs = {
 				return false;
 			}
 			if (this.windowsParams.url == "") {
-				document.getElementById("GBE-bookmark.dialog.url").focus();
+				document.getElementById("GBE-bookmark-dialog-url").focus();
 				return false;
 			}
 			this._M.doChangeBookmarkJQuery(this.windowsParams, this.overlay); 
