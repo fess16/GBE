@@ -152,9 +152,11 @@ SimpleAutoCompleteSearch.prototype = {
     // of the <textbox> element. The JSON is converted into an array and used
     // as the source of match data. Any values that match the search string
     // are moved into temporary arrays and passed to the AutoCompleteResult
-    if (searchParam.length > 0) {
-      var nativeJSON = Components.classes["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-      var searchResults = nativeJSON.decode(searchParam);
+    if (searchParam.length > 0) 
+    {
+      //var nativeJSON = Components.classes["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
+      // var searchResults = nativeJSON.decode(searchParam);
+      var searchResults = JSON.parse(searchParam);
       var results = [];
       var comments = [];
       // делим строку поиска по запятым

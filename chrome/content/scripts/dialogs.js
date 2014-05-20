@@ -286,7 +286,7 @@ var fessGoogleBookmarksDialogs = {
 				document.getElementById("GBE-bookmark-dialog-url").focus();
 				return false;
 			}
-			this._M.doChangeBookmarkJQuery(this.windowsParams, this.overlay); 
+			this._M.doChangeBookmark(this.windowsParams, this.overlay); 
 			if (this.overlay !== null)
 			{
 				this.overlay.needRefresh = true;
@@ -350,7 +350,7 @@ var fessGoogleBookmarksDialogs = {
 	{
 		if (this.windowsParams.id !== null ) 
 		{
-			this._M.doDeleteBookmarkJQuery(this.windowsParams, this.overlay); 
+			this._M.doDeleteBookmark(this.windowsParams, this.overlay); 
 			if (this.overlay !== null)
 			{
 				this.overlay.needRefresh = true;
@@ -398,7 +398,7 @@ var fessGoogleBookmarksDialogs = {
 			var old_nested_labels = oldName.split(this._M.nestedLabelSep);
 			if (old_nested_labels.length == 1)
 			{
-				this._M.doChangeFolderJQuery(oldName, name, this._M.m_signature);
+				this._M.doChangeFolder(oldName, name, this._M.m_signature);
 			}
 			else
 			{
@@ -407,7 +407,7 @@ var fessGoogleBookmarksDialogs = {
 				{
 					if (labelsList[i].indexOf(oldName) == 0)
 					{
-						this._M.doChangeFolderJQuery(labelsList[i], labelsList[i].replace(oldName, name), this._M.m_signature);
+						this._M.doChangeFolder(labelsList[i], labelsList[i].replace(oldName, name), this._M.m_signature);
 					}
 				};
 			}
@@ -444,7 +444,7 @@ var fessGoogleBookmarksDialogs = {
 		{
 			if (!deleteChildren)
 			{
-				this._M.doDeleteFolderJQuery(name, this._M.m_signature);
+				this._M.doDeleteFolder(name, this._M.m_signature);
 			}
 			else
 			{
@@ -470,7 +470,7 @@ var fessGoogleBookmarksDialogs = {
 							id : this._M.m_bookmarkList[i].id,
 							sig : this._M.m_signature
 						};
-						this._M.doDeleteBookmarkJQuery(params); 
+						this._M.doDeleteBookmark(params); 
 						if (this.overlay !== null)
 						{
 							this.overlay.needRefresh = true;
@@ -593,7 +593,7 @@ var fessGoogleBookmarksDialogs = {
 					windowsParams.labels = label;
 				}
 
-				this._M.doChangeBookmarkJQuery(windowsParams, this.overlay); 
+				this._M.doChangeBookmark(windowsParams, this.overlay); 
 			}
 		}
 		if (this.overlay !== null)

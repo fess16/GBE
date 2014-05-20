@@ -337,12 +337,18 @@ doRequestSignature : function()
       		self.m_signature = request.responseXML.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
       	}
   		} 
+  		else
+  		{
+				self.ErrorLog("GBE:doRequestSignature", " Error while requesting signature - edit bookmarks will not work.");
+  			self.ErrorLog(request.responseText); //TODO: надо будет закоментировать
+  		}
   	}
 		request.send(null);
 		let timeout = hwindow.setTimeout( 
 			function(){ 
 				request.abort(); 
 				self.ErrorLog("GBE:doRequestSignature", " Error: Time over - while requesting signature");
+				self.ErrorLog(request.responseText); //TODO: надо будет закоментировать
 			}, 
 			this.timeOut
 		);
@@ -462,11 +468,11 @@ doRequestBookmarkURL : function (id, name, index, GBE_menupopup = null, asyncMod
 	}
 },
 
-doDeleteFolderJQuery : function(label, signature)
+doDeleteFolder : function(label, signature)
 {
 	try
 	{
-		this.DebugLog("doDeleteFolderJQuery");
+		this.DebugLog("doDeleteFolder");
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
@@ -486,7 +492,7 @@ doDeleteFolderJQuery : function(label, signature)
   		} 
   		else 
   		{
-        self.ErrorLog("GBE:doDeleteFolderJQuery", " An error occurred while deleting label (" + label + ").");
+        self.ErrorLog("GBE:doDeleteFolder", " An error occurred while deleting label (" + label + ").");
   		}
   	}
 		request.send(null);
@@ -494,22 +500,22 @@ doDeleteFolderJQuery : function(label, signature)
 		let timeout = hwindow.setTimeout( 
 			function(){ 
 				request.abort(); 
-				self.ErrorLog("GBE:doDeleteFolderJQuery", " Error: Time over - while deleting label (" + label + ").");
+				self.ErrorLog("GBE:doDeleteFolder", " Error: Time over - while deleting label (" + label + ").");
 			}, 
 			this.timeOut
 		);
 	}
 	catch (e)
 	{
-		this.ErrorLog("GBE:doDeleteFolderJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		this.ErrorLog("GBE:doDeleteFolder", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}
 },
 
-doChangeFolderJQuery : function(oldLabel, label, signature)
+doChangeFolder : function(oldLabel, label, signature)
 {
 	try
 	{
-		this.DebugLog("doChangeFolderJQuery");
+		this.DebugLog("doChangeFolder");
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
@@ -529,7 +535,7 @@ doChangeFolderJQuery : function(oldLabel, label, signature)
   		} 
   		else 
   		{
-        self.ErrorLog("GBE:doChangeFolderJQuery", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
+        self.ErrorLog("GBE:doChangeFolder", " An error occurred while renaming label (" + 	oldLabel + " to " + label + ").");
   		}
   	}
 		request.send(data);
@@ -537,22 +543,22 @@ doChangeFolderJQuery : function(oldLabel, label, signature)
 		let timeout = hwindow.setTimeout( 
 			function(){ 
 				request.abort(); 
-				self.ErrorLog("GBE:doChangeFolderJQuery", " Error: Time over - while renaming label (" + 	oldLabel + " to " + label + ").");
+				self.ErrorLog("GBE:doChangeFolder", " Error: Time over - while renaming label (" + 	oldLabel + " to " + label + ").");
 			}, 
 			this.timeOut
 		);
 	}
   catch (e)
 	{
-		this.ErrorLog("GBE:doChangeFolderJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		this.ErrorLog("GBE:doChangeFolder", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}
 },
 
-doChangeBookmarkJQuery : function(params, overlay = null)
+doChangeBookmark : function(params, overlay = null)
 {
 	try
 	{
-		this.DebugLog("doChangeBookmarkJQuery");
+		this.DebugLog("doChangeBookmark");
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
@@ -560,10 +566,15 @@ doChangeBookmarkJQuery : function(params, overlay = null)
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
 		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		request.setRequestHeader('Connection', "keep-alive");
+		// let data = 	"zx="+((new Date()).getTime()) + "&bkmk=" + encodeURIComponent(params.url) + 
+		// 						"&title=" + encodeURIComponent(params.name) + "&labels=" + encodeURIComponent(params.labels) +
+		// 						"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + params.sig;
 		let data = 	"zx="+((new Date()).getTime()) + "&bkmk=" + encodeURIComponent(params.url) + 
 								"&title=" + encodeURIComponent(params.name) + "&labels=" + encodeURIComponent(params.labels) +
-								"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + params.sig;
-		// this.ErrorLog(data);
+								"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + params.sig + 
+								"&cd=bkmk&q=&start=0";
+
 		request.onreadystatechange = function()
 		{
 	  	if (request.readyState != 4) return;
@@ -573,7 +584,7 @@ doChangeBookmarkJQuery : function(params, overlay = null)
   			if (params.oldUrl && params.oldUrl != params.url)
   			{
   				self.ErrorLog("Changing bookmarks URL from ", params.oldUrl, "to", params.url);
-  				self.doDeleteBookmarkJQuery({"url" : params.oldUrl, "id" : params.id, "sig" : params.sig}, overlay);
+  				self.doDeleteBookmark({"url" : params.oldUrl, "id" : params.id, "sig" : params.sig}, overlay);
   			}
 
 				self.needRefresh = true;  
@@ -581,7 +592,7 @@ doChangeBookmarkJQuery : function(params, overlay = null)
   		} 
   		else 
   		{
-        self.ErrorLog("GBE:doChangeBookmarkJQuery", " An error occurred while saving bookmark (" + params.url + ").");
+        self.ErrorLog("GBE:doChangeBookmark", " An error occurred while saving bookmark (" + params.url + ").");
   		}
   		self.windowsParams = {};
   	}
@@ -591,7 +602,7 @@ doChangeBookmarkJQuery : function(params, overlay = null)
 		let timeout = hwindow.setTimeout( 
 			function(){ 
 				request.abort(); 
-				self.ErrorLog("GBE:doChangeBookmarkJQuery", " Error: Time over - while saving bookmark (" + params.url + ").");
+				self.ErrorLog("GBE:doChangeBookmark", " Error: Time over - while saving bookmark (" + params.url + ").");
 			}, 
 			this.timeOut
 		);
@@ -599,15 +610,15 @@ doChangeBookmarkJQuery : function(params, overlay = null)
   catch (e)
 	{
 		this.windowsParams = {};
-		this.ErrorLog("GBE:doChangeBookmarkJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		this.ErrorLog("GBE:doChangeBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}
 },
 
-doDeleteBookmarkJQuery : function(params, overlay = null)
+doDeleteBookmark : function(params, overlay = null)
 {
 	try
 	{
-		this.DebugLog("doDeleteBookmarkJQuery");
+		this.DebugLog("doDeleteBookmark");
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
@@ -627,7 +638,7 @@ doDeleteBookmarkJQuery : function(params, overlay = null)
   		} 
   		else 
   		{
-        self.ErrorLog("GBE:doDeleteBookmarkJQuery", " An error occurred while deleting bookmark (" + params.url + ").");
+        self.ErrorLog("GBE:doDeleteBookmark", " An error occurred while deleting bookmark (" + params.url + ").");
   		}
   	}
 		request.send(null);
@@ -635,7 +646,7 @@ doDeleteBookmarkJQuery : function(params, overlay = null)
 		let timeout = hwindow.setTimeout( 
 			function(){ 
 				request.abort(); 
-				self.ErrorLog("GBE:doDeleteBookmarkJQuery", " Error: Time over - while deleting bookmark (" + params.url + ").");
+				self.ErrorLog("GBE:doDeleteBookmark", " Error: Time over - while deleting bookmark (" + params.url + ").");
 			}, 
 			this.timeOut
 		);
@@ -643,7 +654,7 @@ doDeleteBookmarkJQuery : function(params, overlay = null)
   catch (e)
 	{
 		this.windowsParams = {};
-		this.ErrorLog("GBE:doDeleteBookmarkJQuery", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		this.ErrorLog("GBE:doDeleteBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}
 },
 

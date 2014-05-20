@@ -1677,7 +1677,7 @@ var fessGoogleBookmarks = {
 	      	self._M.removeSIDCookie();
 	  			self._M.refreshInProgress = false;
 	    		self._M.ErrorLog("GBE:doRequestBookmarks", "Bookmarks loading error!");
-	    		self._M.ErrorLog(request.responseText);
+	    		self._M.ErrorLog(request.responseText); //TODO: надо будет закоментировать
 	    		document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 	    		document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", false);
 	    		self.preventMenuHiding = false;
@@ -2181,7 +2181,7 @@ var fessGoogleBookmarks = {
 							sig : this._M.m_signature
 						};
 
-					this._M.doChangeBookmarkJQuery(windowsParams, this); 
+					this._M.doChangeBookmark(windowsParams, this); 
 				}
 			}
 			catch (e)

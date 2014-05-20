@@ -187,7 +187,7 @@ var fessGoogleBookmarksFFbookmarks = {
 								txtLog.value +=	"\nError: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n\n";
 							}
 							txtLog.value +=	"Import bookmark: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n";
-							this._M.doChangeBookmarkJQuery(params);
+							this._M.doChangeBookmark(params);
 						}
 						this._M.needRefresh = true;
 						this.overlay.needRefresh = true;
@@ -333,7 +333,7 @@ var fessGoogleBookmarksFFbookmarks = {
 					txtLog.value +=	"\nError: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n\n";
 				}
 				txtLog.value +=	"Import bookmark: " + params.name + ", " + params.url + ", [" + params.labels + "], " + params.notes + "\n";
-				this._M.doChangeBookmarkJQuery(params);
+				this._M.doChangeBookmark(params);
 			}
 			this._M.needRefresh = true;
 			this.overlay.needRefresh = true;
