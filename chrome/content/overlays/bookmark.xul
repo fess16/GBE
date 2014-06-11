@@ -27,8 +27,12 @@
         oncommand="fessGoogleBookmarksDialogs.onEnableUrlEdit();"/>
     </hbox>
     <label control="GBE-bookmark.dialog.labels" value="&bookmark.label-labels.value;"/>
+
+<panel id="popup_autocomplete" type="autocomplete-richlistbox" noautofocus="true" />
+
     <textbox id="GBE-bookmark.dialog.labels"  
-      type="autocomplete" autocompletesearch="simple-autocomplete"   
+      type="autocomplete" autocompletesearch="simple-autocomplete"  
+      autocompletepopup="popup_autocomplete" 
       autocompletesearchparam='[]' 
       onsearchcomplete="fessGoogleBookmarksDialogs.onSearchCompliteAutocomplite(this);"
       ontextentered="fessGoogleBookmarksDialogs.onTextEnteredAutocomplite(this);" /> 

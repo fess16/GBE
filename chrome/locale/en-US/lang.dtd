@@ -29,6 +29,7 @@
 <!ENTITY overlay.folderMenuAddAllTabs.label "Bookmark all tabs here">
 
 <!ENTITY overlay.contextMenuAddBookmark.label "Add page to Google Bookmarks">
+<!ENTITY overlay.contextMenuAddLinkToBookmark.label "Add Link to Google Bookmarks">
 
 <!ENTITY overlay.textboxLabel "Filter:">
 

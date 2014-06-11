@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:xbl="http://www.mozilla.org/xbl">
+
+  <binding id="autocomplete-richlistitem" extends="chrome://global/content/bindings/autocomplete.xml#autocomplete-richlistitem">
+    <content>
+      <xul:hbox align="center" class="ac-title-box">
+        <xul:image xbl:inherits="src=image" class="ac-site-icon" hidden="true"/>
+        <xul:hbox anonid="title-box" class="ac-title" flex="1"
+                  onunderflow="_doUnderflow('_title');"
+                  onoverflow="_doOverflow('_title');">
+          <xul:description anonid="title" class="ac-normal-text ac-comment" xbl:inherits="selected"/>
+        </xul:hbox>
+        <xul:label anonid="title-overflow-ellipsis" xbl:inherits="selected" hidden="true"
+                   class="ac-ellipsis-after ac-comment"/>
+        <xul:hbox anonid="extra-box" class="ac-extra" align="center" hidden="true">
+          <xul:image class="ac-result-type-tag"/>
+          <xul:label class="ac-normal-text ac-comment" xbl:inherits="selected" value=":"/>
+          <xul:description anonid="extra" class="ac-normal-text ac-comment" xbl:inherits="selected"/>
+        </xul:hbox>
+        <xul:image anonid="type-image" class="ac-type-icon"/>
+      </xul:hbox>
+      <xul:hbox align="center" class="ac-url-box" hidden="true">
+        <xul:spacer class="ac-site-icon"/>
+        <xul:image class="ac-action-icon"/>
+        <xul:hbox anonid="url-box" class="ac-url" flex="1"
+                  onunderflow="_doUnderflow('_url');"
+                  onoverflow="_doOverflow('_url');">
+          <xul:description anonid="url" class="ac-normal-text ac-url-text"
+                           xbl:inherits="selected type"/>
+          <xul:description anonid="action" class="ac-normal-text ac-action-text"
+                           xbl:inherits="selected type"/>
+        </xul:hbox>
+        <xul:label anonid="url-overflow-ellipsis" xbl:inherits="selected"
+                   class="ac-ellipsis-after ac-url-text"/>
+        <xul:spacer class="ac-type-icon"/>
+      </xul:hbox>
+    </content>
+  </binding>
+</bindings>          

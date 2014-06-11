@@ -294,6 +294,17 @@
 			insertbefore="context-selectall" 
 			oncommand="fessGoogleBookmarks.showBookmarkDialog(false);"
 		/> 
+		<menuitem 
+			id="GBE-contextMenuAddLinkToBookmark" 
+			image="chrome://GBE/content/images/bkmrk_add_link.png"
+			label="&overlay.contextMenuAddLinkToBookmark.label;" 
+			class="menuitem-iconic" 
+			insertbefore="context-selectall" 
+			oncommand="fessGoogleBookmarks.AddLinkToBookmark(event);"
+		/> 
 	</popup>
+
+	
+
 
 </overlay>

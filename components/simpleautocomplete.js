@@ -86,7 +86,7 @@ SimpleAutoCompleteResult.prototype = {
    * Get the comment of the result at the given index
    */
   getCommentAt: function(index) {
-    return this._comments[index];
+    return this._results[index];
   },
 
   /**

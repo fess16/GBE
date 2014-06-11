@@ -29,6 +29,7 @@
 <!ENTITY overlay.folderMenuAddAllTabs.label "Добавить в закладки открытые вкладки">
 
 <!ENTITY overlay.contextMenuAddBookmark.label "Добавить страницу в Google Bookmarks">
+<!ENTITY overlay.contextMenuAddLinkToBookmark.label "Добавить ссылку в Google Bookmarks">
 
 <!ENTITY overlay.textboxLabel "Фильтр:">
 

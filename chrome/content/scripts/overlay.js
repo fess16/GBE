@@ -423,6 +423,10 @@ var fessGoogleBookmarks = {
 			// добавляем обработчик изменения адреса
 			gBrowser.addProgressListener(this);
 
+			// var menu = document.getElementById("contentAreaContextMenu");
+  		// menu.addEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing, false);
+  		window.addEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing, false);
+
 			// в настройка включено автодополнение в адресной строке
 			if (this._M.enableGBautocomplite)
 			{
@@ -448,6 +452,66 @@ var fessGoogleBookmarks = {
 			{
 				CustomizableUI.removeListener(this);
 			}
+			// var menu = document.getElementById("contentAreaContextMenu");
+  		// menu.removeEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing);
+  		window.removeEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing);
+		}
+	},
+
+	contextPopupShowing: function(e)
+	{
+		try
+		{
+			if(e.target.nodeName == 'A') 
+			{
+				let menuitem = document.getElementById("GBE-contextMenuAddLinkToBookmark");
+				if(menuitem)
+				{
+				  menuitem.hidden = false;
+				  menuitem.setAttribute("link", e.target.href);
+				  let _title = e.target.title;
+				  let _text = e.target.text;
+				  let linkTitle = "";
+				  if ((_title != null) && (_title.length > 0))
+				  {
+				  	linkTitle = _title;
+				  }
+				  else if ((_text != null) && (_text.length > 0))
+				  {
+				  	linkTitle = _text;
+				  }
+				  menuitem.setAttribute("linkTitle", linkTitle);
+				}
+			}
+			else 
+			{			
+				let menuitem = document.getElementById("GBE-contextMenuAddLinkToBookmark");
+				if(menuitem)
+				{
+				  menuitem.hidden = true;
+				}
+			}
+		}
+		catch(error)
+		{
+			fessGoogleBookmarks._M.ErrorLog("GBE:contextPopupShowing", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+		}
+	},
+
+	AddLinkToBookmark: function(e)
+	{
+		try
+		{
+			let link = e.target.getAttribute("link");
+			let linkTitle = e.target.getAttribute("linkTitle");
+			if (link.length > 0)
+			{
+				this.showBookmarkDialog(false,"", {url : link, title : linkTitle});
+			}
+		}
+		catch(error)
+		{
+			this._M.ErrorLog("GBE:AddLinkToBookmark", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
@@ -883,13 +947,13 @@ var fessGoogleBookmarks = {
 	 * @param  {bool} editBkmk = true режим редактирования (true) или добавления (false) закладки
 	 * @param  {string} addLabel = "" режим добавления новой метки к закладке (через контекстное меню метки)
 	 */
-	showBookmarkDialog : function(editBkmk = true, addLabel = "")
+	showBookmarkDialog : function(editBkmk = true, addLabel = "", link = null)
 	{
 		try
 		{
 			this._M.DebugLog("showBookmarkDialog");
 			// адрес текущей страницы
-			var cUrl = window.content.location.href;
+			var cUrl = (link == null) ? window.content.location.href : link.url ;
 			// если список закладок и адрес не пустые 
 			//if ((GBE.m_bookmarkList.length) && (cUrl !== ""))
 			if (cUrl !== "")
@@ -905,7 +969,7 @@ var fessGoogleBookmarks = {
 
 				// параметры закладки
 				this._M.windowsParams = {
-						name : (window.content.document.title || trimUrl),
+						name : (link == null) ? (window.content.document.title || trimUrl) : (link.title || trimUrl),
 						id : null,
 						url : cUrl,
 						labels : "",
@@ -916,7 +980,7 @@ var fessGoogleBookmarks = {
 				var labelsList = this._M.m_labelsArr;
 
 				// автозаполнение меток на основании заголовка страницы
-				if (this._M.suggestLabel && window.content.document.title && labelsList !== null && !editBkmk)
+				if (this._M.suggestLabel && window.content.document.title && labelsList !== null && !editBkmk && link == null)
 				{
 					// все слова из заголовка
 					// var words = window.content.document.title.split(" ");

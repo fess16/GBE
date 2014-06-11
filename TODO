@@ -1,8 +1,8 @@
 /*
 https://addons.mozilla.org/ru/firefox/addon/fess-google-bookmark-extens/
 
-//TODO: fixed - средний клик по ярлыку test открывает закладки из test2 
-//TODO: не обновляется иконка после добавления/удаления
+//TODO: добавление ссылок через контекстрое меню (как в YAGBE)
+//TODO: выделение набранное части в списке автодополнения
 
 [06:26:11.393] GBE:getBookmark  TypeError: this.m_bookmarkList[i] is
 undefined(line = 205, col = 0, file =
