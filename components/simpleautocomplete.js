@@ -120,6 +120,10 @@ SimpleAutoCompleteResult.prototype = {
     this._comments.splice(index, 1);
   },
 
+  getFinalCompleteValueAt : function (index) {
+    return this.getValueAt(index);
+  },
+
   QueryInterface: function(aIID) {
     if (!aIID.equals(Ci.nsIAutoCompleteResult) && !aIID.equals(Ci.nsISupports))
         throw Components.results.NS_ERROR_NO_INTERFACE;
