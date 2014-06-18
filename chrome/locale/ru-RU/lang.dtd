@@ -112,7 +112,7 @@
 >
 
 <!ENTITY addOpenTabs.form.title "Добавление в закладки открытых вкладок">
-<!ENTITY addOpenTabs.LabelName.label "Название закладки:">
+<!ENTITY addOpenTabs.LabelName.label "Название метки:">
 <!ENTITY addOpenTabs.button-save.label "Добавить">
 <!ENTITY addOpenTabs.button-cancel.label "Отмена">
 <!ENTITY addOpenTabs.treecol.select.label "Выбор">

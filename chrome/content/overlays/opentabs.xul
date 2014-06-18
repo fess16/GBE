@@ -16,9 +16,11 @@
   ondialogaccept="return fessGoogleBookmarksDialogs.onAcceptAddOpenTabsDialog();" >
   <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
     <label control="GBE-addOpenTabs.dialog.labelName" value="&addOpenTabs.LabelName.label;" />
+    <panel id="popup_autocomplete" type="autocomplete-richlistbox" noautofocus="true" />
     <textbox id="GBE-addOpenTabs.dialog.labelName" value="_OpenTabs" 
       type="autocomplete" autocompletesearch="simple-autocomplete"   
       autocompletesearchparam='[]' 
+      autocompletepopup="popup_autocomplete" 
       onsearchcomplete="fessGoogleBookmarksDialogs.onSearchCompliteAutocomplite(this);"
       ontextentered="fessGoogleBookmarksDialogs.onTextEnteredAutocomplite(this);" />
     <separator class="thin"/>
