@@ -370,7 +370,6 @@ doRequestBookmarkNote : function(id, name, noteCtrl)
 	try
 	{
 		this.DebugLog("doRequestBookmarkNote");
-		this.m_signature = null;
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
