@@ -1175,7 +1175,7 @@ var fessGoogleBookmarks = {
 			this._M.m_labelsArr = null;
 			this._M.m_bookmarkList = null;
 			this._M.needRefresh = true;
-			this._M.m_signature = "";
+			this._M.m_signature = null;
 			this._M.currentContextId = "";
 			this._M.currentFolderId = "";
 			this._M.oldSearchValue = "";
@@ -1702,7 +1702,6 @@ var fessGoogleBookmarks = {
 			document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", false);
 			document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", true);
 			this._M.m_ganswer = null;
-			this._M.m_signature = null;
 			this._M.m_bookmarkList = null;
 			this._M.m_labelsArr = null;
 			let enableNotes = this._M.enableNotes;
@@ -1828,8 +1827,10 @@ var fessGoogleBookmarks = {
 			var self = this;
 
 			//сохраняем сигнатуру из ответа (необходима при работе с закладками)
-			this._M.doRequestSignature();
-
+			if (!this._M.checkSignature())
+			{
+				this._M.doRequestSignature();
+			}
 			if (!fromFile)
 			{
 

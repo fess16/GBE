@@ -41,7 +41,8 @@ var fGoogleBookmarksModule =
   // предыдущее значение адреса
   'oldURL': null,
   // значение поля smh:signature из m_ganswer
-  'm_signature' : "",
+  'm_signature' : null,
+  'm_time_signature' : null,
   // id текущего элемента списка меню закладок (для работы контекстного меню)
   'currentContextId' : "",
   // id текущего меню (для работы контекстного меню)
@@ -308,11 +309,18 @@ getHwindow : function()
 	return Cc["@mozilla.org/appshell/appShellService;1"].getService(Ci.nsIAppShellService).hiddenDOMWindow;
 },
 
+checkSignature : function()
+{
+	if (this.m_signature == null) return false;
+	if ((new Date() - this.m_time_signature) > 3600000) return false;
+	return true;
+},
+
 
 /**
  * получает сигнатуру для дальнейшей работы с закладками
  */
-doRequestSignature : function()
+doRequestSignature : function(asyncMode = true)
 {
 	try
 	{
@@ -321,11 +329,21 @@ doRequestSignature : function()
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+		// let data = 	"?output=rss&num=1";
+		// request.open("GET", this.baseUrl + "lookup" + data, asyncMode);
 		let data = 	"?zx="+((new Date()).getTime()) + "&output=rss&q=qB89f6ZAUXXsfrwPdN4t";
-		request.open("GET", this.baseUrl + "find" + data, true);
+		request.open("GET", this.baseUrl + "find" + data, asyncMode);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
 		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		let timeout = hwindow.setTimeout( 
+			function(){ 
+				request.abort(); 
+				self.ErrorLog("GBE:doRequestSignature", " Error: Time over - while requesting signature");
+				self.ErrorLog(request.responseText); //TODO: надо будет закоментировать
+			}, 
+			this.timeOut
+		);
 		request.onreadystatechange = function()
 		{
 	  	if (request.readyState != 4) return;
@@ -335,23 +353,17 @@ doRequestSignature : function()
       	if (request.responseXML.getElementsByTagName("smh:signature").length)
       	{
       		self.m_signature = request.responseXML.getElementsByTagName("smh:signature")[0].childNodes[0].nodeValue;
+      		self.m_time_signature = new Date();
+      		//self.ErrorLog("onreadystatechange", request.status);
       	}
   		} 
   		else
   		{
 				self.ErrorLog("GBE:doRequestSignature", " Error while requesting signature - edit bookmarks will not work.");
-  			self.ErrorLog(request.responseText); //TODO: надо будет закоментировать
+  			//self.ErrorLog(request.responseText); //TODO: надо будет закоментировать
   		}
   	}
 		request.send(null);
-		let timeout = hwindow.setTimeout( 
-			function(){ 
-				request.abort(); 
-				self.ErrorLog("GBE:doRequestSignature", " Error: Time over - while requesting signature");
-				self.ErrorLog(request.responseText); //TODO: надо будет закоментировать
-			}, 
-			this.timeOut
-		);
 	}
 	catch (e)
 	{
@@ -472,11 +484,15 @@ doDeleteFolder : function(label, signature)
 	try
 	{
 		this.DebugLog("doDeleteFolder");
+		if (!this.checkSignature())
+		{
+			this.doRequestSignature(false);
+		}
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
 		let data = 	"?op=modlabel&zx="+((new Date()).getTime()) + "&labels=" + 
-								encodeURIComponent(label) + "&sig=" + signature;
+								encodeURIComponent(label) + "&sig=" + (signature ? signature : this.m_signature);
 		request.open("GET", this.baseUrl2 + data, true);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
@@ -515,6 +531,10 @@ doChangeFolder : function(oldLabel, label, signature)
 	try
 	{
 		this.DebugLog("doChangeFolder");
+		if (!this.checkSignature())
+		{
+			this.doRequestSignature(false);
+		}
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
@@ -523,7 +543,7 @@ doChangeFolder : function(oldLabel, label, signature)
 		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
 		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
 		let data = 	"op=modlabel&zx="+((new Date()).getTime()) + "&labels=" + 
-								encodeURIComponent(oldLabel + "," + label) + "&sig=" + signature;
+								encodeURIComponent(oldLabel + "," + label) + "&sig=" + (signature ? signature : this.m_signature);
 		request.onreadystatechange = function()
 		{
 	  	if (request.readyState != 4) return;
@@ -558,6 +578,10 @@ doChangeBookmark : function(params, overlay = null)
 	try
 	{
 		this.DebugLog("doChangeBookmark");
+		if (!this.checkSignature())
+		{
+			this.doRequestSignature(false);
+		}
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
@@ -571,8 +595,8 @@ doChangeBookmark : function(params, overlay = null)
 		// 						"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + params.sig;
 		let data = 	"zx="+((new Date()).getTime()) + "&bkmk=" + encodeURIComponent(params.url) + 
 								"&title=" + encodeURIComponent(params.name) + "&labels=" + encodeURIComponent(params.labels) +
-								"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + params.sig + 
-								"&cd=bkmk&q=&start=0";
+								"&annotation=" + encodeURIComponent(params.notes) + "&prev=%2Flookup&sig=" + 
+								(params.sig ? params.sig : this.m_signature) + 	"&cd=bkmk&q=&start=0";
 
 		request.onreadystatechange = function()
 		{
@@ -618,10 +642,14 @@ doDeleteBookmark : function(params, overlay = null)
 	try
 	{
 		this.DebugLog("doDeleteBookmark");
+		if (!this.checkSignature())
+		{
+			this.doRequestSignature(false);
+		}
 		let self = this;
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-		let data = 	"?zx="+((new Date()).getTime()) + "&dlq=" + params.id + "&sig=" + params.sig;
+		let data = 	"?zx="+((new Date()).getTime()) + "&dlq=" + params.id + "&sig=" + (params.sig ? params.sig : this.m_signature);
 		request.open("GET", this.baseUrl2 + data, true);
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
