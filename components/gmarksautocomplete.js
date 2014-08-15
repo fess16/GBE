@@ -155,6 +155,10 @@ GbookmarksAutoCompleteResult.prototype = {
       return "google_bookmark"; 
   },
 
+  getFinalCompleteValueAt : function (index) {
+    return this.getValueAt(index);
+  },
+
   /**
    * Remove the value at the given index from the autocomplete results.
    * If removeFromDb is set to true, the value should be removed from
