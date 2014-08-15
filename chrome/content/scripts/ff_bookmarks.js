@@ -361,10 +361,13 @@ var fessGoogleBookmarksFFbookmarks = {
 			  return;
 			}
 
+			var flagImportTags = document.getElementById("GBE-ffBookmark.ImportTags").checked;
+
 
 		 	var bmsvc = Cc["@mozilla.org/browser/nav-bookmarks-service;1"].getService(Ci.nsINavBookmarksService);
 			var annotationService = Cc["@mozilla.org/browser/annotation-service;1"].getService(Ci.nsIAnnotationService);
-			var annotationName = "bookmarkProperties/description";	    
+			var annotationName = "bookmarkProperties/description";	
+			var taggingSvc = Cc["@mozilla.org/browser/tagging-service;1"].getService(Ci.nsITaggingService);	    
 
 			var historyService = Cc["@mozilla.org/browser/nav-history-service;1"].getService(Ci.nsINavHistoryService);                  	
 
@@ -469,6 +472,17 @@ var fessGoogleBookmarksFFbookmarks = {
 					}
 					bmsvc.setItemTitle(newBkmkId, params.name);
 					annotationService.setItemAnnotation(newBkmkId, annotationName, params.notes, 0, Ci.nsIAnnotationService.EXPIRE_NEVER);
+
+					if (flagImportTags)
+					{
+						if (params.labels.length > 0 )
+						{
+							let tags = String(params.labels).split(",");
+							taggingSvc.tagURI(uri, tags);
+						}
+
+					}
+
 					txtLog.value += "title - " + params.name + "; url - " + params.url  + "\n";
 				}
 			};
