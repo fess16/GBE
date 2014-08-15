@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /* 
-Version 0.2.1b
+Version 0.2.1
 + фильтр по примечаниям (в настройка должна быть выбрана опция "Показывать примечания к закладкам")
 + добавление в закладки открытых вкладок (только из активной группы вкладок)
 + CustomizableUI для Firefox выше 29.0
@@ -13,6 +13,7 @@ Version 0.2.1b
 + контекстное меню  для ссылок
 ! автодополнение меток (в редактировании закладки) - обычный список заменен на richlist (подсвечивается введенный фрагмент)
 ! добавлен запрос сигнатуры при необходимости при работе с закладками
+! исправлена ошибка фильтра закладок - проблема с регистром
 
 Version 0.2.0
 + добавлены проверки при парсинге закладки
@@ -1239,9 +1240,9 @@ var fessGoogleBookmarks = {
 		{
 			let checkBookmark = function (bookmark, search) 
 			{
-				if (bookmark.title.toLowerCase().indexOf(search) !== -1) return true;
+				if (bookmark.title.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
 				//if (bookmark.url.toLowerCase().indexOf(search) !== -1) return true;
-				if (bookmark.notes.toLowerCase().indexOf(search) !== -1) return true;
+				if (bookmark.notes.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
 				return false;
 			};
 
