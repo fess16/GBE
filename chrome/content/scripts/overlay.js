@@ -1308,7 +1308,14 @@ var fessGoogleBookmarks = {
 		item.setAttribute("label", value.title);
 		item.setAttribute("id", value.id);
 		item.setAttribute("url", value.url);
-		item.setAttribute("tooltiptext", value.url);
+		let tooltiptext = value.url;
+		if (this._M.enableNotes && value.notes != "") 
+		{
+			// document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.OpenBookmarkHere")
+			tooltiptext += "\n" document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel")
+			"\n" + value.notes;
+		}
+		item.setAttribute("tooltiptext", tooltiptext);
 		item.setAttribute("class", "menuitem-iconic google-bookmarks");
 		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
 		this.setFavicon(value, item); 
@@ -1711,9 +1718,10 @@ var fessGoogleBookmarks = {
 			let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
 			let data = 	"?output=" + (!enableNotes ? "xml" : "rss") + "&num=10000";
 			request.open("GET", this._M.baseUrl + "lookup" + data, true);
+			//request.open("GET", "http://10.115.161.12/my/google_bookmarks_" + (!enableNotes ? "xml" : "rss") + ".xml", true);
 			request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-			request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
-			request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+			//request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+			//request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
 			request.onreadystatechange = function()
 			{
 		  	if (request.readyState != 4) return;
@@ -1723,17 +1731,6 @@ var fessGoogleBookmarks = {
 		    	self._M.m_ganswer = request.responseXML.documentElement;
 		    	self.doBuildMenu();
 		    	self.preventMenuHiding = false;
-		    // 	if (showMenu)
-		    // 	{
-		    // 		if (self._M.useMenuBar)
-		    // 		{
-		    // 			document.getElementById("GBE-MainMenu-Popup").openPopup(document.getElementById("GBE-MainMenu"), "after_start",0,0,false,false);
-						// }
-						// else
-						// {			    			
-		    // 			document.getElementById("GBE-ToolBar-popup").openPopup(document.getElementById("GBE-toolbarbutton"), "after_start",0,0,false,false);
-		    // 		}
-		    // 	}
 		    	if (!self._M.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 		    	document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", true);
@@ -1749,7 +1746,7 @@ var fessGoogleBookmarks = {
 	    		self.preventMenuHiding = false;
 	  		}
 	  	}
-			request.send(null);
+			request.send();
 			let timeout = hwindow.setTimeout( 
 				function(){ 
 					request.abort(); 
