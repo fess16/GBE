@@ -331,7 +331,7 @@ var fessGoogleBookmarks = {
 	    var extension = extensions.get("GBE@fess16.blogspot.com");
 	    if (extension.firstRun)
 	    {
-	    	this.installButton("GBE-toolbaritem");	
+	    	fessGoogleBookmarks.installButton("GBE-toolbaritem");	
 	    }
 	},
 
@@ -1313,7 +1313,7 @@ var fessGoogleBookmarks = {
 		if (this._M.enableNotes && value.notes != "") 
 		{
 			// document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.OpenBookmarkHere")
-			tooltiptext += "\n" document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel")
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel")
 			"\n" + value.notes;
 		}
 		item.setAttribute("tooltiptext", tooltiptext);

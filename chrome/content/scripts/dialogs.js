@@ -236,13 +236,11 @@ var fessGoogleBookmarksDialogs = {
 		var labelsList = this._M.m_labelsArr;
 		if (labelsList !== null)
 		{
-			paramsToSet = "{\"delimiter\" : \""+ this._M.nestedLabelSep + "\", \"labels\" : [";
+			var paramsToSet = { "delimiter" : this._M.nestedLabelSep, "labels" : [] };
 			for (var i = 0; i < labelsList.length; i++) {
-				paramsToSet += "{\"value\" : \"" + labelsList[i] + "\"},";
+				paramsToSet["labels"].push({ "value" : labelsList[i]});
 			};
-			paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
-			paramsToSet += "]}";
-			searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
+			searchTextField.setAttribute("autocompletesearchparam", JSON.stringify(paramsToSet));
 		}
 	},
 
@@ -505,13 +503,11 @@ var fessGoogleBookmarksDialogs = {
 		let labelsList = this._M.m_labelsArr;
 		if (labelsList !== null)
 		{
-			paramsToSet = "{\"delimiter\" : \""+ this._M.nestedLabelSep + "\", \"labels\" : [";
-			for (let i = 0; i < labelsList.length; i++) {
-				paramsToSet += "{\"value\" : \"" + labelsList[i] + "\"},";
+			var paramsToSet = { "delimiter" : this._M.nestedLabelSep, "labels" : [] };
+			for (var i = 0; i < labelsList.length; i++) {
+				paramsToSet["labels"].push({ "value" : labelsList[i]});
 			};
-			paramsToSet = paramsToSet.substring(0, paramsToSet.length-1); // to remove the last ","
-			paramsToSet += "]}";
-			searchTextField.setAttribute("autocompletesearchparam", paramsToSet);
+			searchTextField.setAttribute("autocompletesearchparam", JSON.stringify(paramsToSet));
 		}
 
 		this.windowsParams = JSON.parse(JSON.stringify(this._M.windowsParams)); 
