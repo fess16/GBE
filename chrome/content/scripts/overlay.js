@@ -2,7 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-/* 
+/*
+Version 0.2.2
++ фокус на поле фильтра при открытии списка закладок (по просьбе Elad Shaked) 
++ при экспорте из Google Bookmarks к закладкам Firefox теперь добавляются метки
++ к всплывающей подсказке на закладке добавлена заметка (если она у закладки есть и включена enableNotes)
+! JSON.stringify rather than string concatenation to generate labels autocomplete lists и firstRun fix
+
+
 Version 0.2.1
 + фильтр по примечаниям (в настройка должна быть выбрана опция "Показывать примечания к закладкам")
 + добавление в закладки открытых вкладок (только из активной группы вкладок)
@@ -1214,6 +1221,9 @@ var fessGoogleBookmarks = {
 		if (e.target.getAttribute("id") == "GBE-ToolBar-popup")
 		{
 			e.stopPropagation();
+			// set focus to filter textbox
+			var textbox = document.getElementById("GBE-filterTextbox");
+			if (textbox) textbox.focus();
 		}
 	},
 
