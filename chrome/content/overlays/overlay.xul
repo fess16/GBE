@@ -120,7 +120,7 @@
 					<menuseparator id="GBE-tb-GBlist-EndSeparator"/>
 					<vbox id="GBE-searchResultList">
 					</vbox>
-					<menuseparator id="GBE-AboutSeparator"/>
+					<!-- <menuseparator id="GBE-AboutSeparator"/> -->
 					<!-- <menuitem id="GBE-tb-menuAbout" observes="GBE-bc-menuAbout" /> -->
 				</menupopup>
 
