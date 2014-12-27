@@ -13,3 +13,8 @@ pref("extensions.fessGBE.showToolbarAddBtn", false);
 pref("extensions.fessGBE.showToolbarQuickAddBtn", false);
 pref("extensions.fessGBE.minMenuWidth", 300);
 pref("extensions.fessGBE.maxMenuWidth", 400);
+pref("extensions.fessGBE.enable10recentBookmark", false);
+pref("extensions.fessGBE.enable10visitedBookmark", false);
+pref("extensions.fessGBE.enableLabelHiding", true);
+pref("extensions.fessGBE.showHiddenLabels", false);
+pref("extensions.fessGBE.HiddenLabelsTitle", "_hidden_");

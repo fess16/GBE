@@ -33,6 +33,8 @@
       <preference id="pref_minMenuWidth" name="extensions.fessGBE.minMenuWidth" type="int"/>
       <preference id="pref_enable10recentBookmark" name="extensions.fessGBE.enable10recentBookmark" type="bool"/>
       <preference id="pref_enable10visitedBookmark" name="extensions.fessGBE.enable10visitedBookmark" type="bool"/>
+      <preference id="pref_enableLabelHiding" name="extensions.fessGBE.enableLabelHiding" type="bool"/>
+      <preference id="pref_showHiddenLabels" name="extensions.fessGBE.showHiddenLabels" type="bool"/>
     </preferences>
 
     <hbox align="center" flex="1">
@@ -47,7 +49,7 @@
       <checkbox
         preference="pref_enableLabelUnlabeled"
         id="fessGBE-prefs-enableLabelUnlabeled-Ctrl"
-        oncommand="fessGoogleBookmarksDialogs.onCheckboxStateChange();"/>
+        oncommand="fessGoogleBookmarksDialogs.onCheckboxStateChange('fessGBE-prefs-enableLabelUnlabeled-Ctrl');"/>
       <textbox
         preference="pref_labelUnlabeledName"
         id="fessGBE-prefs-labelUnlabeledName-Ctrl"
@@ -167,6 +169,21 @@
           tooltiptext="300 &lt;= value &lt;= 1000" 
           onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
       </hbox>
+    </groupbox>
+
+    <groupbox>
+      <caption label="&prefWindow.LabelHiding.groupbox.caption;" />
+      <vbox>
+        <checkbox           
+          preference="pref_enableLabelHiding" 
+          id="fessGBE-prefs-enableLabelHiding-Ctrl" 
+          label="&prefWindow.enableLabelHiding.label;"
+          oncommand="fessGoogleBookmarksDialogs.onCheckboxStateChange('fessGBE-prefs-enableLabelHiding-Ctrl');"/>
+        <checkbox           
+          preference="pref_showHiddenLabels" 
+          id="fessGBE-prefs-showHiddenLabels-Ctrl" 
+          label="&prefWindow.showHiddenLabels.label;"/>
+      </vbox>
     </groupbox>
 
   </prefpane>

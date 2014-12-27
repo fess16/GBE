@@ -63,6 +63,25 @@
 				image="chrome://GBE/content/images/add_open_tabs.png"
 				label="&overlay.folderMenuAddAllTabs.label;"
 				oncommand="fessGoogleBookmarks.folderMenuAddAllTabs();"/>
+			<menuseparator/>
+			<menuitem id="GBE-folderMenuHideFolder"
+				class="menuitem-iconic"
+				image="chrome://GBE/content/images/folder.png"
+				label="&overlay.folderMenuHideFolder.label;"
+				hidden="false"
+				oncommand="fessGoogleBookmarks.folderMenuHideFolder();"/>
+			<menuitem id="GBE-folderMenuUnhideFolder"
+				class="menuitem-iconic"
+				image="chrome://GBE/content/images/folder_blue.png"
+				label="&overlay.folderMenuUnhideFolder.label;"
+				hidden="false"
+				oncommand="fessGoogleBookmarks.folderMenuUnhideFolder();"/>
+			<menuitem id="GBE-folderMenuUnhideAll"
+				class="menuitem-iconic"
+				image="chrome://GBE/content/images/folder_blue.png"
+				label="&overlay.folderMenuUnhideAll.label;"
+				hidden="false"
+				oncommand="fessGoogleBookmarks.folderMenuUnhideAll();"/>	
 		</menupopup>
 	</popupset>	
 

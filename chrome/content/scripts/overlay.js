@@ -8,6 +8,7 @@ Version 0.2.2
 + при экспорте из Google Bookmarks к закладкам Firefox теперь добавляются метки
 + к всплывающей подсказке на закладке добавлена заметка (если она у закладки есть и включена enableNotes)
 ! JSON.stringify rather than string concatenation to generate labels autocomplete lists и firstRun fix
++ скрытие меток
 
 
 Version 0.2.1
@@ -1352,25 +1353,19 @@ var fessGoogleBookmarks = {
 		item.setAttribute("image", "chrome://GBE/content/images/folder_blue.png");
 		item.setAttribute("container", "true");
 		// для метки labelUnlabeledName контекстрое меню не назначаем
-		
 		if ((this._M.enableLabelUnlabeled && id == this._M.labelUnlabeledName) || id == "recent10bkmrk" || id == "most10visited") 
 		{}
 		else
 		{
 			item.setAttribute("context", "GBE-folderMenu");
 		}
+		// другая иконка для скрытых меток
+		var re = new RegExp(this._M.hiddenLabelsTitle + "$");
+		if ((label.search(re) !== -1 || fullName.indexOf(this._M.hiddenLabelsTitle+this._M.nestedLabelSep) == 0) && this._M.enableLabelHiding)
+		{
+			item.setAttribute("image", "chrome://GBE/content/images/folder.png");
+		}
 
-		// if (this._M.enableLabelUnlabeled)
-		// {
-		// 	if (id !== this._M.labelUnlabeledName && id !== "recent10bkmrk")
-		// 	{
-		// 		item.setAttribute("context", "GBE-folderMenu");
-		// 	}
-		// }
-		// else
-		// {
-		// 	item.setAttribute("context", "GBE-folderMenu");
-		// }
 		item.appendChild(document.createElement('menupopup'));
 		if (id == "recent10bkmrk" || id == "most10visited")
 		{
@@ -1517,6 +1512,25 @@ var fessGoogleBookmarks = {
 					document.getElementById("GBE_" + this._M.m_labelsArr[i]).open = false;
 				}
 			}
+
+			document.getElementById("GBE-folderMenuHideFolder").setAttribute("hidden", false);
+			document.getElementById("GBE-folderMenuUnhideFolder").setAttribute("hidden", true);
+			document.getElementById("GBE-folderMenuUnhideAll").setAttribute("hidden", true);
+
+			if (this._M.currentFolderId == ('GBE_' + this._M.hiddenLabelsTitle))
+			{
+				document.getElementById("GBE-folderMenuHideFolder").setAttribute("hidden", true);
+				document.getElementById("GBE-folderMenuUnhideFolder").setAttribute("hidden", true);
+				document.getElementById("GBE-folderMenuUnhideAll").setAttribute("hidden", false);
+			}
+
+			if (this._M.currentFolderId.indexOf("GBE_" + this._M.hiddenLabelsTitle + this._M.nestedLabelSep) == 0)
+			{
+				document.getElementById("GBE-folderMenuHideFolder").setAttribute("hidden", true);
+				document.getElementById("GBE-folderMenuUnhideFolder").setAttribute("hidden", false);
+				document.getElementById("GBE-folderMenuUnhideAll").setAttribute("hidden", true);
+			}
+
 		}
 		catch (error) {
 			this._M.ErrorLog("GBE:showFolderMenu", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
@@ -1639,6 +1653,101 @@ var fessGoogleBookmarks = {
 		catch (e)
 		{
 			this._M.ErrorLog("GBE:folderMenuAddHere", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+
+	folderMenuUnhideFolder : function()
+	{
+		try
+		{
+			var folderOldName = document.getElementById(this._M.currentFolderId).getAttribute("fullName");
+			var mySearchString = new RegExp("^" + this._M.hiddenLabelsTitle + this._M.nestedLabelSep, "i");
+			var confirmText = document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmUnhidingText");
+			if (folderOldName.search(mySearchString) == 0)
+			{
+				var folderUnhideName = folderOldName.replace(mySearchString, '');
+				let prompts = Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+				if (prompts.confirm(
+					window, 
+					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmUnhidingTitle"), 
+					confirmText.replace ("%%", folderUnhideName)))
+				{
+					this._M.doChangeFolder(folderOldName, folderUnhideName, this._M.m_signature);
+				} 
+				else 
+				{
+					this._M.ErrorLog("folderMenuUnhideFolder", "Unhiding aborted!");
+				}
+			}
+		}
+		catch (e)
+		{
+			this._M.ErrorLog("GBE:folderMenuUnhideFolder", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+	folderMenuHideFolder : function()
+	{
+		try
+		{
+			var folderOldName = document.getElementById(this._M.currentFolderId).getAttribute("fullName");
+			var folderHidenName = this._M.hiddenLabelsTitle + this._M.nestedLabelSep + folderOldName;
+			var confirmText = document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmHidingText");
+			let prompts =	Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+			if (prompts.confirm(
+				window, 
+				document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmHidingTitle"), 
+				confirmText.replace ("%%", folderOldName)))
+			{
+				this._M.doChangeFolder(folderOldName, folderHidenName, this._M.m_signature);
+			} 
+			else 
+			{
+				this._M.ErrorLog("folderMenuHideFolder", "Hiding aborted!");
+			}
+		}
+		catch (e)
+		{
+			this._M.ErrorLog("GBE:folderMenuHideFolder", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+	folderMenuUnhideAll : function()
+	{
+		try
+		{
+			if (this._M.m_bookmarkList && this._M.m_bookmarkList.length)
+			{
+				let prompts =	Cc["@mozilla.org/embedcomp/prompt-service;1"].getService(Ci.nsIPromptService);
+				if (prompts.confirm(
+					window, 
+					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmUnhidingTitle"), 
+					document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.ConfirmUnhidingAllText")))
+				{
+					var labelsList = this._M.m_labelsArr;
+					for (var i = 0; i < labelsList.length; i++) 
+					{
+						if (labelsList[i].indexOf(this._M.hiddenLabelsTitle + this._M.nestedLabelSep) == 0)
+						{
+							var re = new RegExp("^" + this._M.hiddenLabelsTitle + this._M.nestedLabelSep, "i");
+							this._M.doChangeFolder(labelsList[i], labelsList[i].replace(re, ''), this._M.m_signature);
+						}
+						if (labelsList[i] == this._M.hiddenLabelsTitle)
+						{
+							this._M.doChangeFolder(labelsList[i], '', this._M.m_signature);
+						}
+					};
+				}
+				else 
+				{
+					this._M.ErrorLog("folderMenuUnhideAll", "Hiding aborted!");
+				}
+			}
+		}
+		catch (e)
+		{
+			this._M.ErrorLog("GBE:folderMenuUnhideAll", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 
@@ -2214,6 +2323,12 @@ var fessGoogleBookmarks = {
 				{
 					this.appendMenuItem(recentLabel, document.createElement('menuitem'), this._M.m_recent10bkmrk[i]);
 				}
+			}
+
+			// прячем скрытые метки, если включено 
+			if (!this._M.showHiddenLabels && GBE_GBlist.getElementsByAttribute('id',"GBE_" + this._M.hiddenLabelsTitle)[0] != null)
+			{
+				GBE_GBlist.getElementsByAttribute('id',"GBE_" + this._M.hiddenLabelsTitle)[0].setAttribute("hidden", true);
 			}
 
 			return true;

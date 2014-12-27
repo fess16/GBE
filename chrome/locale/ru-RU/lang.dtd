@@ -27,6 +27,9 @@
 <!ENTITY overlay.folderMenuOpenAll.label "Открыть все">
 <!ENTITY overlay.folderMenuAddHere.label "Добавить закладку здесь">
 <!ENTITY overlay.folderMenuAddAllTabs.label "Добавить в закладки открытые вкладки">
+<!ENTITY overlay.folderMenuHideFolder.label "Добавить в скрытые">
+<!ENTITY overlay.folderMenuUnhideFolder.label "Убрать из скрытых">
+<!ENTITY overlay.folderMenuUnhideAll.label "Убрать из скрытых все">
 
 <!ENTITY overlay.contextMenuAddBookmark.label "Добавить страницу в Google Bookmarks">
 <!ENTITY overlay.contextMenuAddLinkToBookmark.label "Добавить ссылку в Google Bookmarks">
@@ -93,6 +96,9 @@
 <!ENTITY prefWindow.enable10recentBookmark.label "Показывать 10 последних добавленных закладок">
 <!ENTITY prefWindow.enable10visitedBookmark.label "Показывать 10 самых популярных закладок">
 
+<!ENTITY prefWindow.LabelHiding.groupbox.caption "Скрытие меток:">
+<!ENTITY prefWindow.enableLabelHiding.label "Включить скрытие меток">
+<!ENTITY prefWindow.showHiddenLabels.label "Показать скрытые метки">
 
 <!ENTITY ffBookmark.form.title "Импорт/экспорт Google Bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Папка в закладках Firefox для импорта/экспорта:">

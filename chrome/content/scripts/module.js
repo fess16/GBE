@@ -87,6 +87,10 @@ var fGoogleBookmarksModule =
 	'enable10recentBookmark' :false,
 	'enable10visitedBookmark' :false,
 
+	'enableLabelHiding' : true,
+	'showHiddenLabels' : false,
+	'hiddenLabelsTitle' : "_hidden_",
+
  	/* --------------------*/
 
  	'defAutocompliteList' : "",
@@ -245,6 +249,10 @@ var fGoogleBookmarksModule =
 
     this.readPrefValue("enable10recentBookmark", this.prefs.PREF_BOOL, false);
     this.readPrefValue("enable10visitedBookmark", this.prefs.PREF_BOOL, false);
+
+    this.readPrefValue("enableLabelHiding", this.prefs.PREF_BOOL, true);
+    this.readPrefValue("showHiddenLabels", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("hiddenLabelsTitle", this.prefs.PREF_STRING, "_hidden_");
 
     if (this.above29)
     {
@@ -542,7 +550,7 @@ doChangeFolder : function(oldLabel, label, signature)
 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
 		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
-		let data = 	"op=modlabel&zx="+((new Date()).getTime()) + "&labels=" + 
+		let data = 	"op=modlabel&zx="+((new Date()).getTime() + Math.random() * (99) + 1) + "&labels=" + 
 								encodeURIComponent(oldLabel + "," + label) + "&sig=" + (signature ? signature : this.m_signature);
 		request.onreadystatechange = function()
 		{

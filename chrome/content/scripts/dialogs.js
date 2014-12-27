@@ -45,6 +45,16 @@ var fessGoogleBookmarksDialogs = {
 		{
 			document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = true;
 		}
+
+		if (document.getElementById("fessGBE-prefs-enableLabelHiding-Ctrl").checked)
+		{
+			document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").disabled = false;
+		}
+		else
+		{
+			document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").disabled = true;
+			document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").checked = true;
+		}		
 	}, 
 
 	onChangeWidthValue : function(event)
@@ -133,6 +143,9 @@ var fessGoogleBookmarksDialogs = {
 			this._M.prefs.setIntPref("maxMenuWidth", maxMenuWidth);
 			this._M.prefs.setBoolPref("enable10recentBookmark", document.getElementById("fessGBE-prefs-enable10recentBookmark-Ctrl").checked);
 			this._M.prefs.setBoolPref("enable10visitedBookmark", document.getElementById("fessGBE-prefs-enable10visitedBookmark-Ctrl").checked);
+			
+			this._M.prefs.setBoolPref("enableLabelHiding", document.getElementById("fessGBE-prefs-enableLabelHiding-Ctrl").checked);
+			this._M.prefs.setBoolPref("showHiddenLabels", document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").checked);
 
 
 			this._M.needRefresh = true;
@@ -153,6 +166,8 @@ var fessGoogleBookmarksDialogs = {
 			this._M.enable10recentBookmark = document.getElementById("fessGBE-prefs-enable10recentBookmark-Ctrl").checked;
 			this._M.enable10visitedBookmark = document.getElementById("fessGBE-prefs-enable10visitedBookmark-Ctrl").checked;
 
+			this._M.enableLabelHiding = document.getElementById("fessGBE-prefs-enableLabelHiding-Ctrl").checked;
+			this._M.showHiddenLabels = document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").checked;
 
 			if (oldValGBautocomplite !== this._M.enableGBautocomplite && this.overlay !== null)
 			{
@@ -175,18 +190,34 @@ var fessGoogleBookmarksDialogs = {
 	/**
 	 * Enable/disable поля labelUnlabeledName в зависимости от состояния флажка enableLabelUnlabeled
 	 */
-	onCheckboxStateChange : function()
+	onCheckboxStateChange : function(id)
 	{
 		try
 		{
-			if (document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked)
+			if (id === "fessGBE-prefs-enableLabelUnlabeled-Ctrl")
 			{
-				document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = false;
+				if (document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked)
+				{
+					document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = false;
+				}
+				else
+				{
+					document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = true;
+				}
 			}
-			else
+			if (id === "fessGBE-prefs-enableLabelHiding-Ctrl")
 			{
-				document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = true;
+				if (document.getElementById("fessGBE-prefs-enableLabelHiding-Ctrl").checked)
+				{
+					document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").disabled = false;
+				}
+				else
+				{
+					document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").disabled = true;
+					document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").checked = true;
+				}
 			}
+			
 		}
 		catch(e)
 		{
@@ -393,22 +424,22 @@ var fessGoogleBookmarksDialogs = {
 
 		if (name && this._M.m_bookmarkList && this._M.m_bookmarkList.length)
 		{
-			var old_nested_labels = oldName.split(this._M.nestedLabelSep);
-			if (old_nested_labels.length == 1)
-			{
-				this._M.doChangeFolder(oldName, name, this._M.m_signature);
-			}
-			else
-			{
+			// var old_nested_labels = oldName.split(this._M.nestedLabelSep);
+			// if (old_nested_labels.length == 1)
+			// {
+			// 	this._M.doChangeFolder(oldName, name, this._M.m_signature);
+			// }
+			// else
+			// {
 				var labelsList = this._M.m_labelsArr;
 				for (var i = 0; i < labelsList.length; i++) 
 				{
-					if (labelsList[i].indexOf(oldName) == 0)
+					if (labelsList[i] == oldName || labelsList[i].indexOf(oldName + this._M.nestedLabelSep) == 0)
 					{
 						this._M.doChangeFolder(labelsList[i], labelsList[i].replace(oldName, name), this._M.m_signature);
 					}
 				};
-			}
+			// }
 			if (this.overlay !== null)
 			{
 				this.overlay.needRefresh = true;
