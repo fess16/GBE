@@ -869,6 +869,7 @@ var fessGoogleBookmarks = {
 	{
 		this._M.DebugLog("hideBookmarks");
 		let items = document.getElementById("GBE-ToolBar-popup").getElementsByClassName('google-bookmarks');
+		let re = new RegExp(this._M.hiddenLabelsTitle + "$");
 		if (hide)
 		{
 			for(let i = 0; i < items.length; i++) 
@@ -880,6 +881,14 @@ var fessGoogleBookmarks = {
 		{
 			for(let i = 0; i < items.length; i++) 
 			{
+			  // skip hidden labels
+			  var label = items[i].getAttribute("label");
+			  var fullName = items[i].getAttribute("fullName");
+			  if (this._M.enableLabelHiding && !this._M.showHiddenLabels && 
+			  	(label.search(re) !== -1 || fullName.indexOf(this._M.hiddenLabelsTitle+this._M.nestedLabelSep) == 0))
+			  {
+			  	continue;
+			  }
 			  items[i].setAttribute("hidden", false);
 			}
 		}
@@ -1361,7 +1370,7 @@ var fessGoogleBookmarks = {
 		}
 		// другая иконка для скрытых меток
 		var re = new RegExp(this._M.hiddenLabelsTitle + "$");
-		if ((label.search(re) !== -1 || fullName.indexOf(this._M.hiddenLabelsTitle+this._M.nestedLabelSep) == 0) && this._M.enableLabelHiding)
+		if (this._M.enableLabelHiding && (label.search(re) !== -1 || fullName.indexOf(this._M.hiddenLabelsTitle+this._M.nestedLabelSep) == 0))
 		{
 			item.setAttribute("image", "chrome://GBE/content/images/folder.png");
 		}
