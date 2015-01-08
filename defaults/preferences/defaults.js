@@ -18,3 +18,4 @@ pref("extensions.fessGBE.enable10visitedBookmark", false);
 pref("extensions.fessGBE.enableLabelHiding", true);
 pref("extensions.fessGBE.showHiddenLabels", false);
 pref("extensions.fessGBE.HiddenLabelsTitle", "_hidden_");
+pref("extensions.fessGBE.showTagsInTooltip", false);

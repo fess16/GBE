@@ -7,6 +7,7 @@ Version 0.2.2
 + фокус на поле фильтра при открытии списка закладок (по просьбе Elad Shaked) 
 + при экспорте из Google Bookmarks к закладкам Firefox теперь добавляются метки
 + к всплывающей подсказке на закладке добавлена заметка (если она у закладки есть и включена enableNotes)
++ к всплывающей подсказке на закладке добавлены метки (если они у закладки есть и включена showTagsInTooltip)
 ! JSON.stringify rather than string concatenation to generate labels autocomplete lists и firstRun fix
 + скрытие меток
 
@@ -1332,10 +1333,15 @@ var fessGoogleBookmarks = {
 		let tooltiptext = value.url;
 		if (this._M.enableNotes && value.notes != "") 
 		{
-			// document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.OpenBookmarkHere")
-			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel")
-			"\n" + value.notes;
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel") +
+			"\n" + value.notes; 
 		}
+		if (this._M.showTagsInTooltip && value.labels != "")
+		{
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipTagsLabel") +
+			"\n" + value.labels;
+		}
+	
 		item.setAttribute("tooltiptext", tooltiptext);
 		item.setAttribute("class", "menuitem-iconic google-bookmarks");
 		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
