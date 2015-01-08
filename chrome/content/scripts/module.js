@@ -91,6 +91,8 @@ var fGoogleBookmarksModule =
 	'showHiddenLabels' : false,
 	'hiddenLabelsTitle' : "_hidden_",
 
+	'showTagsInTooltip' : false,
+
  	/* --------------------*/
 
  	'defAutocompliteList' : "",
@@ -254,6 +256,8 @@ var fGoogleBookmarksModule =
     this.readPrefValue("showHiddenLabels", this.prefs.PREF_BOOL, false);
     this.readPrefValue("hiddenLabelsTitle", this.prefs.PREF_STRING, "_hidden_");
 
+    this.readPrefValue("showTagsInTooltip", this.prefs.PREF_BOOL, false);
+    
     if (this.above29)
     {
     	this.readPrefValue("GBE_btnAddBookmarkPlace", this.prefs.PREF_STRING, CustomizableUI.AREA_NAVBAR);
