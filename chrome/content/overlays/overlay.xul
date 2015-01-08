@@ -68,19 +68,19 @@
 				class="menuitem-iconic"
 				image="chrome://GBE/content/images/folder.png"
 				label="&overlay.folderMenuHideFolder.label;"
-				hidden="false"
+				hidden="true"
 				oncommand="fessGoogleBookmarks.folderMenuHideFolder();"/>
 			<menuitem id="GBE-folderMenuUnhideFolder"
 				class="menuitem-iconic"
 				image="chrome://GBE/content/images/folder_blue.png"
 				label="&overlay.folderMenuUnhideFolder.label;"
-				hidden="false"
+				hidden="true"
 				oncommand="fessGoogleBookmarks.folderMenuUnhideFolder();"/>
 			<menuitem id="GBE-folderMenuUnhideAll"
 				class="menuitem-iconic"
 				image="chrome://GBE/content/images/folder_blue.png"
 				label="&overlay.folderMenuUnhideAll.label;"
-				hidden="false"
+				hidden="true"
 				oncommand="fessGoogleBookmarks.folderMenuUnhideAll();"/>	
 		</menupopup>
 	</popupset>	

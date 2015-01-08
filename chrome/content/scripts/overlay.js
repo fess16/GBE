@@ -1521,19 +1521,21 @@ var fessGoogleBookmarks = {
 					document.getElementById("GBE_" + this._M.m_labelsArr[i]).open = false;
 				}
 			}
+			if (this._M.enableLabelHiding)
+			{
+				document.getElementById("GBE-folderMenuHideFolder").setAttribute("hidden", false);
+				document.getElementById("GBE-folderMenuUnhideFolder").setAttribute("hidden", true);
+				document.getElementById("GBE-folderMenuUnhideAll").setAttribute("hidden", true);
+			}
 
-			document.getElementById("GBE-folderMenuHideFolder").setAttribute("hidden", false);
-			document.getElementById("GBE-folderMenuUnhideFolder").setAttribute("hidden", true);
-			document.getElementById("GBE-folderMenuUnhideAll").setAttribute("hidden", true);
-
-			if (this._M.currentFolderId == ('GBE_' + this._M.hiddenLabelsTitle))
+			if (this._M.enableLabelHiding && this._M.currentFolderId == ('GBE_' + this._M.hiddenLabelsTitle))
 			{
 				document.getElementById("GBE-folderMenuHideFolder").setAttribute("hidden", true);
 				document.getElementById("GBE-folderMenuUnhideFolder").setAttribute("hidden", true);
 				document.getElementById("GBE-folderMenuUnhideAll").setAttribute("hidden", false);
 			}
 
-			if (this._M.currentFolderId.indexOf("GBE_" + this._M.hiddenLabelsTitle + this._M.nestedLabelSep) == 0)
+			if (this._M.enableLabelHiding && this._M.currentFolderId.indexOf("GBE_" + this._M.hiddenLabelsTitle + this._M.nestedLabelSep) == 0)
 			{
 				document.getElementById("GBE-folderMenuHideFolder").setAttribute("hidden", true);
 				document.getElementById("GBE-folderMenuUnhideFolder").setAttribute("hidden", false);
