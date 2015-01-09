@@ -656,11 +656,12 @@ var fessGoogleBookmarks = {
 				if (this._M.useMenuBar)
 				{
 					this.doClearList("GBE-MainMenu-Popup", "google-bookmarks");
+					this.doClearList("GBE-mb-searchResultList","menuitem-iconic google-bookmarks-filter");
 				}
 				else
 				{
 					this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
-					this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
+					this.doClearList("GBE-tb-searchResultList","menuitem-iconic google-bookmarks-filter");
 				}
 				if (fromFile)
 				{
@@ -826,10 +827,6 @@ var fessGoogleBookmarks = {
 				document.getElementById("GBE-bc-hmenuDel").setAttribute("image", "chrome://GBE/content/images/bkmrk_delete_off.png");
 				document.getElementById("GBE-bc-hmenuDel").setAttribute("disabled", "true");
 			}
-			if (!this._M.useMenuBar)
-			{
-				// document.getElementById("GBE-filterHBox").setAttribute("hidden","true");
-			}
 		}
 		catch (e)
 		{
@@ -848,14 +845,14 @@ var fessGoogleBookmarks = {
 			event.stopPropagation();
 			return;
 		}
-		if (!this._M.useMenuBar)
-		{
+/*		if (!this._M.useMenuBar)
+		{*/
 			this.hideBookmarks(false);
-			// скрываем списко отфильтрованных закладок
-			document.getElementById("GBE-searchResultList").setAttribute("hidden", true);
+			// скрываем список отфильтрованных закладок
+			document.getElementById("GBE-bc-searchResultList").setAttribute("hidden", true);
 			// обнуляем значение фильтра
-			document.getElementById("GBE-filterTextbox").value = "";
-		}
+			document.getElementById("GBE-bc-filterTextbox").value = "";
+/*		}*/
 	},
 
 	onPopupHiding : function(event)
@@ -870,7 +867,14 @@ var fessGoogleBookmarks = {
 	hideBookmarks : function(hide)
 	{
 		this._M.DebugLog("hideBookmarks");
-		let items = document.getElementById("GBE-ToolBar-popup").getElementsByClassName('google-bookmarks');
+		if (this._M.useMenuBar)
+		{
+			var items = document.getElementById("GBE-MainMenu-Popup").getElementsByClassName('google-bookmarks');
+		}
+		else
+		{
+			var items = document.getElementById("GBE-ToolBar-popup").getElementsByClassName('google-bookmarks');
+		}
 		let re = new RegExp(this._M.hiddenLabelsTitle + "$");
 		if (hide)
 		{
@@ -1207,8 +1211,9 @@ var fessGoogleBookmarks = {
 			else
 			{
 				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
-				document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", true);
+				// document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", true);
 			}
+			document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", true);
 		}
 		catch (e)
 		{
@@ -1234,7 +1239,14 @@ var fessGoogleBookmarks = {
 		{
 			e.stopPropagation();
 			// set focus to filter textbox
-			var textbox = document.getElementById("GBE-filterTextbox");
+			if (this._M.useMenuBar)
+			{
+				var textbox = document.getElementById("GBE-mb-filterTextbox");
+			}
+			else
+			{
+				var textbox = document.getElementById("GBE-tb-filterTextbox");
+			}
 			if (textbox) textbox.focus();
 		}
 	},
@@ -1245,12 +1257,20 @@ var fessGoogleBookmarks = {
 	filterBookmarks : function(searchValue)
 	{
 		// var GBE_GBlist = document.getElementById("GBE-GBlist");
-		var GBE_searchResultList = document.getElementById("GBE-searchResultList");
+		if (this._M.useMenuBar)
+		{
+			var listName = "GBE-mb-searchResultList";
+		}
+		else
+		{
+			var listName = "GBE-tb-searchResultList";
+		}
+		var GBE_searchResultList = document.getElementById(listName);
 		var search = searchValue.value;
 		// копия массива предыдущих отфильтрованных закладок
 		var tempArray = this._M.tempFilterArray.slice(); 
 		GBE_searchResultList.setAttribute("hidden", true);
-		this.doClearList("GBE-searchResultList","menuitem-iconic google-bookmarks-filter");
+		this.doClearList(listName,"menuitem-iconic google-bookmarks-filter");
 		// фильтр пустой
 		if (search.length == 0)
 		{
@@ -1872,7 +1892,8 @@ var fessGoogleBookmarks = {
 		    	self._M.m_ganswer = request.responseXML.documentElement;
 		    	self.doBuildMenu();
 		    	self.preventMenuHiding = false;
-		    	if (!self._M.useMenuBar)	document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", false);
+		    	// if (!self._M.useMenuBar)	document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", false);
+		    	document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", false);
 		    	document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 		    	document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", true);
 	  		} 

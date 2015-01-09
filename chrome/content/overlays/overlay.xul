@@ -85,7 +85,6 @@
 		</menupopup>
 	</popupset>	
 
-<!-- image="chrome://GBE/content/images/Star_empty.png" -->
 	<toolbarpalette id="BrowserToolbarPalette">
 		<toolbaritem id="GBE-toolbaritem" overflows="false">
 
@@ -123,25 +122,24 @@
 						<label observes="GBE-bc-errorLabel" />
 					</hbox>
 
-					<hbox id="GBE-filterHBox" align="center">			
+					<hbox id="GBE-tb-filterHBox" align="center">			
 						<observes element="GBE-bc-filterHBox" attribute="hidden"/>		
-						<label id="GBE-filterTextbox-label" control="GBE-filterTextbox" value="&overlay.textboxLabel;"/>
-				    <textbox 
-				      id="GBE-filterTextbox" 
-				      flex="1"
-				      type="search" 
-				      editable="true"
-				      timeout="100"
-				      oncommand="fessGoogleBookmarks.filterBookmarks(this);"
-				      />
+						<label id="GBE-tb-filterTextbox-label" control="GBE-tb-filterTextbox" value="&overlay.textboxLabel;"/>
+<!-- 				    <textbox 
+  id="GBE-filterTextbox" 
+  flex="1"
+  type="search" 
+  editable="true"
+  timeout="100"
+  oncommand="fessGoogleBookmarks.filterBookmarks(this);"
+  /> -->
+  					<textbox id="GBE-tb-filterTextbox" observes="GBE-bc-filterTextbox"/>
 					</hbox>
 					<menuseparator id="GBE-tb-GBlist-StartSeparator"/>
 
 					<menuseparator id="GBE-tb-GBlist-EndSeparator"/>
-					<vbox id="GBE-searchResultList">
+					<vbox id="GBE-tb-searchResultList" observes="GBE-bc-searchResultList">
 					</vbox>
-					<!-- <menuseparator id="GBE-AboutSeparator"/> -->
-					<!-- <menuitem id="GBE-tb-menuAbout" observes="GBE-bc-menuAbout" /> -->
 				</menupopup>
 
 			</toolbarbutton>
@@ -174,7 +172,10 @@
 
 	<menubar id="main-menubar">
     <menu id="GBE-MainMenu" label="Google Bookmarks" name="Google Bookmarks" accesskey="" insertbefore="tools-menu">
-      <menupopup id="GBE-MainMenu-Popup" observes="GBE-bc-popup">
+      <menupopup id="GBE-MainMenu-Popup" 
+      	observes="GBE-bc-popup"
+      	ignorekeys="false" 
+				onpopupshown="fessGoogleBookmarks.onPopupShown(event);">
       	<menuitem id="GBE-mb-hmenuRefresh" observes="GBE-bc-hmenuRefresh" label="&overlay.hmenuRefresh.hint;" />
       	<menuitem id="GBE-mb-hmenuAdd" observes="GBE-bc-hmenuAdd" label="&overlay.hmenuAdd.hint;" />
       	<menuitem id="GBE-mb-hmenuEdit" observes="GBE-bc-hmenuEdit" label="&overlay.hmenuEdit.hint;" />
@@ -195,10 +196,16 @@
       		<image observes="GBE-bc-errorImage" />
       		<label observes="GBE-bc-errorLabel" />
       	</hbox>
+				<hbox id="GBE-mb-filterHBox" align="center">			
+					<observes element="GBE-bc-filterHBox" attribute="hidden"/>		
+					<label id="GBE-mb-filterTextbox-label" control="GBE-mb-filterHBox" value="&overlay.textboxLabel;"/>
+					<textbox id="GBE-mb-filterTextbox" observes="GBE-bc-filterTextbox"/>
+				</hbox>
       	<menuseparator id="GBE-mb-GBlist-StartSeparator"/>
 
 				<menuseparator id="GBE-mb-GBlist-EndSeparator"/>
-<!-- 				<menuitem id="GBE-mb-menuAbout" observes="GBE-bc-menuAbout" /> -->
+				<vbox id="GBE-mb-searchResultList" observes="GBE-bc-searchResultList">
+				</vbox>
       </menupopup>
     </menu>
   </menubar>
@@ -300,6 +307,15 @@
 		<broadcaster id="GBE-bc-errorLabel" value="&overlay.errorHbox.label.value;"/>
 
 		<broadcaster id="GBE-bc-filterHBox" hidden="true" />
+		<broadcaster id="GBE-bc-filterTextbox" 
+      flex="1"
+      type="search" 
+      editable="true"
+      timeout="100"
+      value=""
+      oncommand="fessGoogleBookmarks.filterBookmarks(this);" />
+
+    <broadcaster id="GBE-bc-searchResultList" hidden="true" />
 
  	</broadcasterset>
 

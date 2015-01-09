@@ -86,11 +86,11 @@ toolbarpaletteitem[place="palette"] > #GBE-btnAddBookmark
   overflow-y: scroll;
 }
 
-#GBE-filterTextbox-label, .GBE-messageImage {
+#GBE-tb-filterTextbox-label, #GBE-mb-filterTextbox-label, .GBE-messageImage {
 	margin-left: 30px;
 }
 
-#GBE-filterTextbox {
+#GBE-tb-filterTextbox, #GBE-mb-filterTextbox {
   margin-right: 30px;
 }
 
