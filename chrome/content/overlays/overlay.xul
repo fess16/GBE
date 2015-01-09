@@ -123,16 +123,17 @@
 						<label observes="GBE-bc-errorLabel" />
 					</hbox>
 
-					<hbox id="GBE-filterHBox" align="center">					
-							<label id="GBE-filterTextbox-label" control="GBE-filterTextbox" value="&overlay.textboxLabel;"/>
-					    <textbox 
-					      id="GBE-filterTextbox" 
-					      flex="1"
-					      type="search" 
-					      editable="true"
-					      timeout="100"
-					      oncommand="fessGoogleBookmarks.filterBookmarks(this);"
-					      />
+					<hbox id="GBE-filterHBox" align="center">			
+						<observes element="GBE-bc-filterHBox" attribute="hidden"/>		
+						<label id="GBE-filterTextbox-label" control="GBE-filterTextbox" value="&overlay.textboxLabel;"/>
+				    <textbox 
+				      id="GBE-filterTextbox" 
+				      flex="1"
+				      type="search" 
+				      editable="true"
+				      timeout="100"
+				      oncommand="fessGoogleBookmarks.filterBookmarks(this);"
+				      />
 					</hbox>
 					<menuseparator id="GBE-tb-GBlist-StartSeparator"/>
 
@@ -152,13 +153,11 @@
       class="toolbarbutton-1 chromeclass-toolbar-additional"
       label="&overlay.btnAddBookmark.label;"
 		>
-<!-- 			<observes element="GBE-bc-hmenuAdd" attribute="image"/> -->
 			<observes element="GBE-bc-hmenuAdd" attribute="tooltiptext"/>
 			<observes element="GBE-bc-hmenuAdd" attribute="disabled"/>
 			<observes element="GBE-bc-hmenuAdd" attribute="oncommand"/>
 		</toolbarbutton>
 
-<!-- 			image="chrome://GBE/content/images/bkmrk_add_quick_on.png" -->
 		<toolbarbutton
       id="GBE-btnQuickAddBookmark"
 			class="toolbarbutton-1 chromeclass-toolbar-additional"
@@ -299,6 +298,8 @@
 			width='18px' 
 			height='18px'/>
 		<broadcaster id="GBE-bc-errorLabel" value="&overlay.errorHbox.label.value;"/>
+
+		<broadcaster id="GBE-bc-filterHBox" hidden="true" />
 
  	</broadcasterset>
 

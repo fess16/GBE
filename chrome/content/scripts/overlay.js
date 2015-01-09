@@ -10,6 +10,7 @@ Version 0.2.2
 + к всплывающей подсказке на закладке добавлены метки (если они у закладки есть и включена showTagsInTooltip)
 ! JSON.stringify rather than string concatenation to generate labels autocomplete lists и firstRun fix
 + скрытие меток
++ фильтр по url (в about:config установить enableFilterByUrl)
 
 
 Version 0.2.1
@@ -1206,7 +1207,7 @@ var fessGoogleBookmarks = {
 			else
 			{
 				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
-				document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
+				document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", true);
 			}
 		}
 		catch (e)
@@ -1254,16 +1255,16 @@ var fessGoogleBookmarks = {
 		if (search.length == 0)
 		{
 			// показываем основной список (все закладки и метки)
-			// GBE_GBlist.setAttribute("hidden", false);
 			this.hideBookmarks(false);
 		}
 		else
 		{
+			let self = this;
 			let checkBookmark = function (bookmark, search) 
 			{
 				if (bookmark.title.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
-				//if (bookmark.url.toLowerCase().indexOf(search) !== -1) return true;
 				if (bookmark.notes.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
+				if (self._M.enableFilterByUrl && bookmark.url.toLowerCase().indexOf(search) !== -1) return true;
 				return false;
 			};
 
@@ -1284,15 +1285,11 @@ var fessGoogleBookmarks = {
 					for(var i = 0; i < tempArray.length; i++)
 					{
 						if (checkBookmark(tempArray[i], search))
-						//if (tempArray[i].title.toLowerCase().indexOf(search) !== -1 )
 						{
 							tempMenuitem = document.createElement('menuitem');
-							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i].title, tempArray[i].url, tempArray[i].favicon);
+							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i]);
 							// и формируем this.tempFilterArray заново
-							this._M.tempFilterArray.push({
-								"title" : tempArray[i].title, "url" : tempArray[i].url, 
-								"favicon" : tempArray[i].favicon, "notes" : tempArray[i].notes
-							});
+							this._M.tempFilterArray.push(tempArray[i]);
 						}
 					}
 				}
@@ -1305,11 +1302,8 @@ var fessGoogleBookmarks = {
 						//if (this._M.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1 )
 						{
 							tempMenuitem = document.createElement('menuitem');
-							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this._M.m_bookmarkList[i].title, this._M.m_bookmarkList[i].url, this._M.m_bookmarkList[i].favicon);
-							this._M.tempFilterArray.push({
-								"title" : this._M.m_bookmarkList[i].title, "url" : this._M.m_bookmarkList[i].url, 
-								"favicon" : this._M.m_bookmarkList[i].favicon, "notes" : this._M.m_bookmarkList[i].notes
-							});
+							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this._M.m_bookmarkList[i]);
+							this._M.tempFilterArray.push(this._M.m_bookmarkList[i]);
 						}
 					}
 				}
@@ -1400,14 +1394,24 @@ var fessGoogleBookmarks = {
 		}
 	},
 
-	appendSearchMenuItem : function(parent, item, label, url, favicon)
+	appendSearchMenuItem : function(parent, item, value)
 	{
-		item.setAttribute("label", label);
-		item.setAttribute("url", url);
-		item.setAttribute("tooltiptext", url);
+		item.setAttribute("label", value.title);
+		let tooltiptext = value.url;
+		if (this._M.enableNotes && value.notes != "") 
+		{
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel") +
+			"\n" + value.notes; 
+		}
+		if (this._M.showTagsInTooltip && value.labels != "")
+		{
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipTagsLabel") +
+			"\n" + value.labels;
+		}
+		item.setAttribute("tooltiptext", tooltiptext);
 		item.setAttribute("class", "menuitem-iconic google-bookmarks-filter");
 		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
-		item.setAttribute("image", favicon);
+		item.setAttribute("image", value.favicon);
 		parent.appendChild(item);
 	},
 
@@ -1868,7 +1872,7 @@ var fessGoogleBookmarks = {
 		    	self._M.m_ganswer = request.responseXML.documentElement;
 		    	self.doBuildMenu();
 		    	self.preventMenuHiding = false;
-		    	if (!self._M.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
+		    	if (!self._M.useMenuBar)	document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", false);
 		    	document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 		    	document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", true);
 	  		} 

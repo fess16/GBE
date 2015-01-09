@@ -92,6 +92,7 @@ var fGoogleBookmarksModule =
 	'hiddenLabelsTitle' : "_hidden_",
 
 	'showTagsInTooltip' : false,
+	'enableFilterByUrl' : false,
 
  	/* --------------------*/
 
@@ -257,6 +258,7 @@ var fGoogleBookmarksModule =
     this.readPrefValue("hiddenLabelsTitle", this.prefs.PREF_STRING, "_hidden_");
 
     this.readPrefValue("showTagsInTooltip", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableFilterByUrl", this.prefs.PREF_BOOL, false);
     
     if (this.above29)
     {
