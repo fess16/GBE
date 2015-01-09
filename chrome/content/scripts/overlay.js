@@ -1299,7 +1299,6 @@ var fessGoogleBookmarks = {
 					for (var i = 0; i < this._M.m_bookmarkList.length; i++)
 					{
 						if (checkBookmark(this._M.m_bookmarkList[i], search))
-						//if (this._M.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1 )
 						{
 							tempMenuitem = document.createElement('menuitem');
 							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this._M.m_bookmarkList[i]);
