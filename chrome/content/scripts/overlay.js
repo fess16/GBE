@@ -1207,7 +1207,7 @@ var fessGoogleBookmarks = {
 			else
 			{
 				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
-				document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", true);
+				document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 			}
 		}
 		catch (e)
@@ -1871,7 +1871,7 @@ var fessGoogleBookmarks = {
 		    	self._M.m_ganswer = request.responseXML.documentElement;
 		    	self.doBuildMenu();
 		    	self.preventMenuHiding = false;
-		    	if (!self._M.useMenuBar)	document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", false);
+		    	if (!self._M.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 		    	document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", true);
 	  		} 

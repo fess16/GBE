@@ -135,6 +135,7 @@ var fessGoogleBookmarksDialogs = {
 			{
 				this._M.prefs.setBoolPref("useMenuBar", false);
 			}
+
 			this._M.prefs.setBoolPref("enableLabelUnlabeled", document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked);
 			this._M.prefs.setCharPref("labelUnlabeledName", document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value);
 			this._M.prefs.setBoolPref("showToolbarAddBtn", document.getElementById("fessGBE-prefs-showToolbarAddBtn-Ctrl").checked);
@@ -222,6 +223,23 @@ var fessGoogleBookmarksDialogs = {
 		catch(e)
 		{
 			this._M.ErrorLog("GBE:onCheckboxStateChange", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+	onUseMenuBarRadioCommand : function(event)
+	{
+		var value = event.target.value;
+		if (Application.prefs.get("browser.preferences.instantApply"))
+		{
+			if (value == "on")
+			{
+				this._M.prefs.setBoolPref("useMenuBar", true);
+			}
+			else
+			{
+				this._M.prefs.setBoolPref("useMenuBar", false);
+			}
+			this._M.useMenuBar = this._M.prefs.getBoolPref("useMenuBar");
 		}
 	},
 

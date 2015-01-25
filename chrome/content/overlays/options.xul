@@ -111,8 +111,10 @@
         id="fessGBE-prefs-useMenuBar-Ctrl"
       >
         <hbox>
-          <radio label="&prefWindow.useMenuBar.radio1.label;" value="on"/>
-          <radio label="&prefWindow.useMenuBar.radio2.label;" value="off"/>
+          <radio label="&prefWindow.useMenuBar.radio1.label;" value="on" 
+            oncommand="fessGoogleBookmarksDialogs.onUseMenuBarRadioCommand(event);"/>
+          <radio label="&prefWindow.useMenuBar.radio2.label;" value="off" 
+            oncommand="fessGoogleBookmarksDialogs.onUseMenuBarRadioCommand(event);"/>
         </hbox>
       </radiogroup>
     </groupbox>
