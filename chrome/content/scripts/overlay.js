@@ -1396,6 +1396,7 @@ var fessGoogleBookmarks = {
 	appendSearchMenuItem : function(parent, item, value)
 	{
 		item.setAttribute("label", value.title);
+		item.setAttribute("url", value.url);
 		let tooltiptext = value.url;
 		if (this._M.enableNotes && value.notes != "") 
 		{
