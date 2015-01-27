@@ -1279,26 +1279,62 @@ var fessGoogleBookmarks = {
 			{
 				this._M.tempFilterArray.length = 0;
 				// если новое значение фильтра входит в предыдущее,
-				if(this._M.oldFilterValue !== "" && search.indexOf(this._M.oldFilterValue) == 0)
+/*				if(this._M.oldFilterValue !== "" && search.indexOf(this._M.oldFilterValue) == 0)
 				{
 					// то ищем только среди ранее отфильтрованных закладок
 					for(var i = 0; i < tempArray.length; i++)
 					{
+						var hit = false;
 						if (checkBookmark(tempArray[i], search))
+						{
+							hit = true;							
+						}
+						else
+						{
+							var words = search.split(/\s+/);
+							for (var j = 0; j < words.length; j++)
+							{
+								if (checkBookmark(tempArray[i], words[j])) 
+								{
+									hit = true;
+									break;
+								}
+							}
+						}
+						// и формируем this.tempFilterArray заново
+						if (hit) 
 						{
 							tempMenuitem = document.createElement('menuitem');
 							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i]);
-							// и формируем this.tempFilterArray заново
 							this._M.tempFilterArray.push(tempArray[i]);
 						}
 					}
 				}
-				else
+				else*/
 				{
+					var words = search.trim().split(/\s+/);
+					var wordsCount = words.length;
 					// иначе - поиск по всем закладкам
 					for (var i = 0; i < this._M.m_bookmarkList.length; i++)
 					{
+						var hit = false;
 						if (checkBookmark(this._M.m_bookmarkList[i], search))
+						{
+							hit = true;							
+						}
+						else
+						{
+							var hitCount = 0;
+							for (var j = 0; j < wordsCount; j++)
+							{
+								if (checkBookmark(this._M.m_bookmarkList[i], words[j])) 
+								{
+									hitCount++;
+								}
+							}
+							if (hitCount == wordsCount) hit = true;
+						}
+						if (hit) 
 						{
 							tempMenuitem = document.createElement('menuitem');
 							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this._M.m_bookmarkList[i]);
