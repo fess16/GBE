@@ -122,5 +122,7 @@
 <!ENTITY addOpenTabs.button-save.label "Добавить">
 <!ENTITY addOpenTabs.button-cancel.label "Отмена">
 <!ENTITY addOpenTabs.treecol.select.label "Выбор">
-<!ENTITY addOpenTabs.treecol.Title.label "Заголовок">
 <!ENTITY addOpenTabs.treecol.URL.label "Адрес">
+<!ENTITY addOpenTabs.treecol.Title.label "Заголовок">
+
+<!ENTITY search.form.title "Google Bookmark: поиск">

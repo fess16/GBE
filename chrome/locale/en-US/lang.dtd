@@ -127,3 +127,5 @@
 <!ENTITY addOpenTabs.treecol.select.label "Select">
 <!ENTITY addOpenTabs.treecol.Title.label "Title">
 <!ENTITY addOpenTabs.treecol.URL.label "URL">
+
+<!ENTITY search.form.title; "Google Bookmark: search">

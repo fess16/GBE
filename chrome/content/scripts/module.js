@@ -106,6 +106,8 @@ var fGoogleBookmarksModule =
 
  	'above29' : _above29,
  	'm_recent10bkmrk' : [],
+ 	'lastKey' : null,
+ 	'keyUpTime' : 0,
 
 
 

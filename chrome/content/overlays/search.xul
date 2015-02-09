@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://GBE/skin/styles/overlay.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://GBE/locale/lang.dtd">
+
+<window 
+  id="GBE-searchWindow" 
+  hidechrome="no" 
+  titlebar="yes" 
+  title="&search.form.title;"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  onload="fessGoogleBookmarksDialogs.onLoadSearchWindow();">
+
+  <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="fGoogleBookmarksExtension.strings" src="chrome://GBE/locale/fessGBE.properties"/>
+  </stringbundleset>
+  <keyset>
+    <key id="GBE-escape-key" keycode="VK_ESCAPE" oncommand="fessGoogleBookmarksDialogs.close();"/>
+  </keyset>
+  <popapset>
+    <menupopup  id="GBE-search.window.resultPopup"
+                ignorekeys="true"
+                position="after_start"
+                width="440px"
+                onclick="fessGoogleBookmarksDialogs.handleClick(event);"/>
+  </popapset>
+
+  <vbox align="center">
+    <hbox   flex="1" 
+            style="width: 440px; margin-left: 10px; margin-right: 10px;">
+      <groupbox flex="1">
+        <label control="GBE-search.window.name" value="&overlay.textboxLabel;" flex="1"/>
+        <textbox  id="GBE-search.window.filterTextbox" 
+                  value="" 
+                  flex="1" 
+                  style="width: 440px;"
+                  type="search" 
+                  editable="true"
+                  timeout="100"
+                  onkeypress="fessGoogleBookmarksDialogs.onKeypressfilterTextbox(event);"
+                  oncommand="fessGoogleBookmarksDialogs.filterBookmarks(this);"/>
+
+      </groupbox>
+    </hbox>
+  </vbox>
+</window>

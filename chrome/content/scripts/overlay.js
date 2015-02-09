@@ -441,6 +441,8 @@ var fessGoogleBookmarks = {
   		// menu.addEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing, false);
   		window.addEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing, false);
 
+  		window.addEventListener("keyup", fessGoogleBookmarks.keyUpHandler, false);
+
 			// в настройка включено автодополнение в адресной строке
 			if (this._M.enableGBautocomplite)
 			{
@@ -448,6 +450,39 @@ var fessGoogleBookmarks = {
 				this.setURLBarAutocompleteList("on");
 			}
 		}
+	},
+
+	keyUpHandler	: function(event)
+	{
+			if (event.keyCode === 36)
+			{
+				var d = new Date();
+				var n = d.getTime(); 
+				if 	(	fessGoogleBookmarks._M.lastKey == event.keyCode 
+							&& (n - fessGoogleBookmarks._M.keyUpTime > 10) 
+							&& (n - fessGoogleBookmarks._M.keyUpTime < 500)
+						)
+				{
+					var args = {
+					  param1: fessGoogleBookmarks
+					};
+
+					args.wrappedJSObject = args;
+
+					var watcher = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
+					                            .getService(Components.interfaces.nsIWindowWatcher);
+					watcher.openWindow(null, "chrome://GBE/content/overlays/search.xul", "Search", "chrome,titlebar=yes,centerscreen", args);
+
+					fessGoogleBookmarks._M.lastKey = null;
+					fessGoogleBookmarks._M.keyUpTime = 0;
+				}
+				else
+				{
+					fessGoogleBookmarks._M.lastKey = event.keyCode;
+					fessGoogleBookmarks._M.keyUpTime = n;
+				}
+			}
+
 	},
 
 	uninit : function()
@@ -469,6 +504,7 @@ var fessGoogleBookmarks = {
 			// var menu = document.getElementById("contentAreaContextMenu");
   		// menu.removeEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing);
   		window.removeEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing);
+  		window.removeEventListener("keyup", fessGoogleBookmarks.keyUpHandler);
 		}
 	},
 
@@ -937,7 +973,7 @@ var fessGoogleBookmarks = {
 		}
 		catch(error)
 		{
-			fGoogleBookmarksModule.ErrorLog("GBE:folderClick", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+			fGoogleBookmarksModule.ErrorLog("GBE:handleClick", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 

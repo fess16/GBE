@@ -10,6 +10,7 @@ var fessGoogleBookmarksDialogs = {
 	"_M" : fGoogleBookmarksModule,
 	"overlay" : null,
 	"windowsParams" : null,
+	"searchPosition" : 0,
 
 	/**
 	 * При загрузке окна настроек дополнения
@@ -644,6 +645,202 @@ var fessGoogleBookmarksDialogs = {
 		if (this.overlay !== null)
 		{
 			this.overlay.needRefresh = true;
+		}
+
+	},
+
+	onLoadSearchWindow	: function(){
+		var args = window.arguments[0].wrappedJSObject;
+		this.fGB = args.param1;
+		this.tempFilterArray = [];
+		var textbox = document.getElementById("GBE-search.window.filterTextbox");
+		if (textbox) textbox.focus();
+	},
+
+	appendSearchMenuItem : function(parent, item, value)
+	{
+		item.setAttribute("label", value.title);
+		item.setAttribute("url", value.url);
+		let tooltiptext = document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipTitleLabel") +
+			" " + value.title + "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipUrlLabel") +
+			" " + value.url;
+		if (this._M.enableNotes && value.notes != "") 
+		{
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel") +
+			" " + value.notes; 
+		}
+		if (this._M.showTagsInTooltip && value.labels != "")
+		{
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipTagsLabel") +
+			" " + value.labels;
+		}
+		item.setAttribute("tooltiptext", tooltiptext);
+		item.setAttribute("class", "menuitem-iconic google-bookmarks-filter");
+		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
+		item.setAttribute("image", value.favicon);
+		parent.appendChild(item);
+	},
+
+	filterBookmarks : function(searchValue)
+	{
+		var GBE_searchResultList = document.getElementById("GBE-search.window.resultPopup");
+		var search = searchValue.value;
+
+		let self = this;
+		let checkBookmark = function (bookmark, search) 
+		{
+			if (bookmark.title.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
+			if (bookmark.notes.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
+			if (self._M.enableFilterByUrl && bookmark.url.toLowerCase().indexOf(search) !== -1) return true;
+			return false;
+		};
+		GBE_searchResultList.setAttribute("hidden", true);
+		for (var i = GBE_searchResultList.childNodes.length-1; i>=0; i--)
+		{
+      GBE_searchResultList.removeChild(GBE_searchResultList.childNodes[i]);
+    }
+
+    if (search.length > 0)
+		{
+			var tempArray = this.tempFilterArray.slice();
+	    var tempMenuitem;
+
+	    if (this._M.m_bookmarkList && this._M.m_bookmarkList.length)
+	    {
+	    	this.tempFilterArray.length = 0;
+	    	var words = search.trim().split(/\s+/);
+	    	var wordsCount = words.length;
+	    	// иначе - поиск по всем закладкам
+	    	for (var i = 0; i < this._M.m_bookmarkList.length; i++)
+	    	{
+	    		var hit = false;
+	    		if (checkBookmark(this._M.m_bookmarkList[i], search))
+	    		{
+	    			hit = true;							
+	    		}
+	    		else
+	    		{
+	    			var hitCount = 0;
+	    			for (var j = 0; j < wordsCount; j++)
+	    			{
+	    				if (checkBookmark(this._M.m_bookmarkList[i], words[j])) 
+	    				{
+	    					hitCount++;
+	    				}
+	    			}
+	    			if (hitCount == wordsCount) hit = true;
+	    		}
+	    		if (hit) 
+	    		{
+	    			tempMenuitem = document.createElement('menuitem');
+	    			this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this._M.m_bookmarkList[i]);
+	    			this.tempFilterArray.push(this._M.m_bookmarkList[i]);
+	    		}
+	    	}
+	    	if (this.tempFilterArray.length > 0)
+	    	{
+		    	GBE_searchResultList.setAttribute("hidden", false);
+		    	var filterTextbox = document.getElementById("GBE-search.window.filterTextbox");
+		    	GBE_searchResultList.showPopup(filterTextbox,filterTextbox.boxObject.screenX-20,filterTextbox.boxObject.screenY+filterTextbox.boxObject.height,"popup");
+		    	GBE_searchResultList.childNodes[0].setAttribute("_moz-menuactive", "true");
+		    	this.searchPosition == 0;
+		    }	
+	    }
+			tempArray.length = 0;
+		}
+
+	},
+
+	close : function()
+	{
+		var GBE_searchResultList = document.getElementById("GBE-search.window.resultPopup");
+		for (var i = GBE_searchResultList.childNodes.length-1; i>=0; i--)
+		{
+      GBE_searchResultList.removeChild(GBE_searchResultList.childNodes[i]);
+    }
+    window.close();
+	},
+
+	handleClick : function(e)
+	{
+		try{
+			switch (e.button) 
+			{
+				case 0 :
+					{
+						if (e.target.getAttribute("class") == "menuitem-iconic google-bookmarks-filter")
+						{
+							fessGoogleBookmarksDialogs.fGB.showURL(e.target.getAttribute("url"), fessGoogleBookmarksDialogs._M.reverseBkmrkLeftClick);
+							e.stopPropagation();
+							fessGoogleBookmarksDialogs.close();
+							break;
+						}
+						break;
+					}
+				case 1 :
+					{
+						if (e.target.getAttribute("class") == "menuitem-iconic google-bookmarks-filter")
+						{
+							fessGoogleBookmarksDialogs.fGB.showURL(e.target.getAttribute("url"), !fGoogleBookmarksModule.reverseBkmrkLeftClick);
+							e.stopPropagation();
+							fessGoogleBookmarksDialogs.close();
+							break;
+						}
+						break;
+					}
+			}
+		}
+		catch(error)
+		{
+			fessGoogleBookmarksDialogs.ErrorLog("GBE:handleClick", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+		}
+	},
+
+	onKeypressfilterTextbox : function(event)
+	{
+		var keycode=event.keyCode;
+		var self = fessGoogleBookmarksDialogs;
+		var GBE_searchResultList = document.getElementById("GBE-search.window.resultPopup");
+		var searchResultsCount = GBE_searchResultList.childNodes.length;
+		switch (keycode)
+		{
+			case 27 :
+			{
+				for (var i = GBE_searchResultList.childNodes.length-1; i>=0; i--)
+				{
+		      GBE_searchResultList.removeChild(GBE_searchResultList.childNodes[i]);
+		    }
+		    GBE_searchResultList.setAttribute("hidden", true);
+		    break;
+			}
+			case 40 :
+			{
+				if (searchResultsCount == 0) break;
+				GBE_searchResultList.childNodes[self.searchPosition].setAttribute("_moz-menuactive", "false");
+				self.searchPosition++;
+				if (self.searchPosition >= searchResultsCount) self.searchPosition = 0
+				GBE_searchResultList.childNodes[self.searchPosition].setAttribute("_moz-menuactive", "true");
+				break;
+			}
+			case 38 :
+			{
+				if (searchResultsCount == 0) break;
+				GBE_searchResultList.childNodes[self.searchPosition].setAttribute("_moz-menuactive", "false");
+				self.searchPosition--;
+				if (self.searchPosition < 0) self.searchPosition = searchResultsCount - 1;
+				GBE_searchResultList.childNodes[self.searchPosition].setAttribute("_moz-menuactive", "true");
+				break;
+			}
+			case 13 :
+			{
+				if (searchResultsCount > 0)
+				{
+					var url = GBE_searchResultList.childNodes[self.searchPosition].getAttribute("url");
+					self.fGB.showURL(url, self._M.reverseBkmrkLeftClick);
+					self.close();
+				}
+				break;
+			}
 		}
 
 	},
