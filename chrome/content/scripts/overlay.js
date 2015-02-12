@@ -443,6 +443,21 @@ var fessGoogleBookmarks = {
 
   		window.addEventListener("keyup", fessGoogleBookmarks.keyUpHandler, false);
 
+  		if (this._M.enableCtrlD)
+  		{
+  			try
+  			{
+  				var AddBookmarkAs = document.getElementById("Browser:AddBookmarkAs");
+  				AddBookmarkAs.setAttribute("oncommand", "fessGoogleBookmarks.showBookmarkDialog(false);");
+  			}
+  			catch (error)
+  			{
+  				this._M.ErrorLog("GBE:contextPopupShowing", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+  				this._M.prefs.setBoolPref("enableCtrlD", false);
+  				this._M.ErrorLog("Set Ctrl+D command error! enableCtrlD reset to false");
+  			}
+  		}
+
 			// в настройка включено автодополнение в адресной строке
 			if (this._M.enableGBautocomplite)
 			{

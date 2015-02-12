@@ -93,6 +93,7 @@ var fGoogleBookmarksModule =
 
 	'showTagsInTooltip' : false,
 	'enableFilterByUrl' : false,
+	'enableCtrlD' : false,
 
  	/* --------------------*/
 
@@ -261,6 +262,7 @@ var fGoogleBookmarksModule =
 
     this.readPrefValue("showTagsInTooltip", this.prefs.PREF_BOOL, false);
     this.readPrefValue("enableFilterByUrl", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableCtrlD", this.prefs.PREF_BOOL, false);
     
     if (this.above29)
     {
