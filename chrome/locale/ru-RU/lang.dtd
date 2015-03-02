@@ -69,6 +69,9 @@
 <!ENTITY folderDelete.label-info.value "Вы действительно хотите удалить метку:">
 <!ENTITY folderDelete.checkbox.label "Удалить вложенные закладки?">
 
+<!ENTITY prefWindow.mainPanel.label "Основные">
+<!ENTITY prefWindow.advPanel.label "Другие">
+
 <!ENTITY prefWindow.form.title "Настройки Fess Google Bookmark Extension">
 <!ENTITY prefWindow.pane.title "Настройки">
 <!ENTITY prefWindow.nestedLabelSep.label "Разделитель вложенных меток:">
@@ -99,6 +102,11 @@
 <!ENTITY prefWindow.LabelHiding.groupbox.caption "Скрытие меток:">
 <!ENTITY prefWindow.enableLabelHiding.label "Включить скрытие меток">
 <!ENTITY prefWindow.showHiddenLabels.label "Показать скрытые метки">
+
+<!ENTITY prefWindow.showTagsInTooltip.label "Показывать метки в всплывающей подсказке">
+<!ENTITY prefWindow.enableFilterByUrl.label "Искать в URL закладок">
+<!ENTITY prefWindow.enableCtrlD.label "Включить добаление закладок по Ctrl+D">
+<!ENTITY prefWindow.enableQuickSearch.label "Включить быстрый поиск (Home+Home) - требуется перезапуск">
 
 <!ENTITY ffBookmark.form.title "Импорт/экспорт Google Bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Папка в закладках Firefox для импорта/экспорта:">

@@ -21,3 +21,4 @@ pref("extensions.fessGBE.HiddenLabelsTitle", "_hidden_");
 pref("extensions.fessGBE.showTagsInTooltip", false);
 pref("extensions.fessGBE.enableFilterByUrl", false);
 pref("extensions.fessGBE.enableCtrlD", false);
+pref("extensions.fessGBE.enableQuickSearch", false);

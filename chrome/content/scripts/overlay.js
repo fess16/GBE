@@ -441,7 +441,10 @@ var fessGoogleBookmarks = {
   		// menu.addEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing, false);
   		window.addEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing, false);
 
-  		window.addEventListener("keyup", fessGoogleBookmarks.keyUpHandler, false);
+  		if (this._M.enableQuickSearch)
+  		{ 
+  			window.addEventListener("keyup", fessGoogleBookmarks.keyUpHandler, false);
+  		}
 
   		if (this._M.enableCtrlD)
   		{
@@ -497,7 +500,6 @@ var fessGoogleBookmarks = {
 					fessGoogleBookmarks._M.keyUpTime = n;
 				}
 			}
-
 	},
 
 	uninit : function()
@@ -519,7 +521,10 @@ var fessGoogleBookmarks = {
 			// var menu = document.getElementById("contentAreaContextMenu");
   		// menu.removeEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing);
   		window.removeEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing);
-  		window.removeEventListener("keyup", fessGoogleBookmarks.keyUpHandler);
+  		if (this._M.enableQuickSearch)
+  		{ 
+  			window.removeEventListener("keyup", fessGoogleBookmarks.keyUpHandler);
+  		}
 		}
 	},
 

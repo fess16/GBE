@@ -148,6 +148,11 @@ var fessGoogleBookmarksDialogs = {
 			
 			this._M.prefs.setBoolPref("enableLabelHiding", document.getElementById("fessGBE-prefs-enableLabelHiding-Ctrl").checked);
 			this._M.prefs.setBoolPref("showHiddenLabels", document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").checked);
+			
+			this._M.prefs.setBoolPref("showTagsInTooltip", document.getElementById("fessGBE-prefs-showTagsInTooltip-Ctrl").checked);
+			this._M.prefs.setBoolPref("enableFilterByUrl", document.getElementById("fessGBE-prefs-enableFilterByUrl-Ctrl").checked);
+			this._M.prefs.setBoolPref("enableCtrlD", document.getElementById("fessGBE-prefs-enableCtrlD-Ctrl").checked);
+			this._M.prefs.setBoolPref("enableQuickSearch", document.getElementById("fessGBE-prefs-enableQuickSearch-Ctrl").checked);
 
 
 			this._M.needRefresh = true;
@@ -170,6 +175,11 @@ var fessGoogleBookmarksDialogs = {
 
 			this._M.enableLabelHiding = document.getElementById("fessGBE-prefs-enableLabelHiding-Ctrl").checked;
 			this._M.showHiddenLabels = document.getElementById("fessGBE-prefs-showHiddenLabels-Ctrl").checked;
+			
+			this._M.showTagsInTooltip = document.getElementById("fessGBE-prefs-showTagsInTooltip-Ctrl").checked;
+			this._M.enableFilterByUrl = document.getElementById("fessGBE-prefs-enableFilterByUrl-Ctrl").checked;
+			this._M.enableCtrlD = document.getElementById("fessGBE-prefs-enableCtrlD-Ctrl").checked;
+			this._M.enableQuickSearch = document.getElementById("fessGBE-prefs-enableQuickSearch-Ctrl").checked;
 
 			if (oldValGBautocomplite !== this._M.enableGBautocomplite && this.overlay !== null)
 			{
