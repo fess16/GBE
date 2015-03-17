@@ -39,12 +39,14 @@
       <preference id="pref_enableFilterByUrl" name="extensions.fessGBE.enableFilterByUrl" type="bool"/>
       <preference id="pref_enableCtrlD" name="extensions.fessGBE.enableCtrlD" type="bool"/>
       <preference id="pref_enableQuickSearch" name="extensions.fessGBE.enableQuickSearch" type="bool"/>
+      <preference id="pref_darkThemeIcon" name="extensions.fessGBE.darkThemeIcon" type="bool"/>
     </preferences>
     <vbox flex="1">
       <tabbox selectedIndex="0">
         <tabs>
           <tab label="&prefWindow.mainPanel.label;"/>    
           <tab label="&prefWindow.advPanel.label;"/>  
+          <tab label="&prefWindow.iconsPanel.label;"/>  
         </tabs>
         <tabpanels>   
           <tabpanel id="fessGBE-prefs-mainPanel" orient="vertical">
@@ -223,6 +225,26 @@
                 id="fessGBE-prefs-showTagsInTooltip-Ctrl" 
                 label="&prefWindow.showTagsInTooltip.label;"/>
             </hbox>  
+          </tabpanel>
+          <tabpanel id="fessGBE-prefs-iconsPanel" orient="vertical">
+            <groupbox>
+              <caption label="&prefWindow.useMenuBar.caption.label;" />
+              <radiogroup
+                preference="pref_darkThemeIcon"
+                id="fessGBE-prefs-darkThemeIcon-Ctrl"
+              >
+                <vbox>
+                  <radio value="off" 
+                    oncommand="fessGoogleBookmarksDialogs.onDarkThemeIconRadioCommand(event);"
+                    style="list-style-image:url(chrome://GBE/content/images/Star_empty_iconset.png);"
+                  />
+                  <radio value="on" 
+                    oncommand="fessGoogleBookmarksDialogs.onDarkThemeIconRadioCommand(event);"
+                    style="list-style-image:url(chrome://GBE/content/images/Star_empty_iconset1.png);"
+                  />
+                </vbox>
+              </radiogroup>
+            </groupbox>
           </tabpanel>
         </tabpanels>
       </tabbox>

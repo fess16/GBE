@@ -72,6 +72,7 @@
 
 <!ENTITY prefWindow.mainPanel.label "Main">
 <!ENTITY prefWindow.advPanel.label "Other">
+<!ENTITY prefWindow.iconsPanel.label "Icons">
 
 <!ENTITY prefWindow.form.title "Fess Google Bookmark Extension Options">
 <!ENTITY prefWindow.pane.title "Preferences">

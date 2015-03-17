@@ -9,6 +9,17 @@
   -moz-image-region: rect(0px, 16px, 16px, 0px);
 }
 
+#GBE-toolbarbutton.GBE-empty-star.dark
+{
+  list-style-image: url(chrome://GBE/content/images/Star_empty1.png);
+  -moz-image-region: rect(0px, 18px, 18px, 0px);
+}
+#GBE-toolbarbutton.GBE-full-star.dark
+{
+  list-style-image: url(chrome://GBE/content/images/Star_full1.png);
+  -moz-image-region: rect(0px, 18px, 18px, 0px);
+}
+
 
 #GBE-btnQuickAddBookmark
 {

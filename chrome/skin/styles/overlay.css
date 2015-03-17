@@ -3,6 +3,11 @@
   list-style-image: url(chrome://GBE/content/images/Star_empty.png);
 }
 
+#GBE-toolbarbutton.GBE-empty-star.dark
+{
+  list-style-image: url(chrome://GBE/content/images/Star_empty1.png);
+}
+
 /* Added for Australis support */
 #GBE-toolbaritem[cui-areatype="menu-panel"] > #GBE-toolbarbutton.GBE-empty-star,
 toolbarpaletteitem[place="palette"] > #GBE-toolbaritem > #GBE-toolbarbutton 
@@ -13,6 +18,11 @@ toolbarpaletteitem[place="palette"] > #GBE-toolbaritem > #GBE-toolbarbutton
 #GBE-toolbarbutton.GBE-full-star
 {
   list-style-image: url(chrome://GBE/content/images/Star_full.png);
+}
+
+#GBE-toolbarbutton.GBE-full-star.dark
+{
+  list-style-image: url(chrome://GBE/content/images/Star_full1.png);
 }
 
 /* Added for Australis support */

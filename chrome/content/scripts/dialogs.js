@@ -38,6 +38,20 @@ var fessGoogleBookmarksDialogs = {
 		{
 			document.getElementById("fessGBE-prefs-useMenuBar-Ctrl").selectedIndex = 1;
 		}
+
+		var darkThemeIcon = Components.classes["@mozilla.org/preferences-service;1"]
+     .getService(Components.interfaces.nsIPrefService)
+     .getBranch("extensions.fessGBE.")
+     .getBoolPref("darkThemeIcon");
+    if (darkThemeIcon)
+		{
+			document.getElementById("fessGBE-prefs-darkThemeIcon-Ctrl").selectedIndex = 1;
+		}
+		else
+		{
+			document.getElementById("fessGBE-prefs-darkThemeIcon-Ctrl").selectedIndex = 0;
+		}
+
 		if (document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked)
 		{
 			document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").disabled = false;
@@ -137,6 +151,15 @@ var fessGoogleBookmarksDialogs = {
 				this._M.prefs.setBoolPref("useMenuBar", false);
 			}
 
+			if (document.getElementById("fessGBE-prefs-darkThemeIcon-Ctrl").selectedIndex === 1)
+			{
+				this._M.prefs.setBoolPref("darkThemeIcon", true);
+			}
+			else
+			{
+				this._M.prefs.setBoolPref("darkThemeIcon", false);
+			}
+
 			this._M.prefs.setBoolPref("enableLabelUnlabeled", document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked);
 			this._M.prefs.setCharPref("labelUnlabeledName", document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value);
 			this._M.prefs.setBoolPref("showToolbarAddBtn", document.getElementById("fessGBE-prefs-showToolbarAddBtn-Ctrl").checked);
@@ -165,7 +188,10 @@ var fessGoogleBookmarksDialogs = {
 			var oldValGBautocomplite = this._M.enableGBautocomplite;
 			this._M.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
 			this._M.enableNotes = document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked;
-			this._M.useMenuBar = this._M.prefs.getBoolPref("useMenuBar");
+			if (this._M.useMenuBar !== this._M.prefs.getBoolPref("useMenuBar"))
+			{
+				this._M.useMenuBar = this._M.prefs.getBoolPref("useMenuBar");
+			}
 			this._M.enableLabelUnlabeled = document.getElementById("fessGBE-prefs-enableLabelUnlabeled-Ctrl").checked;
 			this._M.labelUnlabeledName = document.getElementById("fessGBE-prefs-labelUnlabeledName-Ctrl").value;
 			this._M.minMenuWidth = minMenuWidth;
@@ -180,6 +206,8 @@ var fessGoogleBookmarksDialogs = {
 			this._M.enableFilterByUrl = document.getElementById("fessGBE-prefs-enableFilterByUrl-Ctrl").checked;
 			this._M.enableCtrlD = document.getElementById("fessGBE-prefs-enableCtrlD-Ctrl").checked;
 			this._M.enableQuickSearch = document.getElementById("fessGBE-prefs-enableQuickSearch-Ctrl").checked;
+
+			this._M.darkThemeIcon = this._M.prefs.getBoolPref("darkThemeIcon");
 
 			if (oldValGBautocomplite !== this._M.enableGBautocomplite && this.overlay !== null)
 			{
@@ -253,6 +281,24 @@ var fessGoogleBookmarksDialogs = {
 			this._M.useMenuBar = this._M.prefs.getBoolPref("useMenuBar");
 		}
 	},
+
+	onDarkThemeIconRadioCommand : function(event)
+	{
+		var value = event.target.value;
+		if (Application.prefs.get("browser.preferences.instantApply"))
+		{
+			if (value === "on")
+			{
+				this._M.prefs.setBoolPref("darkThemeIcon", true);
+			}
+			else
+			{
+				this._M.prefs.setBoolPref("darkThemeIcon", false);
+			}
+		}
+	},
+
+
 
 	/**
 	 * выполняется при загрузке диалога редактирования закладок

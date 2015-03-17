@@ -241,6 +241,10 @@ var fessGoogleBookmarks = {
 		  case "showToolbarQuickAddBtn":
 		  	this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.prefs.getBoolPref(aData));
 	    	break;	
+	    case "darkThemeIcon":
+	    	this._M.darkThemeIcon = this._M.prefs.getBoolPref(aData);
+	    	this.setButtonIcons();
+	    	break;
 		}
 	},
 
@@ -411,19 +415,10 @@ var fessGoogleBookmarks = {
 			if (this._M.above29)
 			{
 				CustomizableUI.addListener(this);
-				// this._M.ErrorLog(this.AppVersion);
-				// this._M.ErrorLog(JSON.stringify( CustomizableUI.getWidgetIdsInArea(CustomizableUI.AREA_MENUBAR)));
-				// // this._M.ErrorLog(CustomizableUI.getCustomizeTargetForArea(CustomizableUI.AREA_NAVBAR, window).id);
-				//  this._M.ErrorLog(JSON.stringify(CustomizableUI.getPlacementOfWidget("GBE-toolbaritem")));
-				// // areaType = toolbar || menu-panel
-				// this._M.ErrorLog(CustomizableUI.getWidget("GBE-toolbaritem").areaType);
-				// this._M.ErrorLog(CustomizableUI.getWidget("GBE-toolbaritem").instances[0].node.getAttribute("hidden"));
-				// // this._M.ErrorLog(CustomizableUI.getPlacementOfWidget("GBE-toolbaritem").area);
-				// // this._M.ErrorLog(JSON.stringify(CustomizableUI.isSpecialWidget("GBE-toolbaritem")));
-				// // CustomizableUI.addWidgetToArea("GBE-toolbaritem", CustomizableUI.AREA_NAVBAR);
 			}
 
 			this.switchInteface(this._M.useMenuBar);
+			this.setButtonIcons();
 			this.setAdditionalButton("GBE-btnAddBookmark", this._M.showToolbarAddBtn);
 			this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.showToolbarQuickAddBtn);
 
@@ -437,8 +432,6 @@ var fessGoogleBookmarks = {
 			// добавляем обработчик изменения адреса
 			gBrowser.addProgressListener(this);
 
-			// var menu = document.getElementById("contentAreaContextMenu");
-  		// menu.addEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing, false);
   		window.addEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing, false);
 
   		if (this._M.enableQuickSearch)
@@ -470,12 +463,14 @@ var fessGoogleBookmarks = {
 		}
 	},
 
+	// обработчик двойного нажатия клавиши Home
 	keyUpHandler	: function(event)
 	{
 			if (event.keyCode === 36)
 			{
 				var d = new Date();
 				var n = d.getTime(); 
+				// если промежуток между нажатиями от 10 до 500 мс открываем окно быстрого поиска
 				if 	(	fessGoogleBookmarks._M.lastKey == event.keyCode 
 							&& (n - fessGoogleBookmarks._M.keyUpTime > 10) 
 							&& (n - fessGoogleBookmarks._M.keyUpTime < 500)
@@ -681,9 +676,6 @@ var fessGoogleBookmarks = {
 			searchList = 'gbookmarks-autocomplete' + " " + s;
 		}
 		gURLBar.setAttribute("autocompletesearch", searchList);
-		// this.ErrorLog("setURLBarAutocompleteList ", gURLBar.getAttribute('autocompletesearch'));
-		// gURLBar.setAttribute("disableautocomplete", true);
-		// gURLBar.setAttribute("disableautocomplete", false);
 	},
 
 	refreshBookmarks : function(showMenu = true, fromFile = false)
@@ -750,8 +742,10 @@ var fessGoogleBookmarks = {
 				{
 					if (!this._M.useMenuBar) 
 					{
-						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star toolbarbutton-1");
-						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/content/images/Star_full.png");
+						if (this._M.darkThemeIcon)
+							document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star dark toolbarbutton-1");
+						else
+							document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star toolbarbutton-1");
 					}
 					if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
 					{
@@ -768,7 +762,6 @@ var fessGoogleBookmarks = {
 
 					if (document.getElementById("GBE-btnQuickAddBookmark"))
 					{
-						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/content/images/bkmrk_add_quick_off.png");
 						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("class","GBE-button-OFF toolbarbutton-1");
 					}
 				}
@@ -776,8 +769,10 @@ var fessGoogleBookmarks = {
 				{
 					if (!this._M.useMenuBar) 
 					{
-						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star toolbarbutton-1");
-						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/content/images/Star_empty.png");
+						if (this._M.darkThemeIcon)
+							document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star dark toolbarbutton-1");
+						else
+							document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star toolbarbutton-1");
 					}
 					if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
 					{
@@ -794,7 +789,6 @@ var fessGoogleBookmarks = {
 
 					if (document.getElementById("GBE-btnQuickAddBookmark"))
 					{
-						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/content/images/bkmrk_add_quick_on.png");
 						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("class","toolbarbutton-1");
 					}
 
@@ -1062,8 +1056,6 @@ var fessGoogleBookmarks = {
 				if (this._M.suggestLabel && window.content.document.title && labelsList !== null && !editBkmk && link == null)
 				{
 					// все слова из заголовка
-					// var words = window.content.document.title.split(" ");
-					// let delimiter = /[ {}|=\[\]\(\)\-\\\/!?,.;:]/;
 					var words = window.content.document.title.split(/[ {}|=\[\]\(\)\-\\\/!?,.;:]/);
 
 					// для хранения уникальных слов
@@ -1514,11 +1506,8 @@ var fessGoogleBookmarks = {
 	{
 		try {
 			this._M.DebugLog("onShowContextMenu");
-			// GBE.currentContextId = event.target.getAttribute("id").replace("GBE_","");
 			// запоминаем код закладки
 			this._M.currentContextId = event.target.triggerNode.getAttribute("id").replace("GBE_","");
-			// document.getElementById("GBE-contextMenu").showPopup(document.getElementById(GBE.currentContextId), 
-			// 													event.screenX - 2, event.screenY - 2, "context");
 		}
 		catch (e) {
 			this._M.ErrorLog("GBE:onBookmarkContextMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
@@ -2565,5 +2554,3 @@ else
 {
   Application.getExtensions(fessGoogleBookmarks.firstRun);
 }
-
-
