@@ -11,6 +11,10 @@ Version 0.2.2
 ! JSON.stringify rather than string concatenation to generate labels autocomplete lists и firstRun fix
 + скрытие меток
 + фильтр по url (в about:config установить enableFilterByUrl)
++ быстрый поиск (по двойному Home)
++ добавление закладки по Ctrl+D
++ иконки для темной темы
+! исправлено автозаполнение меток
 
 
 Version 0.2.1
@@ -1167,37 +1171,30 @@ var fessGoogleBookmarks = {
 				    	uniqueWords.push(el);
 				    	// регулярка для поиска
 				    	// ищем с начала строки/после nestedLabelSep до конца строки/nestedLabelSep 
-						  let SearchString = new RegExp("(^|" + self._M.nestedLabelSep + ")" 
-						  	+ el + "($|" + self._M.nestedLabelSep + ")", "i");
+				    	// ограничиваем уровень вложенности метки
+				    	// например: ищем chrome, есть закладка Browsers/Chrome/test
+				    	// newLabel будет Browsers/Chrome/
+				    	// Browsers/браузер Chrome - не подходит
+				    	// Browsers/Chrome браузер - подходит
+							let SearchString = new RegExp("(.*(^|" + self._M.nestedLabelSep + ")" 
+								+ el + ")[^$" + self._M.nestedLabelSep + "]*", "i");
 						  // просматриваем массив меток
 				      for (let i=0; i<labelsList.length; i++) 
 				      {
-				      	// результат поиска
-				      	let position = labelsList[i].search(SearchString);
-				      	// нашли совпадение
-				        if (position != -1) 
-				        {
-				          // ограничиваем уровень вложенности метки
-				          // например: ищем chrome, есть закладка Browsers/Chrome/test
-				          // newLabel будет Browsers/Chrome/
-				          let newLabel = labelsList[i].substring(0,position + el.length+1);
-				          // если последний символ равен разделителю вложенных меток - удаляем его
-				          if (newLabel.charAt(newLabel.length - 1) == self.nestedLabelSep)
-				          {
-				          	newLabel = newLabel.substr(0, newLabel.length-1);
-				          }
-				          // если такой метки еще не было, добавляем ее в массив
-				          if (labels.indexOf(newLabel) === -1)
-				          {
-				          	labels.push(newLabel);
-				          }
-				        }
+				      	if (SearchString.test(labelsList[i]))
+				      	{
+				      		let find = SearchString.exec(labelsList[i]);
+				      		// если такой метки еще не было, добавляем ее в массив
+				      		if (labels.indexOf(find[0]) === -1)
+				      		{
+				      			labels.push(find[0]);
+				      		}
+				      	}
 				      }
 				    }
 					});
 					this._M.windowsParams.labels = labels;
 				}
-
 
 				// находим закладку по адресу (при редактировании)
 				if (editBkmk)
