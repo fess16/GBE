@@ -35,156 +35,219 @@
       <preference id="pref_enable10visitedBookmark" name="extensions.fessGBE.enable10visitedBookmark" type="bool"/>
       <preference id="pref_enableLabelHiding" name="extensions.fessGBE.enableLabelHiding" type="bool"/>
       <preference id="pref_showHiddenLabels" name="extensions.fessGBE.showHiddenLabels" type="bool"/>
+      <preference id="pref_showTagsInTooltip" name="extensions.fessGBE.showTagsInTooltip" type="bool"/>
+      <preference id="pref_enableFilterByUrl" name="extensions.fessGBE.enableFilterByUrl" type="bool"/>
+      <preference id="pref_enableCtrlD" name="extensions.fessGBE.enableCtrlD" type="bool"/>
+      <preference id="pref_enableQuickSearch" name="extensions.fessGBE.enableQuickSearch" type="bool"/>
+      <preference id="pref_darkThemeIcon" name="extensions.fessGBE.darkThemeIcon" type="bool"/>
     </preferences>
+    <vbox flex="1">
+      <tabbox selectedIndex="0">
+        <tabs>
+          <tab label="&prefWindow.mainPanel.label;"/>    
+          <tab label="&prefWindow.advPanel.label;"/>  
+          <tab label="&prefWindow.iconsPanel.label;"/>  
+        </tabs>
+        <tabpanels>   
+          <tabpanel id="fessGBE-prefs-mainPanel" orient="vertical">
+            <hbox align="center" flex="1">
+              <checkbox 
+                preference="pref_showFavicons" 
+                id="fessGBE-prefs-showFavicons-Ctrl" 
+                label="&prefWindow.showFavicons.label;"/>
+            </hbox>     
+            <hbox align="center" flex="1">
+              <checkbox 
+                preference="pref_reverseBkmrkLeftClick" 
+                id="fessGBE-prefs-reverseBkmrkLeftClick-Ctrl" 
+                label="&prefWindow.reverseBkmrkLeftClick.label;"/>
+            </hbox>   
 
-    <hbox align="center" flex="1">
-      <label control="fessGBE-prefs-nestedLabelSep-Ctrl" value="&prefWindow.nestedLabelSep.label;"/>
-      <textbox 
-        preference="pref_nestedLabelSep" 
-        id="fessGBE-prefs-nestedLabelSep-Ctrl" 
-        width="20px" maxlength="1"/>
-    </hbox>
-    <hbox align="center" flex="1">
-      <label control="fessGBE-prefs-enableLabelUnlabeled-Ctrl" value="&prefWindow.enableLabelUnlabeled.label;"/>
-      <checkbox
-        preference="pref_enableLabelUnlabeled"
-        id="fessGBE-prefs-enableLabelUnlabeled-Ctrl"
-        oncommand="fessGoogleBookmarksDialogs.onCheckboxStateChange('fessGBE-prefs-enableLabelUnlabeled-Ctrl');"/>
-      <textbox
-        preference="pref_labelUnlabeledName"
-        id="fessGBE-prefs-labelUnlabeledName-Ctrl"
-        width="150px" maxlength="30"/>
-    </hbox>
-    <hbox align="center" flex="1">
-      <checkbox
-        preference="pref_suggestLabel"
-        id="fessGBE-prefs-suggestLabel-Ctrl"
-        label="&prefWindow.suggestLabel.label;"/>
-    </hbox>
-    <hbox align="center" flex="1">
-      <checkbox 
-        preference="pref_showFavicons" 
-        id="fessGBE-prefs-showFavicons-Ctrl" 
-        label="&prefWindow.showFavicons.label;"/>
-    </hbox>     
-    <hbox align="center" flex="1">
-      <checkbox 
-        preference="pref_reverseBkmrkLeftClick" 
-        id="fessGBE-prefs-reverseBkmrkLeftClick-Ctrl" 
-        label="&prefWindow.reverseBkmrkLeftClick.label;"/>
-    </hbox>   
+            <separator class="thin"/>
+            <hbox align="center" flex="1">
+              <label control="fessGBE-prefs-sortType-Ctrl" value="&prefWindow.sortBy.label;"/>
+              <menulist id="fessGBE-prefs-sortType-Ctrl" preference="pref_sortType">
+                <menupopup>
+                  <menuitem value="name" label="&prefWindow.sortType.value1;"/>
+                  <menuitem value="timestamp" label="&prefWindow.sortType.value2;"/>
+                </menupopup>
+              </menulist>
+                <menulist id="fessGBE-prefs-sortOrder-Ctrl" preference="pref_sortOrder">
+                  <menupopup>
+                    <menuitem value="asc" label="&prefWindow.sortOrder.value1;"/>
+                    <menuitem value="desc" label="&prefWindow.sortOrder.value2;"/>
+                  </menupopup>
+                </menulist>  
+            </hbox> 
+            <separator class="thin"/>
+            <hbox align="center">
+              <checkbox 
+                preference="pref_enableNotes" 
+                id="fessGBE-prefs-enableNotes-Ctrl" 
+                label="&prefWindow.enableNotes.label;"/>
+            </hbox> 
 
-    <separator class="thin"/>
-    <hbox align="center" flex="1">
-      <label control="fessGBE-prefs-sortType-Ctrl" value="&prefWindow.sortBy.label;"/>
-      <menulist id="fessGBE-prefs-sortType-Ctrl" preference="pref_sortType">
-        <menupopup>
-          <menuitem value="name" label="&prefWindow.sortType.value1;"/>
-          <menuitem value="timestamp" label="&prefWindow.sortType.value2;"/>
-        </menupopup>
-      </menulist>
-        <menulist id="fessGBE-prefs-sortOrder-Ctrl" preference="pref_sortOrder">
-          <menupopup>
-            <menuitem value="asc" label="&prefWindow.sortOrder.value1;"/>
-            <menuitem value="desc" label="&prefWindow.sortOrder.value2;"/>
-          </menupopup>
-        </menulist>  
-    </hbox> 
-    <separator class="thin"/>
-    <hbox align="center" flex="0">
-      <checkbox 
-        preference="pref_enableGBautocomplite" 
-        id="fessGBE-prefs-enableGBautocomplite-Ctrl" 
-        label="&prefWindow.enableGBautocomplite.label;"/>
-    </hbox>  
-    <hbox align="center">
-      <checkbox 
-        preference="pref_enableNotes" 
-        id="fessGBE-prefs-enableNotes-Ctrl" 
-        label="&prefWindow.enableNotes.label;"/>
-    </hbox> 
+            <groupbox>
+              <caption label="&prefWindow.useMenuBar.caption.label;" />
+              <radiogroup
+                preference="pref_useMenuBar"
+                id="fessGBE-prefs-useMenuBar-Ctrl"
+              >
+                <hbox>
+                  <radio label="&prefWindow.useMenuBar.radio1.label;" value="on" 
+                    oncommand="fessGoogleBookmarksDialogs.onUseMenuBarRadioCommand(event);"/>
+                  <radio label="&prefWindow.useMenuBar.radio2.label;" value="off" 
+                    oncommand="fessGoogleBookmarksDialogs.onUseMenuBarRadioCommand(event);"/>
+                </hbox>
+              </radiogroup>
+            </groupbox>
 
-    <groupbox>
-      <caption label="&prefWindow.useMenuBar.caption.label;" />
-      <radiogroup
-        preference="pref_useMenuBar"
-        id="fessGBE-prefs-useMenuBar-Ctrl"
-      >
-        <hbox>
-          <radio label="&prefWindow.useMenuBar.radio1.label;" value="on"/>
-          <radio label="&prefWindow.useMenuBar.radio2.label;" value="off"/>
-        </hbox>
-      </radiogroup>
-    </groupbox>
+            <groupbox>
+              <vbox flex="1">
+                <caption label="&prefWindow.additionalButtons.groupbox.caption;" />
+                <checkbox           
+                          preference="pref_showToolbarAddBtn" 
+                          id="fessGBE-prefs-showToolbarAddBtn-Ctrl" 
+                          label="&prefWindow.showToolbarAddBtn.label;"/>
+                <checkbox           
+                  preference="pref_showToolbarQuickAddBtn" 
+                  id="fessGBE-prefs-showToolbarQuickAddBtn-Ctrl" 
+                  label="&prefWindow.showToolbarQuickAddBtn.label;"/>
+              </vbox>
+            </groupbox>
+            
+            <groupbox>
+              <vbox>
+                <checkbox           
+                  preference="pref_enable10recentBookmark" 
+                  id="fessGBE-prefs-enable10recentBookmark-Ctrl" 
+                  label="&prefWindow.enable10recentBookmark.label;"/>
+                <checkbox           
+                  preference="pref_enable10visitedBookmark" 
+                  id="fessGBE-prefs-enable10visitedBookmark-Ctrl" 
+                  label="&prefWindow.enable10visitedBookmark.label;"/>
+              </vbox>
+            </groupbox>
 
-    <groupbox>
-      <vbox flex="1">
-        <caption label="&prefWindow.additionalButtons.groupbox.caption;" />
-        <checkbox           
-                  preference="pref_showToolbarAddBtn" 
-                  id="fessGBE-prefs-showToolbarAddBtn-Ctrl" 
-                  label="&prefWindow.showToolbarAddBtn.label;"/>
-        <checkbox           
-          preference="pref_showToolbarQuickAddBtn" 
-          id="fessGBE-prefs-showToolbarQuickAddBtn-Ctrl" 
-          label="&prefWindow.showToolbarQuickAddBtn.label;"/>
-      </vbox>
-    </groupbox>
-    
-    <groupbox>
-      <vbox>
-        <checkbox           
-          preference="pref_enable10recentBookmark" 
-          id="fessGBE-prefs-enable10recentBookmark-Ctrl" 
-          label="&prefWindow.enable10recentBookmark.label;"/>
-        <checkbox           
-          preference="pref_enable10visitedBookmark" 
-          id="fessGBE-prefs-enable10visitedBookmark-Ctrl" 
-          label="&prefWindow.enable10visitedBookmark.label;"/>
-      </vbox>
-    </groupbox>
-
-    <groupbox>
-      <hbox align="center" flex="1">
-        <label 
-          control="fessGBE-prefs-minMenuWidth-Ctrl" 
-          value="&prefWindow.minMenuWidth.label;" 
-          tooltiptext="300 &lt;= value &lt;= 950" />
-        <textbox 
-          preference="pref_minMenuWidth" 
-          id="fessGBE-prefs-minMenuWidth-Ctrl" 
-          width="50px" maxlength="4"
-          tooltiptext="300 &lt;= value &lt;= 950"
-          onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
-      </hbox>
-      <hbox align="center" flex="1">
-        <label 
-          control="fessGBE-prefs-maxMenuWidth-Ctrl" 
-          value="&prefWindow.maxMenuWidth.label;"
-          tooltiptext="300 &lt;= value &lt;= 1000" />
-        <textbox 
-          preference="pref_maxMenuWidth" 
-          id="fessGBE-prefs-maxMenuWidth-Ctrl" 
-          width="50px" maxlength="4"
-          tooltiptext="300 &lt;= value &lt;= 1000" 
-          onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
-      </hbox>
-    </groupbox>
-
-    <groupbox>
-      <caption label="&prefWindow.LabelHiding.groupbox.caption;" />
-      <vbox>
-        <checkbox           
-          preference="pref_enableLabelHiding" 
-          id="fessGBE-prefs-enableLabelHiding-Ctrl" 
-          label="&prefWindow.enableLabelHiding.label;"
-          oncommand="fessGoogleBookmarksDialogs.onCheckboxStateChange('fessGBE-prefs-enableLabelHiding-Ctrl');"/>
-        <checkbox           
-          preference="pref_showHiddenLabels" 
-          id="fessGBE-prefs-showHiddenLabels-Ctrl" 
-          label="&prefWindow.showHiddenLabels.label;"/>
-      </vbox>
-    </groupbox>
-
+            <groupbox>
+              <hbox align="center" flex="1">
+                <label 
+                  control="fessGBE-prefs-minMenuWidth-Ctrl" 
+                  value="&prefWindow.minMenuWidth.label;" 
+                  tooltiptext="300 &lt;= value &lt;= 950" />
+                <textbox 
+                  preference="pref_minMenuWidth" 
+                  id="fessGBE-prefs-minMenuWidth-Ctrl" 
+                  width="50px" maxlength="4"
+                  tooltiptext="300 &lt;= value &lt;= 950"
+                  onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
+              </hbox>
+              <hbox align="center" flex="1">
+                <label 
+                  control="fessGBE-prefs-maxMenuWidth-Ctrl" 
+                  value="&prefWindow.maxMenuWidth.label;"
+                  tooltiptext="300 &lt;= value &lt;= 1000" />
+                <textbox 
+                  preference="pref_maxMenuWidth" 
+                  id="fessGBE-prefs-maxMenuWidth-Ctrl" 
+                  width="50px" maxlength="4"
+                  tooltiptext="300 &lt;= value &lt;= 1000" 
+                  onblur="fessGoogleBookmarksDialogs.onChangeWidthValue(event);"/>
+              </hbox>
+            </groupbox>
+          </tabpanel>
+          <tabpanel id="fessGBE-prefs-AdvPanel" orient="vertical">
+            <hbox align="center" flex="1">
+              <label control="fessGBE-prefs-nestedLabelSep-Ctrl" value="&prefWindow.nestedLabelSep.label;"/>
+              <textbox 
+                preference="pref_nestedLabelSep" 
+                id="fessGBE-prefs-nestedLabelSep-Ctrl" 
+                width="20px" maxlength="1"/>
+            </hbox>
+            <hbox align="center" flex="1">
+              <label control="fessGBE-prefs-enableLabelUnlabeled-Ctrl" value="&prefWindow.enableLabelUnlabeled.label;"/>
+              <checkbox
+                preference="pref_enableLabelUnlabeled"
+                id="fessGBE-prefs-enableLabelUnlabeled-Ctrl"
+                oncommand="fessGoogleBookmarksDialogs.onCheckboxStateChange('fessGBE-prefs-enableLabelUnlabeled-Ctrl');"/>
+              <textbox
+                preference="pref_labelUnlabeledName"
+                id="fessGBE-prefs-labelUnlabeledName-Ctrl"
+                width="150px" maxlength="30"/>
+            </hbox>
+            <hbox align="center" flex="1">
+              <checkbox
+                preference="pref_suggestLabel"
+                id="fessGBE-prefs-suggestLabel-Ctrl"
+                label="&prefWindow.suggestLabel.label;"/>
+            </hbox>
+            <hbox align="center" flex="1">
+              <checkbox
+                preference="pref_enableCtrlD"
+                id="fessGBE-prefs-enableCtrlD-Ctrl"
+                label="&prefWindow.enableCtrlD.label;"/>
+            </hbox>            
+            <hbox align="center" flex="1">
+              <checkbox
+                preference="pref_enableFilterByUrl"
+                id="fessGBE-prefs-enableFilterByUrl-Ctrl"
+                label="&prefWindow.enableFilterByUrl.label;"/>
+            </hbox>
+            <hbox align="center" flex="0">
+              <checkbox 
+                preference="pref_enableGBautocomplite" 
+                id="fessGBE-prefs-enableGBautocomplite-Ctrl" 
+                label="&prefWindow.enableGBautocomplite.label;"/>
+            </hbox>
+            <hbox align="center" flex="0">
+              <checkbox 
+                preference="pref_enableQuickSearch" 
+                id="fessGBE-prefs-enableQuickSearch-Ctrl" 
+                label="&prefWindow.enableQuickSearch.label;"/>
+            </hbox>  
+            <groupbox>
+              <caption label="&prefWindow.LabelHiding.groupbox.caption;" />
+              <vbox>
+                <checkbox           
+                  preference="pref_enableLabelHiding" 
+                  id="fessGBE-prefs-enableLabelHiding-Ctrl" 
+                  label="&prefWindow.enableLabelHiding.label;"
+                  oncommand="fessGoogleBookmarksDialogs.onCheckboxStateChange('fessGBE-prefs-enableLabelHiding-Ctrl');"/>
+                <checkbox           
+                  preference="pref_showHiddenLabels" 
+                  id="fessGBE-prefs-showHiddenLabels-Ctrl" 
+                  label="&prefWindow.showHiddenLabels.label;"/>
+              </vbox>
+            </groupbox> 
+            <hbox align="center" flex="0">
+              <checkbox 
+                preference="pref_showTagsInTooltip" 
+                id="fessGBE-prefs-showTagsInTooltip-Ctrl" 
+                label="&prefWindow.showTagsInTooltip.label;"/>
+            </hbox>  
+          </tabpanel>
+          <tabpanel id="fessGBE-prefs-iconsPanel" orient="vertical">
+            <groupbox>
+              <caption label="&prefWindow.useMenuBar.caption.label;" />
+              <radiogroup
+                preference="pref_darkThemeIcon"
+                id="fessGBE-prefs-darkThemeIcon-Ctrl"
+              >
+                <vbox>
+                  <radio value="off" 
+                    oncommand="fessGoogleBookmarksDialogs.onDarkThemeIconRadioCommand(event);"
+                    style="list-style-image:url(chrome://GBE/content/images/Star_empty_iconset.png);"
+                  />
+                  <radio value="on" 
+                    oncommand="fessGoogleBookmarksDialogs.onDarkThemeIconRadioCommand(event);"
+                    style="list-style-image:url(chrome://GBE/content/images/Star_empty_iconset1.png);"
+                  />
+                </vbox>
+              </radiogroup>
+            </groupbox>
+          </tabpanel>
+        </tabpanels>
+      </tabbox>
+    </vbox>
   </prefpane>
 </prefwindow>

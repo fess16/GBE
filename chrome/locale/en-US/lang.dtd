@@ -70,6 +70,10 @@
 <!ENTITY folderDelete.label-info.value "Are you sure you want to delete label:">
 <!ENTITY folderDelete.checkbox.label "Delete all children?">
 
+<!ENTITY prefWindow.mainPanel.label "Main">
+<!ENTITY prefWindow.advPanel.label "Other">
+<!ENTITY prefWindow.iconsPanel.label "Icons">
+
 <!ENTITY prefWindow.form.title "Fess Google Bookmark Extension Options">
 <!ENTITY prefWindow.pane.title "Preferences">
 <!ENTITY prefWindow.nestedLabelSep.label "Nested Labels Separator:">
@@ -102,6 +106,11 @@
 <!ENTITY prefWindow.enableLabelHiding.label "Enable hiding">
 <!ENTITY prefWindow.showHiddenLabels.label "Show hidden labels">
 
+<!ENTITY prefWindow.showTagsInTooltip.label "Show labels in tooltip">
+<!ENTITY prefWindow.enableFilterByUrl.label "Enable search in bookmark URL's">
+<!ENTITY prefWindow.enableCtrlD.label "Enable add bookmark by Ctrl+D">
+<!ENTITY prefWindow.enableQuickSearch.label "Enable quick search (double Home) - needs restart">
+
 <!ENTITY ffBookmark.form.title "Import/Export google bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Firefox bookmarks folder for import/export:">
 <!ENTITY ffBookmark.GBgroupbox.caption.label "Google Bookmarks label for import/export:">
@@ -127,3 +136,5 @@
 <!ENTITY addOpenTabs.treecol.select.label "Select">
 <!ENTITY addOpenTabs.treecol.Title.label "Title">
 <!ENTITY addOpenTabs.treecol.URL.label "URL">
+
+<!ENTITY search.form.title "Google Bookmark: search">

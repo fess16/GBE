@@ -11,6 +11,10 @@ Version 0.2.2
 ! JSON.stringify rather than string concatenation to generate labels autocomplete lists и firstRun fix
 + скрытие меток
 + фильтр по url (в about:config установить enableFilterByUrl)
++ быстрый поиск (по двойному Home)
++ добавление закладки по Ctrl+D
++ иконки для темной темы
+! исправлено автозаполнение меток
 
 
 Version 0.2.1
@@ -226,57 +230,79 @@ var fessGoogleBookmarks = {
 
 	// обработчик изменения настроек дополнения
 	observe : function(aSubject, aTopic, aData) {
-		if (aTopic != "nsPref:changed")
+		try
 		{
-		  return;
+			if (aTopic != "nsPref:changed")
+			{
+			  return;
+			}
+			switch(aData)
+			{
+			  case "useMenuBar":
+			  	this.switchInteface(this._M.prefs.getBoolPref(aData));
+			    break;
+			  case "showToolbarAddBtn":
+			  	this.setAdditionalButton("GBE-btnAddBookmark", this._M.prefs.getBoolPref(aData));
+			  	break;
+			  case "showToolbarQuickAddBtn":
+			  	this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.prefs.getBoolPref(aData));
+		    	break;	
+		    case "darkThemeIcon":
+		    	this._M.darkThemeIcon = this._M.prefs.getBoolPref(aData);
+		    	this.setButtonIcons();
+		    	break;
+			}
 		}
-		switch(aData)
+		catch(error)
 		{
-		  case "useMenuBar":
-		  	this.switchInteface(this._M.prefs.getBoolPref(aData));
-		    break;
-		  case "showToolbarAddBtn":
-		  	this.setAdditionalButton("GBE-btnAddBookmark", this._M.prefs.getBoolPref(aData));
-		  	break;
-		  case "showToolbarQuickAddBtn":
-		  	this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.prefs.getBoolPref(aData));
-	    	break;	
+			this._M.ErrorLog("GBE:observe", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
+	// добавление/удаление дополнительных кнопок (обычное и быстрое добавление закладки)
+	// id - код кнопки
+	// prefValue - отобразить/скрыть кнопку (boolean)
 	setAdditionalButton : function(id, prefValue)
 	{
-  	if (this._M.above29)
-  	{
-  		if (prefValue)
+		try
+		{
+	  	if (this._M.above29)
 	  	{
-	  		this.installButton(id);
-	  	}
-	  	else
-	  	{
-	  		this.removeButton(id);
-	  	}
-  	}
-	  else	
-	  {
-	  	if (prefValue)
-	  	{
-	  		if (!document.getElementById(id))
-	  		{
+	  		if (prefValue)
+		  	{
 		  		this.installButton(id);
-	  		}
-	  		document.getElementById(id).setAttribute("hidden", false);
+		  	}
+		  	else
+		  	{
+		  		this.removeButton(id);
+		  	}
 	  	}
-	  	else
-	  	{
-	  		if (document.getElementById(id))
-	  		{
-	  			document.getElementById(id).setAttribute("hidden", true);
-	  		}
-	  	}
-	  }
+		  else	
+		  {
+		  	if (prefValue)
+		  	{
+		  		if (!document.getElementById(id))
+		  		{
+			  		this.installButton(id);
+		  		}
+		  		document.getElementById(id).setAttribute("hidden", false);
+		  	}
+		  	else
+		  	{
+		  		if (document.getElementById(id))
+		  		{
+		  			document.getElementById(id).setAttribute("hidden", true);
+		  		}
+		  	}
+		  }
+		}
+		catch(error)
+		{
+			this._M.ErrorLog("GBE:setAdditionalButton", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+		}
 	},
 
+	// добавление кнопки на панель
 	installButton : function(id)
 	{
 		this._M.DebugLog("installButton");
@@ -320,6 +346,7 @@ var fessGoogleBookmarks = {
 		}
 	},
 
+	// удаление кнопки с панели
 	removeButton : function(id)
 	{
 		try 
@@ -345,133 +372,228 @@ var fessGoogleBookmarks = {
 	    }
 	},
 
+	// при перемещении кнопок запоминаем их новое расположение (панель и позицию)
 	onWidgetMoved : function(aWidgetId, aArea, aOldPosition, aNewPosition)
 	{
-		if (aWidgetId == "GBE-toolbaritem")
+		try
 		{
-			this._M.prefs.setCharPref("GBE_toolbaritemPlace", aArea);
-			this._M.prefs.setIntPref("GBE_toolbaritemPosition", aNewPosition);
+			if (aWidgetId == "GBE-toolbaritem")
+			{
+				this._M.prefs.setCharPref("GBE_toolbaritemPlace", aArea);
+				this._M.prefs.setIntPref("GBE_toolbaritemPosition", aNewPosition);
+			}
+			if (aWidgetId == "GBE-btnAddBookmark")
+			{
+				this._M.prefs.setCharPref("GBE_btnAddBookmarkPlace", aArea);
+				this._M.prefs.setIntPref("GBE_btnAddBookmarkPosition", aNewPosition);
+			}
+			if (aWidgetId == "GBE-btnQuickAddBookmark")
+			{
+				this._M.prefs.setCharPref("GBE_btnQuickAddBookmarkPlace", aArea);
+				this._M.prefs.setIntPref("GBE_btnQuickAddBookmarkPosition", aNewPosition);
+			}
 		}
-		if (aWidgetId == "GBE-btnAddBookmark")
+		catch(error)
 		{
-			this._M.prefs.setCharPref("GBE_btnAddBookmarkPlace", aArea);
-			this._M.prefs.setIntPref("GBE_btnAddBookmarkPosition", aNewPosition);
-		}
-		if (aWidgetId == "GBE-btnQuickAddBookmark")
-		{
-			this._M.prefs.setCharPref("GBE_btnQuickAddBookmarkPlace", aArea);
-			this._M.prefs.setIntPref("GBE_btnQuickAddBookmarkPosition", aNewPosition);
+			this._M.ErrorLog("GBE:onWidgetMoved", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
+	// при добавлении кнопок запоминаем их расположение (панель и позицию)
+	// для дополнительных кнопок - еще включаем опции их отображения (если кнопки были установлены из палитры вручную) 
 	onWidgetAdded : function(aWidgetId, aArea, aPosition)
 	{
-		if (aWidgetId == "GBE-toolbaritem")
+		try
 		{
-			this._M.prefs.setCharPref("GBE_toolbaritemPlace", aArea);
-			this._M.prefs.setIntPref("GBE_toolbaritemPosition", aPosition);
+			if (aWidgetId == "GBE-toolbaritem")
+			{
+				this._M.prefs.setCharPref("GBE_toolbaritemPlace", aArea);
+				this._M.prefs.setIntPref("GBE_toolbaritemPosition", aPosition);
+			}
+			if (aWidgetId == "GBE-btnAddBookmark")
+			{
+				this._M.prefs.setCharPref("GBE_btnAddBookmarkPlace", aArea);
+				this._M.prefs.setIntPref("GBE_btnAddBookmarkPosition", aPosition);
+				this._M.prefs.setBoolPref("showToolbarAddBtn",true);
+			}
+			if (aWidgetId == "GBE-btnQuickAddBookmark")
+			{
+				this._M.prefs.setCharPref("GBE_btnQuickAddBookmarkPlace", aArea);
+				this._M.prefs.setIntPref("GBE_btnQuickAddBookmarkPosition", aPosition);
+				this._M.prefs.setBoolPref("showToolbarQuickAddBtn",true);
+			}
 		}
-		if (aWidgetId == "GBE-btnAddBookmark")
+		catch(error)
 		{
-			this._M.prefs.setCharPref("GBE_btnAddBookmarkPlace", aArea);
-			this._M.prefs.setIntPref("GBE_btnAddBookmarkPosition", aPosition);
-			this._M.prefs.setBoolPref("showToolbarAddBtn",true);
-		}
-		if (aWidgetId == "GBE-btnQuickAddBookmark")
-		{
-			this._M.prefs.setCharPref("GBE_btnQuickAddBookmarkPlace", aArea);
-			this._M.prefs.setIntPref("GBE_btnQuickAddBookmarkPosition", aPosition);
-			this._M.prefs.setBoolPref("showToolbarQuickAddBtn",true);
+			this._M.ErrorLog("GBE:onWidgetAdded", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
+	// при удалении дополнительных кнопок выключаем опции их отображения (удаление кнопки с панели вручную)
 	onWidgetRemoved : function(aWidgetId, aArea)
 	{
-		if (aWidgetId == "GBE-btnAddBookmark")
+		try
 		{
-			this._M.prefs.setBoolPref("showToolbarAddBtn",false);
+			if (aWidgetId == "GBE-btnAddBookmark")
+			{
+				this._M.prefs.setBoolPref("showToolbarAddBtn",false);
+			}
+			if (aWidgetId == "GBE-btnQuickAddBookmark")
+			{
+				this._M.prefs.setBoolPref("showToolbarQuickAddBtn",false);
+			}
 		}
-		if (aWidgetId == "GBE-btnQuickAddBookmark")
+		catch(error)
 		{
-			this._M.prefs.setBoolPref("showToolbarQuickAddBtn",false);
+			this._M.ErrorLog("GBE:onWidgetRemoved", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
+	// инициализация дополнения
 	init : function()
 	{
-		this._M.debugId = (new Date()).getTime();	
-		this._M.DebugLog("init");
-		this._M.getPrefsValues();
-		this._M.refreshInProgress = false;
-
-		if (window.location == "chrome://browser/content/browser.xul")
+		try
 		{
-			// добавляем обработчик изменения настроек
-			this._M.prefs.addObserver("", this, false);
-			if (this._M.above29)
+			this._M.debugId = (new Date()).getTime();	
+			this._M.DebugLog("init");
+			this._M.getPrefsValues();
+			this._M.refreshInProgress = false;
+
+			if (window.location == "chrome://browser/content/browser.xul")
 			{
-				CustomizableUI.addListener(this);
-				// this._M.ErrorLog(this.AppVersion);
-				// this._M.ErrorLog(JSON.stringify( CustomizableUI.getWidgetIdsInArea(CustomizableUI.AREA_MENUBAR)));
-				// // this._M.ErrorLog(CustomizableUI.getCustomizeTargetForArea(CustomizableUI.AREA_NAVBAR, window).id);
-				//  this._M.ErrorLog(JSON.stringify(CustomizableUI.getPlacementOfWidget("GBE-toolbaritem")));
-				// // areaType = toolbar || menu-panel
-				// this._M.ErrorLog(CustomizableUI.getWidget("GBE-toolbaritem").areaType);
-				// this._M.ErrorLog(CustomizableUI.getWidget("GBE-toolbaritem").instances[0].node.getAttribute("hidden"));
-				// // this._M.ErrorLog(CustomizableUI.getPlacementOfWidget("GBE-toolbaritem").area);
-				// // this._M.ErrorLog(JSON.stringify(CustomizableUI.isSpecialWidget("GBE-toolbaritem")));
-				// // CustomizableUI.addWidgetToArea("GBE-toolbaritem", CustomizableUI.AREA_NAVBAR);
+				// добавляем обработчик изменения настроек
+				this._M.prefs.addObserver("", this, false);
+				if (this._M.above29)
+				{
+					CustomizableUI.addListener(this);
+				}
+
+				this.switchInteface(this._M.useMenuBar);
+				this.setButtonIcons();
+				this.setAdditionalButton("GBE-btnAddBookmark", this._M.showToolbarAddBtn);
+				this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.showToolbarQuickAddBtn);
+
+				//if (this.AppVersion.indexOf("29.") == 0)
+
+				if(this._M.checkLogin() && (document.getElementById("GBE-toolbarbutton") 
+					|| (document.getElementById("GBE-MainMenu") && !document.getElementById("GBE-MainMenu").getAttribute("hidden") ) ) )
+				{
+					this.refreshBookmarks(false);
+				}
+				// добавляем обработчик изменения адреса
+				gBrowser.addProgressListener(this);
+
+	  		window.addEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing, false);
+
+	  		if (this._M.enableQuickSearch)
+	  		{ 
+	  			window.addEventListener("keyup", fessGoogleBookmarks.keyUpHandler, false);
+	  		}
+
+	  		if (this._M.enableCtrlD)
+	  		{
+	  			try
+	  			{
+	  				var AddBookmarkAs = document.getElementById("Browser:AddBookmarkAs");
+	  				AddBookmarkAs.setAttribute("oncommand", "fessGoogleBookmarks.showBookmarkDialog(false);");
+	  			}
+	  			catch (error)
+	  			{
+	  				this._M.ErrorLog("GBE:init:enableCtrlD", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+	  				this._M.prefs.setBoolPref("enableCtrlD", false);
+	  				this._M.ErrorLog("Set Ctrl+D command error! enableCtrlD reset to false");
+	  			}
+	  		}
+
+				// в настройка включено автодополнение в адресной строке
+				if (this._M.enableGBautocomplite)
+				{
+					// включаем автодополнение
+					this.setURLBarAutocompleteList("on");
+				}
 			}
+		}
+		catch(error)
+		{
+			this._M.ErrorLog("GBE:init", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+		}
+	},
 
-			this.switchInteface(this._M.useMenuBar);
-			this.setAdditionalButton("GBE-btnAddBookmark", this._M.showToolbarAddBtn);
-			this.setAdditionalButton("GBE-btnQuickAddBookmark", this._M.showToolbarQuickAddBtn);
-
-			//if (this.AppVersion.indexOf("29.") == 0)
-
-			if(this._M.checkLogin() && (document.getElementById("GBE-toolbarbutton") 
-				|| (document.getElementById("GBE-MainMenu") && !document.getElementById("GBE-MainMenu").getAttribute("hidden") ) ) )
+	// обработчик двойного нажатия клавиши Home
+	keyUpHandler	: function(event)
+	{
+		try
+		{
+			if (event.keyCode === 36)
 			{
-				this.refreshBookmarks(false);
-			}
-			// добавляем обработчик изменения адреса
-			gBrowser.addProgressListener(this);
+				var d = new Date();
+				var n = d.getTime(); 
+				// если промежуток между нажатиями от 10 до 500 мс открываем окно быстрого поиска
+				if 	(	fessGoogleBookmarks._M.lastKey == event.keyCode 
+							&& (n - fessGoogleBookmarks._M.keyUpTime > 10) 
+							&& (n - fessGoogleBookmarks._M.keyUpTime < 500)
+						)
+				{
+					var args = {
+					  param1: fessGoogleBookmarks
+					};
 
-			// var menu = document.getElementById("contentAreaContextMenu");
-  		// menu.addEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing, false);
-  		window.addEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing, false);
+					args.wrappedJSObject = args;
 
-			// в настройка включено автодополнение в адресной строке
-			if (this._M.enableGBautocomplite)
-			{
-				// включаем автодополнение
-				this.setURLBarAutocompleteList("on");
+					var watcher = Components.classes["@mozilla.org/embedcomp/window-watcher;1"]
+					                            .getService(Components.interfaces.nsIWindowWatcher);
+					watcher.openWindow(null, "chrome://GBE/content/overlays/search.xul", "Search", "chrome,titlebar=yes,centerscreen", args);
+
+					fessGoogleBookmarks._M.lastKey = null;
+					fessGoogleBookmarks._M.keyUpTime = 0;
+				}
+				else
+				{
+					fessGoogleBookmarks._M.lastKey = event.keyCode;
+					fessGoogleBookmarks._M.keyUpTime = n;
+				}
 			}
+		}
+		catch(error)
+		{
+			fessGoogleBookmarks._M.ErrorLog("GBE:keyUpHandler", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
 	uninit : function()
 	{
-		this._M.DebugLog("uninit");
-		if (window.location == "chrome://browser/content/browser.xul")
+		try
 		{
-			// удаляем свои обработчики
-			gBrowser.removeProgressListener(this);
-			this._M.prefs.removeObserver("", this);
-			if (this._M.enableGBautocomplite)
+			this._M.DebugLog("uninit");
+			if (window.location == "chrome://browser/content/browser.xul")
 			{
-				this.setURLBarAutocompleteList("off");
+				// удаляем свои обработчики
+				gBrowser.removeProgressListener(this);
+				this._M.prefs.removeObserver("", this);
+				if (this._M.enableGBautocomplite)
+				{
+					this.setURLBarAutocompleteList("off");
+				}
+				if (this._M.above29)
+				{
+					CustomizableUI.removeListener(this);
+				}
+				// var menu = document.getElementById("contentAreaContextMenu");
+	  		// menu.removeEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing);
+	  		window.removeEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing);
+	  		if (this._M.enableQuickSearch)
+	  		{ 
+	  			window.removeEventListener("keyup", fessGoogleBookmarks.keyUpHandler);
+	  		}
 			}
-			if (this._M.above29)
-			{
-				CustomizableUI.removeListener(this);
-			}
-			// var menu = document.getElementById("contentAreaContextMenu");
-  		// menu.removeEventListener("popupshowing", fessGoogleBookmarks.contextPopupShowing);
-  		window.removeEventListener("contextmenu", fessGoogleBookmarks.contextPopupShowing);
+		}
+		catch(error)
+		{
+			this._M.ErrorLog("GBE:uninit", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
+	// отображает пункт добавления ссылки в закладки (при правом клике на ссылках)
 	contextPopupShowing: function(e)
 	{
 		try
@@ -512,6 +634,7 @@ var fessGoogleBookmarks = {
 		}
 	},
 
+	// открывает диалог добавления в закладки после клика в контекстром меню добавления ссылки
 	AddLinkToBookmark: function(e)
 	{
 		try
@@ -617,17 +740,21 @@ var fessGoogleBookmarks = {
 	 */
 	setURLBarAutocompleteList : function(state)
 	{
-		this._M.DebugLog("setURLBarAutocompleteList");
-		var searchList = this._M.defAutocompliteList;
-		if (state != 'off') 
+		try
 		{
-			var s = this._M.defAutocompliteList = gURLBar.getAttribute('autocompletesearch');
-			searchList = 'gbookmarks-autocomplete' + " " + s;
+			this._M.DebugLog("setURLBarAutocompleteList");
+			var searchList = this._M.defAutocompliteList;
+			if (state != 'off') 
+			{
+				var s = this._M.defAutocompliteList = gURLBar.getAttribute('autocompletesearch');
+				searchList = 'gbookmarks-autocomplete' + " " + s;
+			}
+			gURLBar.setAttribute("autocompletesearch", searchList);
 		}
-		gURLBar.setAttribute("autocompletesearch", searchList);
-		// this.ErrorLog("setURLBarAutocompleteList ", gURLBar.getAttribute('autocompletesearch'));
-		// gURLBar.setAttribute("disableautocomplete", true);
-		// gURLBar.setAttribute("disableautocomplete", false);
+		catch(error)
+		{
+			this._M.ErrorLog("GBE:setURLBarAutocompleteList", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+		}
 	},
 
 	refreshBookmarks : function(showMenu = true, fromFile = false)
@@ -694,8 +821,10 @@ var fessGoogleBookmarks = {
 				{
 					if (!this._M.useMenuBar) 
 					{
-						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star toolbarbutton-1");
-						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/content/images/Star_full.png");
+						if (this._M.darkThemeIcon)
+							document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star dark toolbarbutton-1");
+						else
+							document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-full-star toolbarbutton-1");
 					}
 					if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
 					{
@@ -712,7 +841,6 @@ var fessGoogleBookmarks = {
 
 					if (document.getElementById("GBE-btnQuickAddBookmark"))
 					{
-						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/content/images/bkmrk_add_quick_off.png");
 						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("class","GBE-button-OFF toolbarbutton-1");
 					}
 				}
@@ -720,8 +848,10 @@ var fessGoogleBookmarks = {
 				{
 					if (!this._M.useMenuBar) 
 					{
-						document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star toolbarbutton-1");
-						// document.getElementById("GBE-toolbarbutton").setAttribute("image", "chrome://GBE/content/images/Star_empty.png");
+						if (this._M.darkThemeIcon)
+							document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star dark toolbarbutton-1");
+						else
+							document.getElementById("GBE-toolbarbutton").setAttribute("class", "GBE-empty-star toolbarbutton-1");
 					}
 					if (this._M.showToolbarAddBtn && document.getElementById("GBE-btnAddBookmark"))
 					{
@@ -738,7 +868,6 @@ var fessGoogleBookmarks = {
 
 					if (document.getElementById("GBE-btnQuickAddBookmark"))
 					{
-						// document.getElementById("GBE-btnQuickAddBookmark").setAttribute("image","chrome://GBE/content/images/bkmrk_add_quick_on.png");
 						document.getElementById("GBE-btnQuickAddBookmark").setAttribute("class","toolbarbutton-1");
 					}
 
@@ -840,21 +969,28 @@ var fessGoogleBookmarks = {
 	// при скрытии меню
 	onHideMenu : function(event)
 	{
-		this._M.DebugLog("onHideMenu");
-		// делаем видимым основной список закладок
-		// document.getElementById("GBE-GBlist").setAttribute("hidden", false);
-		if ( !(event.target.getAttribute("id") == "GBE-ToolBar-popup" || event.target.getAttribute("id") == "GBE-MainMenu-popup" ))
+		try
 		{
-			event.stopPropagation();
-			return;
+			this._M.DebugLog("onHideMenu");
+			// делаем видимым основной список закладок
+			// document.getElementById("GBE-GBlist").setAttribute("hidden", false);
+			if ( !(event.target.getAttribute("id") == "GBE-ToolBar-popup" || event.target.getAttribute("id") == "GBE-MainMenu-popup" ))
+			{
+				event.stopPropagation();
+				return;
+			}
+			if (!this._M.useMenuBar)
+			{
+				this.hideBookmarks(false);
+				// скрываем списко отфильтрованных закладок
+				document.getElementById("GBE-searchResultList").setAttribute("hidden", true);
+				// обнуляем значение фильтра
+				document.getElementById("GBE-filterTextbox").value = "";
+			}
 		}
-		if (!this._M.useMenuBar)
+		catch(error)
 		{
-			this.hideBookmarks(false);
-			// скрываем списко отфильтрованных закладок
-			document.getElementById("GBE-searchResultList").setAttribute("hidden", true);
-			// обнуляем значение фильтра
-			document.getElementById("GBE-filterTextbox").value = "";
+			this._M.ErrorLog("GBE:onHideMenu", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
@@ -869,30 +1005,37 @@ var fessGoogleBookmarks = {
 
 	hideBookmarks : function(hide)
 	{
-		this._M.DebugLog("hideBookmarks");
-		let items = document.getElementById("GBE-ToolBar-popup").getElementsByClassName('google-bookmarks');
-		let re = new RegExp(this._M.hiddenLabelsTitle + "$");
-		if (hide)
+		try
 		{
-			for(let i = 0; i < items.length; i++) 
+			this._M.DebugLog("hideBookmarks");
+			let items = document.getElementById("GBE-ToolBar-popup").getElementsByClassName('google-bookmarks');
+			let re = new RegExp(this._M.hiddenLabelsTitle + "$");
+			if (hide)
 			{
-			  items[i].setAttribute("hidden", true);
+				for(let i = 0; i < items.length; i++) 
+				{
+				  items[i].setAttribute("hidden", true);
+				}
+			}
+			else
+			{
+				for(let i = 0; i < items.length; i++) 
+				{
+				  // skip hidden labels
+				  var label = items[i].getAttribute("label");
+				  var fullName = items[i].getAttribute("fullName");
+				  if (this._M.enableLabelHiding && !this._M.showHiddenLabels && 
+				  	(label.search(re) !== -1 || fullName.indexOf(this._M.hiddenLabelsTitle+this._M.nestedLabelSep) == 0))
+				  {
+				  	continue;
+				  }
+				  items[i].setAttribute("hidden", false);
+				}
 			}
 		}
-		else
+		catch(error)
 		{
-			for(let i = 0; i < items.length; i++) 
-			{
-			  // skip hidden labels
-			  var label = items[i].getAttribute("label");
-			  var fullName = items[i].getAttribute("fullName");
-			  if (this._M.enableLabelHiding && !this._M.showHiddenLabels && 
-			  	(label.search(re) !== -1 || fullName.indexOf(this._M.hiddenLabelsTitle+this._M.nestedLabelSep) == 0))
-			  {
-			  	continue;
-			  }
-			  items[i].setAttribute("hidden", false);
-			}
+			this._M.ErrorLog("GBE:onWidgetRemoved", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
@@ -937,7 +1080,7 @@ var fessGoogleBookmarks = {
 		}
 		catch(error)
 		{
-			fGoogleBookmarksModule.ErrorLog("GBE:folderClick", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+			fGoogleBookmarksModule.ErrorLog("GBE:handleClick", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
@@ -948,20 +1091,27 @@ var fessGoogleBookmarks = {
 	 */
 	showURL : function(url, inSameTab = false)
 	{
-	  this._M.DebugLog("showURL");
-	  const kWindowMediatorContractID = "@mozilla.org/appshell/window-mediator;1";
-	  const kWindowMediatorIID = Components.interfaces.nsIWindowMediator;
-	  const kWindowMediator = Components.classes[kWindowMediatorContractID].getService(kWindowMediatorIID);
-	  var browserWindow = kWindowMediator.getMostRecentWindow("navigator:browser");
-		if (browserWindow) {
-			if (inSameTab)
-			{
-				browserWindow.loadURI(url); 				
+		try
+		{
+		  this._M.DebugLog("showURL");
+		  const kWindowMediatorContractID = "@mozilla.org/appshell/window-mediator;1";
+		  const kWindowMediatorIID = Components.interfaces.nsIWindowMediator;
+		  const kWindowMediator = Components.classes[kWindowMediatorContractID].getService(kWindowMediatorIID);
+		  var browserWindow = kWindowMediator.getMostRecentWindow("navigator:browser");
+			if (browserWindow) {
+				if (inSameTab)
+				{
+					browserWindow.loadURI(url); 				
+				}
+				else
+				{
+					browserWindow.delayedOpenTab(url); 		
+				}
 			}
-			else
-			{
-				browserWindow.delayedOpenTab(url); 		
-			}
+		}
+		catch(error)
+		{
+			this._M.ErrorLog("GBE:onWidgetRemoved", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
 		}
 	},
 
@@ -1006,8 +1156,6 @@ var fessGoogleBookmarks = {
 				if (this._M.suggestLabel && window.content.document.title && labelsList !== null && !editBkmk && link == null)
 				{
 					// все слова из заголовка
-					// var words = window.content.document.title.split(" ");
-					// let delimiter = /[ {}|=\[\]\(\)\-\\\/!?,.;:]/;
 					var words = window.content.document.title.split(/[ {}|=\[\]\(\)\-\\\/!?,.;:]/);
 
 					// для хранения уникальных слов
@@ -1023,37 +1171,30 @@ var fessGoogleBookmarks = {
 				    	uniqueWords.push(el);
 				    	// регулярка для поиска
 				    	// ищем с начала строки/после nestedLabelSep до конца строки/nestedLabelSep 
-						  let SearchString = new RegExp("(^|" + self._M.nestedLabelSep + ")" 
-						  	+ el + "($|" + self._M.nestedLabelSep + ")", "i");
+				    	// ограничиваем уровень вложенности метки
+				    	// например: ищем chrome, есть закладка Browsers/Chrome/test
+				    	// newLabel будет Browsers/Chrome/
+				    	// Browsers/браузер Chrome - не подходит
+				    	// Browsers/Chrome браузер - подходит
+							let SearchString = new RegExp("(.*(^|" + self._M.nestedLabelSep + ")" 
+								+ el + ")[^$" + self._M.nestedLabelSep + "]*", "i");
 						  // просматриваем массив меток
 				      for (let i=0; i<labelsList.length; i++) 
 				      {
-				      	// результат поиска
-				      	let position = labelsList[i].search(SearchString);
-				      	// нашли совпадение
-				        if (position != -1) 
-				        {
-				          // ограничиваем уровень вложенности метки
-				          // например: ищем chrome, есть закладка Browsers/Chrome/test
-				          // newLabel будет Browsers/Chrome/
-				          let newLabel = labelsList[i].substring(0,position + el.length+1);
-				          // если последний символ равен разделителю вложенных меток - удаляем его
-				          if (newLabel.charAt(newLabel.length - 1) == self.nestedLabelSep)
-				          {
-				          	newLabel = newLabel.substr(0, newLabel.length-1);
-				          }
-				          // если такой метки еще не было, добавляем ее в массив
-				          if (labels.indexOf(newLabel) === -1)
-				          {
-				          	labels.push(newLabel);
-				          }
-				        }
+				      	if (SearchString.test(labelsList[i]))
+				      	{
+				      		let find = SearchString.exec(labelsList[i]);
+				      		// если такой метки еще не было, добавляем ее в массив
+				      		if (labels.indexOf(find[0]) === -1)
+				      		{
+				      			labels.push(find[0]);
+				      		}
+				      	}
 				      }
 				    }
 					});
 					this._M.windowsParams.labels = labels;
 				}
-
 
 				// находим закладку по адресу (при редактировании)
 				if (editBkmk)
@@ -1135,42 +1276,56 @@ var fessGoogleBookmarks = {
 
 	showPrefWindow : function()
 	{
-		this._M.DebugLog("showPrefWindow");
-		if (null == this._M._preferencesWindow || this._M._preferencesWindow.closed) 
+		try
 		{
-	    let instantApply = Application.prefs.get("browser.preferences.instantApply");
-	    let features = "chrome,titlebar,toolbar,centerscreen" + (instantApply.value ? ",dialog=no" : ",modal");
-			let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-		           .getService(Components.interfaces.nsIWindowMediator)
-		           .getMostRecentWindow("navigator:browser");
-	    this._M._preferencesWindow =
-	      win.openDialog(
-	        "chrome://GBE/content/overlays/options.xul",
-	        "", 
-	        features, 
-	        this
-	      );
+			this._M.DebugLog("showPrefWindow");
+			if (null == this._M._preferencesWindow || this._M._preferencesWindow.closed) 
+			{
+		    let instantApply = Application.prefs.get("browser.preferences.instantApply");
+		    let features = "chrome,titlebar,toolbar,centerscreen" + (instantApply.value ? ",dialog=no" : ",modal");
+				let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+			           .getService(Components.interfaces.nsIWindowMediator)
+			           .getMostRecentWindow("navigator:browser");
+		    this._M._preferencesWindow =
+		      win.openDialog(
+		        "chrome://GBE/content/overlays/options.xul",
+		        "", 
+		        features, 
+		        this
+		      );
+			}
+			this._M._preferencesWindow.focus();		
 		}
-		this._M._preferencesWindow.focus();		
+		catch(error)
+		{
+			this._M.ErrorLog("GBE:onWidgetRemoved", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+		}
 	},
 
 	showFFbookmarkWindow : function()
 	{
-		this._M.DebugLog("showFFbookmarkWindow");
-		if (null == this._M._ffWindow || this._M._ffWindow.closed) 
+		try
 		{
-			let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-		           .getService(Components.interfaces.nsIWindowMediator)
-		           .getMostRecentWindow("navigator:browser");
-	    this._M._ffWindow =
-	      win.openDialog(
-	        "chrome://GBE/content/overlays/ff_bookmark.xul",
-	        "", 
-	        "chrome,titlebar,toolbar,centerscreen,modal", 
-	        this
-	      );
+			this._M.DebugLog("showFFbookmarkWindow");
+			if (null == this._M._ffWindow || this._M._ffWindow.closed) 
+			{
+				let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+			           .getService(Components.interfaces.nsIWindowMediator)
+			           .getMostRecentWindow("navigator:browser");
+		    this._M._ffWindow =
+		      win.openDialog(
+		        "chrome://GBE/content/overlays/ff_bookmark.xul",
+		        "", 
+		        "chrome,titlebar,toolbar,centerscreen,modal", 
+		        this
+		      );
+			}
+			this._M._ffWindow.focus();		
 		}
-		this._M._ffWindow.focus();		
+		catch(error)
+		{
+			this._M.ErrorLog("GBE:onWidgetRemoved", " " + error + '(line = ' + error.lineNumber + ", col = " + error.columnNumber + ", file = " +  error.fileName);
+		}
 	},
 
 	/**
@@ -1207,7 +1362,7 @@ var fessGoogleBookmarks = {
 			else
 			{
 				this.doClearList("GBE-ToolBar-popup", "google-bookmarks");
-				document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", true);
+				document.getElementById("GBE-filterHBox").setAttribute("hidden", true);
 			}
 		}
 		catch (e)
@@ -1279,27 +1434,62 @@ var fessGoogleBookmarks = {
 			{
 				this._M.tempFilterArray.length = 0;
 				// если новое значение фильтра входит в предыдущее,
-				if(this._M.oldFilterValue !== "" && search.indexOf(this._M.oldFilterValue) == 0)
+/*				if(this._M.oldFilterValue !== "" && search.indexOf(this._M.oldFilterValue) == 0)
 				{
 					// то ищем только среди ранее отфильтрованных закладок
 					for(var i = 0; i < tempArray.length; i++)
 					{
+						var hit = false;
 						if (checkBookmark(tempArray[i], search))
+						{
+							hit = true;							
+						}
+						else
+						{
+							var words = search.split(/\s+/);
+							for (var j = 0; j < words.length; j++)
+							{
+								if (checkBookmark(tempArray[i], words[j])) 
+								{
+									hit = true;
+									break;
+								}
+							}
+						}
+						// и формируем this.tempFilterArray заново
+						if (hit) 
 						{
 							tempMenuitem = document.createElement('menuitem');
 							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, tempArray[i]);
-							// и формируем this.tempFilterArray заново
 							this._M.tempFilterArray.push(tempArray[i]);
 						}
 					}
 				}
-				else
+				else*/
 				{
+					var words = search.trim().split(/\s+/);
+					var wordsCount = words.length;
 					// иначе - поиск по всем закладкам
 					for (var i = 0; i < this._M.m_bookmarkList.length; i++)
 					{
+						var hit = false;
 						if (checkBookmark(this._M.m_bookmarkList[i], search))
-						//if (this._M.m_bookmarkList[i].title.toLowerCase().indexOf(search) !== -1 )
+						{
+							hit = true;							
+						}
+						else
+						{
+							var hitCount = 0;
+							for (var j = 0; j < wordsCount; j++)
+							{
+								if (checkBookmark(this._M.m_bookmarkList[i], words[j])) 
+								{
+									hitCount++;
+								}
+							}
+							if (hitCount == wordsCount) hit = true;
+						}
+						if (hit) 
 						{
 							tempMenuitem = document.createElement('menuitem');
 							this.appendSearchMenuItem(GBE_searchResultList, tempMenuitem, this._M.m_bookmarkList[i]);
@@ -1397,6 +1587,7 @@ var fessGoogleBookmarks = {
 	appendSearchMenuItem : function(parent, item, value)
 	{
 		item.setAttribute("label", value.title);
+		item.setAttribute("url", value.url);
 		let tooltiptext = value.url;
 		if (this._M.enableNotes && value.notes != "") 
 		{
@@ -1420,13 +1611,11 @@ var fessGoogleBookmarks = {
 	 */
 	onShowContextMenu : function(event)
 	{
-		try {
+		try 
+		{
 			this._M.DebugLog("onShowContextMenu");
-			// GBE.currentContextId = event.target.getAttribute("id").replace("GBE_","");
 			// запоминаем код закладки
 			this._M.currentContextId = event.target.triggerNode.getAttribute("id").replace("GBE_","");
-			// document.getElementById("GBE-contextMenu").showPopup(document.getElementById(GBE.currentContextId), 
-			// 													event.screenX - 2, event.screenY - 2, "context");
 		}
 		catch (e) {
 			this._M.ErrorLog("GBE:onBookmarkContextMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
@@ -1828,19 +2017,6 @@ var fessGoogleBookmarks = {
 		}
 	},
 
-	// parseJsonFile : function(jsonString)
-	// {
-	// 	jQuery.noConflict();
-	// 	let arr = jQuery.parseJSON(jsonString);
-	// 	if (arr !== null && arr.bookmarks.length && arr.labels.length )
-	// 	{
-	// 		this._M.m_bookmarkList = arr.bookmarks;
-	// 		this._M.m_labelsArr = arr.labels;
-	// 		return this.refreshBookmarks(false,true);
-	// 	}
-	// 	return false;
-	// },
-
 	doRequestBookmarks : function(showMenu)
 	{
 		try
@@ -1872,7 +2048,7 @@ var fessGoogleBookmarks = {
 		    	self._M.m_ganswer = request.responseXML.documentElement;
 		    	self.doBuildMenu();
 		    	self.preventMenuHiding = false;
-		    	if (!self._M.useMenuBar)	document.getElementById("GBE-bc-filterHBox").setAttribute("hidden", false);
+		    	if (!self._M.useMenuBar)	document.getElementById("GBE-filterHBox").setAttribute("hidden", false);
 		    	document.getElementById("GBE-bc-loadingHbox").setAttribute("hidden", true);
 		    	document.getElementById("GBE-bc-errorHbox").setAttribute("hidden", true);
 	  		} 
@@ -2473,5 +2649,3 @@ else
 {
   Application.getExtensions(fessGoogleBookmarks.firstRun);
 }
-
-

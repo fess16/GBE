@@ -123,8 +123,8 @@
 						<label observes="GBE-bc-errorLabel" />
 					</hbox>
 
-					<hbox id="GBE-filterHBox" align="center">			
-						<observes element="GBE-bc-filterHBox" attribute="hidden"/>		
+					<hbox id="GBE-filterHBox" align="center" attribute="hidden">			
+<!-- 						<observes element="GBE-bc-filterHBox" attribute="hidden"/>	 -->	
 						<label id="GBE-filterTextbox-label" control="GBE-filterTextbox" value="&overlay.textboxLabel;"/>
 				    <textbox 
 				      id="GBE-filterTextbox" 
@@ -299,7 +299,7 @@
 			height='18px'/>
 		<broadcaster id="GBE-bc-errorLabel" value="&overlay.errorHbox.label.value;"/>
 
-		<broadcaster id="GBE-bc-filterHBox" hidden="true" />
+<!-- 		<broadcaster id="GBE-bc-filterHBox" hidden="true" /> -->
 
  	</broadcasterset>
 

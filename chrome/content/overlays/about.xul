@@ -15,7 +15,7 @@
     <separator class="thin"/>
     <label href="mailto:&about.label-author.about;" class="text-link" value="&about.label-author.about;"/>
   </groupbox>
-  <groupbox>
+<!--   <groupbox>
     <caption label="&about.label-donation.title;" />
     <label class="text-link" value="Skrill (Moneybookers)"
       onclick="var win = Components.classes['@mozilla.org/appshell/window-mediator;1']
@@ -27,6 +27,6 @@
         .getService(Components.interfaces.nsIWindowMediator)
         .getMostRecentWindow('navigator:browser');
       win.gBrowser.selectedTab = win.gBrowser.addTab('http://fess16.blogspot.com/p/yandexmoney-donation.html');"/>    
-  </groupbox>
+  </groupbox> -->
   <label></label>
 </dialog>

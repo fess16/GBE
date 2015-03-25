@@ -93,6 +93,10 @@ var fGoogleBookmarksModule =
 
 	'showTagsInTooltip' : false,
 	'enableFilterByUrl' : false,
+	'enableCtrlD' : false,
+	'enableQuickSearch' : false,
+
+	'darkThemeIcon' : false,
 
  	/* --------------------*/
 
@@ -106,6 +110,8 @@ var fGoogleBookmarksModule =
 
  	'above29' : _above29,
  	'm_recent10bkmrk' : [],
+ 	'lastKey' : null,
+ 	'keyUpTime' : 0,
 
 
 
@@ -259,6 +265,9 @@ var fGoogleBookmarksModule =
 
     this.readPrefValue("showTagsInTooltip", this.prefs.PREF_BOOL, false);
     this.readPrefValue("enableFilterByUrl", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableCtrlD", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("enableQuickSearch", this.prefs.PREF_BOOL, false);
+    this.readPrefValue("darkThemeIcon", this.prefs.PREF_BOOL, false);
     
     if (this.above29)
     {
