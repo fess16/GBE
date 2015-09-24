@@ -1531,6 +1531,11 @@ var fessGoogleBookmarks = {
 		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
 		this.setFavicon(value, item); 
 		item.setAttribute("context", "GBE-contextMenu");
+
+		item.setAttribute("ondragstart", "fessGoogleBookmarks.onMenuItemDragStart(event);");
+		item.setAttribute("ondragend", "fessGoogleBookmarks.onMenuItemDragend(event);");
+
+
 		if (parent.nodeName == "menuseparator")
 		{
 			parent.parentNode.insertBefore(item, parent);
@@ -1540,6 +1545,156 @@ var fessGoogleBookmarks = {
 			parent.appendChild(item);
 		}
 	},
+
+	onMenuItemDragStart : function (event)
+	{
+		var id = {"id" :event.target.getAttribute ("id")};
+		event.dataTransfer.setData('text/plain', JSON.stringify(id));
+		event.dataTransfer.effectAllowed = "copyMove";
+
+		this._M.ErrorLog("onLabelDragStart", event.dataTransfer.dropEffect);
+	},
+
+	onMenuItemDragend : function (event)
+	{
+		this._M.ErrorLog(event.dataTransfer.dropEffect);
+		this._currentDropTarget = null;
+		event.preventDefault();
+	},
+
+	onLabelDragover : function(event)
+	{
+		var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+	  if ((data.id.length > 0) && event.target.localName == "menu")
+	  {
+			// event.target.setAttribute("label", event.target.getAttribute ("label") + "2");
+
+	  	//this._M.ErrorLog("onLabelDragover", event.target.getAttribute ("id"), data);
+	  	event.preventDefault();
+		}
+	  event.stopPropagation();
+	},
+
+	_springLoadDelay: 350, // milliseconds
+  _loadTimer: null,
+  _closerTimer: null,
+  _currentDropTarget : null,
+
+	onLabelDragleave : function(event)
+	{
+   	this._M.ErrorLog("-onLabelDragleave", event.target.getAttribute("label"), this._currentDropTarget.nodeName);
+		if (event.target.localName !== "menu") return;
+
+		event.target.setAttribute("class", "menu-iconic google-bookmarks");
+		var data = event.dataTransfer.getData("text/plain");
+		// event.target.open = "false";
+
+   	let popup = event.target.lastChild;
+
+ 	  // if (this._loadTimer) {
+ 	  //   this._loadTimer.cancel();
+ 	  //   this._loadTimer = null;
+ 	  //   this._M.ErrorLog("--onLabelDragleave", 'this._loadTimer = null');
+ 	  // }
+ 	  
+ 	  var self = this;
+
+ 	  this._closeTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+ 	  this._closeTimer.initWithCallback(function() {
+ 	    this._closeTimer = null;
+ 	    let node = self._currentDropTarget;//PlacesControllerDragHelper.currentDropTarget;
+ 	    let inHierarchy = false;
+ 	    while (node && !inHierarchy) {
+ 	      //self._M.ErrorLog("--inHierarchy");
+ 	      inHierarchy = node == event.target;
+ 	      if (node.parentNode.getAttribute("id") == "GBE-ToolBar-popup" || node.parentNode.getAttribute("id") == "GBE-MainMenu")
+ 	      	break;
+ 	      node = node.parentNode;
+ 	       // self._M.ErrorLog("---inHierarchy", inHierarchy);
+ 	       // self._M.ErrorLog("---event.target", event.target.getAttribute("id"));
+ 	       // self._M.ErrorLog("---node", node.nodeName, "-", node.getAttribute("id"));
+ 	       // self._M.ErrorLog("---node.parentNode", node.parentNode.getAttribute("id"));
+ 	    }
+ 	    self._M.ErrorLog("--inHierarchy", inHierarchy);
+ 	    if (!inHierarchy && popup && popup.hasAttribute("autoopened")) 
+ 	    {
+ 	    	self._M.ErrorLog("---popup", popup.parentNode.getAttribute("id"));
+ 	      popup.removeAttribute("autoopened");
+ 	      popup.hidePopup();
+ 	      let topLevelPopup = false;
+ 	      node = popup;
+ 	      while (node && !topLevelPopup)
+ 	      {
+ 	      	if (node.parentNode.getAttribute("id") == "GBE-ToolBar-popup" || node.parentNode.getAttribute("id") == "GBE-MainMenu")
+ 	      		break;
+ 	      	topLevelPopup = self._currentDropTarget.parentNode == node.parentNode;
+ 	      	node = node.parentNode;
+ 	      	if (node.nodeName == "menupopup")
+ 	      	{
+ 	      		node.removeAttribute("autoopened");
+ 	      		node.hidePopup();
+ 	      	}
+ 	      }
+ 	    }
+ 	  }, this._springLoadDelay-50, Ci.nsITimer.TYPE_ONE_SHOT);
+	}, 
+
+	onLabelDragenter : function(event)
+	{
+
+	  this._currentDropTarget = event.target;
+	  this._M.ErrorLog("+_currentDropTarget", this._currentDropTarget.getAttribute("id"));
+		if (event.target.localName !== "menu") return;
+
+		//event.target.setAttribute("label", event.target.getAttribute ("label") + "2");
+		event.target.setAttribute("class", "droparea menu-iconic google-bookmarks");
+		// event.target.open = "true";
+		var data = event.dataTransfer.getData("text/plain");
+
+
+	  let popup = event.target.lastChild;
+
+	  if (this._loadTimer) {
+	    this._loadTimer.cancel();
+	    this._loadTimer = null;
+	    this._M.ErrorLog("++onLabelDragenter", 'this._loadTimer = null');
+	  }
+
+			// popup.setAttribute("autoopened", "true");
+   //    popup.showPopup(popup);
+	  this._M.ErrorLog("+onLabelDragenter", event.target.getAttribute("label"), data);
+
+    if (this._loadTimer || popup.state === "showing" || popup.state === "open")
+    {
+      return;
+      this._M.ErrorLog("++onLabelDragenter", "if");
+    }
+
+
+    this._loadTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+    this._loadTimer.initWithCallback(() => {
+      this._loadTimer = null;
+      this._M.ErrorLog("++onLabelDragenter - initWithCallback", popup.parentNode.getAttribute("id"));
+      popup.setAttribute("autoopened", "true");
+      popup.showPopup(popup);
+    }, this._springLoadDelay, Ci.nsITimer.TYPE_ONE_SHOT);
+    event.preventDefault();
+    event.stopPropagation();
+
+
+	},
+
+	onLabelDrop : function(event)
+	{
+	  event.target.setAttribute("class", "menu-iconic google-bookmarks");
+	  var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+	  if (data.id.length > 0)
+	  {
+	  	this._M.ErrorLog("onLabelDrop", event.target.getAttribute ("label"), data.id);
+		}
+	  event.preventDefault();
+	},
+
 
 	appendLabelItem : function(parent, item, id, label, fullName = "")
 	{
@@ -1573,6 +1728,12 @@ var fessGoogleBookmarks = {
 		}
 		else
 		{
+			
+			item.setAttribute("ondragover", "fessGoogleBookmarks.onLabelDragover(event);");
+			item.setAttribute("ondragenter", "fessGoogleBookmarks.onLabelDragenter(event);");
+			item.setAttribute("ondragleave", "fessGoogleBookmarks.onLabelDragleave(event);");
+			item.setAttribute("ondrop", "fessGoogleBookmarks.onLabelDrop(event);");
+
 			if (parent.nodeName == "menuseparator")
 			{
 				parent.parentNode.insertBefore(item, parent);
