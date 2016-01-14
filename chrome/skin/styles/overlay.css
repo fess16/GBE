@@ -179,3 +179,21 @@ url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
   /*-moz-appearance: none;*/
   border: 2px solid blue; !important;
 }
+
+/* rules for menupopup drop indicators */
+#GBE-tb-menupopup-drop-indicator-bar, #GBE-mb-menupopup-drop-indicator-bar, .GBE-menupopup-drop-indicator-bar {
+  position: relative;
+  /* these two margins must together compensate the indicator's height */
+  /*margin-top: -1px;*/
+  /*margin-bottom: -1px;*/
+  /*width: 30px;*/
+  padding-left: 30px;
+  padding-right: 200px;
+}
+
+.GBE-menupopup-drop-indicator {
+  list-style-image: none;
+  height: 2px;
+  -moz-margin-end: -4em;
+  background-color: Highlight;
+}

@@ -889,13 +889,16 @@ var fessGoogleBookmarks = {
 		var list = document.getElementById(parentId);
 		try
 		{
-			this._M.DebugLog("doClearList");
-			// Fetch all elements in the document with the class 'tagSelected'
-			var selectTag = list.getElementsByClassName(className);
-		  // Remove all of them.
-			while( selectTag[0] ) 
+			if (list)
 			{
-		    selectTag[0].parentNode.removeChild( selectTag[0] );
+				this._M.DebugLog("doClearList");
+				// Fetch all elements in the document with the class 'tagSelected'
+				var selectTag = list.getElementsByClassName(className);
+			  // Remove all of them.
+				while( selectTag[0] ) 
+				{
+			    selectTag[0].parentNode.removeChild( selectTag[0] );
+				}
 			}
 		}
 		catch (e)
@@ -1537,6 +1540,9 @@ var fessGoogleBookmarks = {
 		item.setAttribute("ondragend", "fessGoogleBookmarks.onMenuItemDragend(event);");
 
 		item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
+		item.setAttribute("ondragenter", "fessGoogleBookmarks.onMenuItemlDragEnter(event);");
+		item.setAttribute("ondragexit", "fessGoogleBookmarks.onMenuItemlDragExit(event);");
+		item.setAttribute("ondrop", "fessGoogleBookmarks.onMenuItemDrop(event);");
 
 
 		if (parent.nodeName == "menuseparator")
@@ -1549,38 +1555,59 @@ var fessGoogleBookmarks = {
 		}
 	},
 
+	// начало перемещения
 	onMenuItemDragStart : function (event)
 	{
-		//!!!!!!! event.target - перемещаемый элемент
-		var id = {"id" :event.target.getAttribute ("id"), "parentId" : event.target.parentNode.parentNode.getAttribute("id")};
+		// event.target - перемещаемый элемент
+		// сохраняем в dataTransfer id перемещаемого элемента и id меню, в котором он находится
+		var id = {
+			"id" :event.target.getAttribute ("id"), 
+			"parentId" : event.target.parentNode.parentNode.getAttribute("id")};
 		event.dataTransfer.setData('text/plain', JSON.stringify(id));
 		event.dataTransfer.effectAllowed = "copyMove";
-
-		this._M.ErrorLog("onLabelDragStart", event.dataTransfer.dropEffect, JSON.stringify(id));
 	},
 
+	// во время перемещения
 	onMenuItemDrag : function (event)
 	{
-		//!!!!!!! event.target - перемещаемый элемент
-		//var id = {"id" :event.target.getAttribute("id"), "parentId" : event.target.parentNode.parentNode.getAttribute("id")};
+		// перемещаемый элемент - меняем цвет шрифта на красный
 		event.target.style.color = "red";
-		//this._M.ErrorLog("onMenuItemDrag", JSON.stringify(id));
 	},
-
+	
+	// завершение перемещения
 	onMenuItemDragend : function (event)
 	{
-		//!!!!!!! event.target - перемещаемый элемент
-		this._M.ErrorLog(event.dataTransfer.dropEffect);
-		event.target.style.color = "";
-		this._currentDropTarget = null;
-/*		let popup = event.target.lastChild;
-		if (popup && popup.hasAttribute("autoopened")) 
-    {
-      this._M.ErrorLog("onMenuItemDragend", event.target.lastChild.getAttribute("id"));
-      popup.removeAttribute("autoopened");
-      popup.hidePopup();
-    }*/
+		var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+		
+		//this._M.ErrorLog(event.dataTransfer.dropEffect, JSON.stringify(data), this._DropTarget);
+		
+		// параметры перемещаемой закладки
+		let params = {name : "", id : data.id, url : "", labels : "",	notes : "",	sig : this._M.m_signature};
+		this._M.getBookmark(params);
 
+		// признак успешного перемещения
+		let isdrop = false;
+		// перемещали закладку - перезаписываем метки
+		if (event.dataTransfer.dropEffect == "move")
+		{
+			params.labels = this._DropTarget;
+			isdrop = true;
+		}
+		// копировали закладку - добавляем новую метку к исходным
+		if (event.dataTransfer.dropEffect == "copy")
+		{
+			params.labels += "," + this._DropTarget;
+			isdrop = true;
+		}
+
+		if (isdrop)
+		{
+			//this._M.ErrorLog(JSON.stringify(params));
+			this._M.doChangeBookmark(params, this); 
+		}
+		event.target.style.color = "";
+		this.GBE_menupopup.hidePopup();
+		this._currentDropTarget = null;
 		event.preventDefault();
 	},
 
@@ -1600,138 +1627,134 @@ var fessGoogleBookmarks = {
 	  event.stopPropagation();
 	},
 
-	// onLabelDragover : function(event)
-	// {
-	// 	var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-	//   if ((data.id.length > 0) && event.target.localName == "menu")
-	//   {
-	// 		// event.target.setAttribute("label", event.target.getAttribute ("label") + "2");
+	_springLoadDelay: 350, // задержка появления меню при перетаскивании
+  _loadTimer: null, // таймер задержки 
+  _currentDropTarget : null, // текущее назначение перетаскивания
+  _DropTarget : "", 
 
-	//   	//this._M.ErrorLog("onLabelDragover", event.target.getAttribute ("id"), data);
-	//   	event.preventDefault();
-	// 	}
-	//   event.stopPropagation();
-	// },
-
-	_springLoadDelay: 350, // milliseconds
-  _loadTimer: null,
-  _closerTimer: null,
-  _currentDropTarget : null,
-
-	onLabelDragleave : function(event)
+	// закрывает все открытые menupopup, кроме тех, которые выше в иерархии curentMenu
+	closePopups : function (root, curentMenu)
 	{
-   	//this._M.ErrorLog("-onLabelDragleave", event.target.getAttribute("label"), this._currentDropTarget.nodeName);
-		if (event.target.localName !== "menu") return;
+		if (root)
+		{
+			// реально = this.GBE_menupopup
+			let menuList = root.querySelectorAll('menu');
+			let curId = curentMenu.getAttribute("id") + this._M.nestedLabelSep;
+			for (let i=0; i < menuList.length; i++)
+			{
+				let menu = menuList[i];
+				let menupopup = menu.lastChild;
+				if (menupopup)
+				{
+					if (curId.indexOf(menu.getAttribute("id") + this._M.nestedLabelSep) == 0)
+					{
+						continue;
+					}
+					menupopup.removeAttribute("autoopened");
+					if (menupopup.state == "open" || menupopup.state == "showing") menupopup.hidePopup();	
+				}
+			}
+		}
+	},
 
-		event.target.setAttribute("class", "menu-iconic google-bookmarks");
-		var data = event.dataTransfer.getData("text/plain");
-		// event.target.open = "false";
-
-   	let popup = event.target.lastChild;
-
- 	  // if (this._loadTimer) {
- 	  //   this._loadTimer.cancel();
- 	  //   this._loadTimer = null;
- 	  //   this._M.ErrorLog("--onLabelDragleave", 'this._loadTimer = null');
- 	  // }
- 	  
- 	  var self = this;
- 	  var currentTarget = this._currentDropTarget;
-
- 	  this._closeTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
- 	  this._closeTimer.initWithCallback(function() {
- 	    this._closeTimer = null;
- 	    let node = currentTarget;//PlacesControllerDragHelper.currentDropTarget;
- 	    let inHierarchy = false;
- 	    while (node && !inHierarchy) {
- 	      //self._M.ErrorLog("--inHierarchy");
- 	      inHierarchy = node == event.target;
- 	      if (node.parentNode.getAttribute("id") == "GBE-ToolBar-popup" || node.parentNode.getAttribute("id") == "GBE-MainMenu")
- 	      	break;
- 	      node = node.parentNode;
- 	       // self._M.ErrorLog("---inHierarchy", inHierarchy);
- 	       // self._M.ErrorLog("---event.target", event.target.getAttribute("id"));
- 	       // self._M.ErrorLog("---node", node.nodeName, "-", node.getAttribute("id"));
- 	       // self._M.ErrorLog("---node.parentNode", node.parentNode.getAttribute("id"));
- 	    }
- 	    self._M.ErrorLog("--inHierarchy", inHierarchy);
- 	    if (!inHierarchy && popup && popup.hasAttribute("autoopened")) 
- 	    {
- 	    	//self._M.ErrorLog("---popup", popup.parentNode.getAttribute("id"));
- 	      popup.removeAttribute("autoopened");
- 	      popup.hidePopup();
- 	      let topLevelPopup = false;
- 	      node = popup;
- 	      while (node && !topLevelPopup)
- 	      {
- 	      	if (node.parentNode.getAttribute("id") == "GBE-ToolBar-popup" || node.parentNode.getAttribute("id") == "GBE-MainMenu")
- 	      		break;
- 	      	topLevelPopup = currentTarget.parentNode == node.parentNode;
- 	      	node = node.parentNode;
- 	      	if (node.nodeName == "menupopup")
- 	      	{
- 	      		node.removeAttribute("autoopened");
- 	      		node.hidePopup();
- 	      	}
- 	      }
- 	    }
- 	  }, this._springLoadDelay-50, Ci.nsITimer.TYPE_ONE_SHOT);
-	}, 
-
-	onLabelDragenter : function(event)
+	// перемещаемый элемент покидает элемент-назначения MenuItem
+	onMenuItemlDragExit : function(event)
 	{
-
-	  this._currentDropTarget = event.target;
-	  //this._M.ErrorLog("+_currentDropTarget", this._currentDropTarget.getAttribute("id"));
+		// удаляем индикаторы перемещения в данном menupopup
+		this.doClearList(event.target.parentNode.parentNode.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+		if (this._loadTimer) {
+	    this._loadTimer.cancel();
+	    this._loadTimer = null;
+	  }
+	},
+	
+	onLabelDragExit : function(event)
+	{
 		if (event.target.localName !== "menu") return;
-
-		//event.target.setAttribute("label", event.target.getAttribute ("label") + "2");
-		event.target.setAttribute("class", "droparea menu-iconic google-bookmarks");
-		// event.target.open = "true";
+		event.target.setAttribute("_moz-menuactive", false);
 		var data = event.dataTransfer.getData("text/plain");
-
-
-	  let popup = event.target.lastChild;
 
 	  if (this._loadTimer) {
 	    this._loadTimer.cancel();
 	    this._loadTimer = null;
-	    //this._M.ErrorLog("++onLabelDragenter", 'this._loadTimer = null');
 	  }
-
-			// popup.setAttribute("autoopened", "true");
-   //    popup.showPopup(popup);
-	  //this._M.ErrorLog("+onLabelDragenter", event.target.getAttribute("label"), data);
-
-    if (this._loadTimer || popup.state === "showing" || popup.state === "open")
-    {
-      return;
-      this._M.ErrorLog("++onLabelDragenter", "if");
-    }
+	},
 
 
-    this._loadTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-    this._loadTimer.initWithCallback(() => {
-      this._loadTimer = null;
-      //this._M.ErrorLog("++onLabelDragenter - initWithCallback", popup.parentNode.getAttribute("id"));
-      popup.setAttribute("autoopened", "true");
-      popup.showPopup(popup);
-    }, this._springLoadDelay, Ci.nsITimer.TYPE_ONE_SHOT);
-    event.preventDefault();
-    event.stopPropagation();
+	onMenuItemlDragEnter : function(event)
+	{
+		var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+	  if (data.id.length > 0)
+	  {
+			this._currentDropTarget = event.target.parentNode.parentNode;
+	  	this.closePopups(this.GBE_menupopup, this._currentDropTarget);
+			this.doClearList(this._currentDropTarget.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
 
+			if (data.parentId == this._currentDropTarget.getAttribute("id")) return;
+			let _indClone = this._indicatorBar.cloneNode(true);
+			_indClone.setAttribute("hidden", false);
+			_indClone.setAttribute("class", "GBE-menupopup-drop-indicator-bar");
+			_indClone.setAttribute("id", event.target.getAttribute("id")+"_indicatorBar");
+			event.target.parentNode.insertBefore(_indClone, event.target.nextSibling);
 
+			event.preventDefault();
+			event.stopPropagation();
+		}
+	},
+
+	onLabelDragenter : function(event)
+	{
+		if (event.target.localName !== "menu") return;
+		this._currentDropTarget = event.target;
+		event.target.setAttribute("_moz-menuactive", true);
+		var data = event.dataTransfer.getData("text/plain");
+		let popup = event.target.lastChild;
+
+		this._loadTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+		this._loadTimer.initWithCallback(() => {
+		  this._loadTimer = null;
+		  popup.setAttribute("autoopened", "true");
+			this.closePopups(this.GBE_menupopup, event.target);
+		  popup.showPopup(popup);
+		}, this._springLoadDelay, Ci.nsITimer.TYPE_ONE_SHOT);
+
+		event.preventDefault();
+		event.stopPropagation();
+
+	},
+
+	onMenuItemDrop : function(event)
+	{
+		var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+	  if (data.id.length > 0)
+	  {
+	  	if (data.parentId == event.target.parentNode.parentNode.getAttribute("id")) return;
+	  	let parent = event.target.parentNode.parentNode;
+	  	this._DropTarget = parent.getAttribute("fullName");
+	  	if (event.target.parentNode.getAttribute("id") == this.GBE_menupopup.getAttribute("id"))
+	  	{
+				parent = event.target.parentNode;
+				this._DropTarget = ""
+	  	}
+	  	this.closePopups(this.GBE_menupopup, this.GBE_menupopup);
+			this.doClearList(parent.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+		}
+		event.preventDefault();
+		event.stopPropagation();
 	},
 
 	onLabelDrop : function(event)
 	{
-	  event.target.setAttribute("class", "menu-iconic google-bookmarks");
+	  event.target.setAttribute("_moz-menuactive", false);
 	  var data = JSON.parse(event.dataTransfer.getData("text/plain"));
 	  if (data.id.length > 0)
 	  {
-	  	this._M.ErrorLog("onLabelDrop", event.target.getAttribute ("label"), data.id,  data.parentId);
+			this.closePopups(this.GBE_menupopup, this.GBE_menupopup);
+			this.doClearList(event.target.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+			this._DropTarget = event.target.getAttribute("fullName");
 		}
 	  event.preventDefault();
+	  event.stopPropagation();
 	},
 
 
@@ -1769,9 +1792,8 @@ var fessGoogleBookmarks = {
 		{
 			
 			item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
-			// item.setAttribute("ondragover", "fessGoogleBookmarks.onLabelDragover(event);");
 			item.setAttribute("ondragenter", "fessGoogleBookmarks.onLabelDragenter(event);");
-			item.setAttribute("ondragleave", "fessGoogleBookmarks.onLabelDragleave(event);");
+			item.setAttribute("ondragexit", "fessGoogleBookmarks.onLabelDragExit(event);");
 			item.setAttribute("ondrop", "fessGoogleBookmarks.onLabelDrop(event);");
 
 			if (parent.nodeName == "menuseparator")
@@ -2332,6 +2354,7 @@ var fessGoogleBookmarks = {
 				var menupopup = document.getElementById("GBE-ToolBar-popup"); 
 				var GBE_GBlist_separator = document.getElementById("GBE-tb-GBlist-EndSeparator");
 				var GBE_GBlist_Start_separator = document.getElementById("GBE-tb-GBlist-StartSeparator");
+				var _indicatorBar = document.getElementById("GBE-tb-menupopup-drop-indicator-bar");
 			}
 			else
 			{
@@ -2339,8 +2362,10 @@ var fessGoogleBookmarks = {
 				var menupopup = document.getElementById("GBE-MainMenu-Popup"); 
 				var GBE_GBlist_separator = document.getElementById("GBE-mb-GBlist-EndSeparator");				
 				var GBE_GBlist_Start_separator = document.getElementById("GBE-mb-GBlist-StartSeparator");				
+				var _indicatorBar = document.getElementById("GBE-mb-menupopup-drop-indicator-bar");
 			}
 			this.GBE_menupopup = menupopup;
+			this._indicatorBar = _indicatorBar;//this.GBE_menupopup.getElementsByAttribute('id',"GBE-menupopup-drop-indicator-bar")[0];
 
 			var self = this;
 

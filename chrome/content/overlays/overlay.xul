@@ -135,6 +135,9 @@
 				      oncommand="fessGoogleBookmarks.filterBookmarks(this);"
 				      />
 					</hbox>
+					<vbox id="GBE-tb-menupopup-drop-indicator-bar" hidden="true">
+	          <image class="GBE-menupopup-drop-indicator" mousethrough="always"/>
+	        </vbox>
 					<menuseparator id="GBE-tb-GBlist-StartSeparator"/>
 
 					<menuseparator id="GBE-tb-GBlist-EndSeparator"/>
@@ -195,6 +198,9 @@
       		<image observes="GBE-bc-errorImage" />
       		<label observes="GBE-bc-errorLabel" />
       	</hbox>
+      	<vbox id="GBE-mb-menupopup-drop-indicator-bar" hidden="true">
+	          <image class="GBE-menupopup-drop-indicator" mousethrough="always"/>
+	      </vbox>
       	<menuseparator id="GBE-mb-GBlist-StartSeparator"/>
 
 				<menuseparator id="GBE-mb-GBlist-EndSeparator"/>
