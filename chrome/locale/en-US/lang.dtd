@@ -110,6 +110,7 @@
 <!ENTITY prefWindow.enableFilterByUrl.label "Enable search in bookmark URL's">
 <!ENTITY prefWindow.enableCtrlD.label "Enable add bookmark by Ctrl+D">
 <!ENTITY prefWindow.enableQuickSearch.label "Enable quick search (double Home) - needs restart">
+<!ENTITY prefWindow.enableDnD.label "Enable Drag and Drop bookmarks">
 
 <!ENTITY ffBookmark.form.title "Import/Export google bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Firefox bookmarks folder for import/export:">

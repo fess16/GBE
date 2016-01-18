@@ -96,6 +96,8 @@ var fGoogleBookmarksModule =
 	'enableCtrlD' : false,
 	'enableQuickSearch' : false,
 
+	'enableDnD' : false,
+
 	'darkThemeIcon' : false,
 
  	/* --------------------*/
@@ -267,6 +269,9 @@ var fGoogleBookmarksModule =
     this.readPrefValue("enableFilterByUrl", this.prefs.PREF_BOOL, false);
     this.readPrefValue("enableCtrlD", this.prefs.PREF_BOOL, false);
     this.readPrefValue("enableQuickSearch", this.prefs.PREF_BOOL, false);
+
+    this.readPrefValue("enableDnD", this.prefs.PREF_BOOL, false);
+    
     this.readPrefValue("darkThemeIcon", this.prefs.PREF_BOOL, false);
     
     if (this.above29)

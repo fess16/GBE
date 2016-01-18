@@ -40,6 +40,7 @@
       <preference id="pref_enableCtrlD" name="extensions.fessGBE.enableCtrlD" type="bool"/>
       <preference id="pref_enableQuickSearch" name="extensions.fessGBE.enableQuickSearch" type="bool"/>
       <preference id="pref_darkThemeIcon" name="extensions.fessGBE.darkThemeIcon" type="bool"/>
+      <preference id="pref_enableDnD" name="extensions.fessGBE.enableDnD" type="bool"/>
     </preferences>
     <vbox flex="1">
       <tabbox selectedIndex="0">
@@ -204,6 +205,12 @@
                 preference="pref_enableQuickSearch" 
                 id="fessGBE-prefs-enableQuickSearch-Ctrl" 
                 label="&prefWindow.enableQuickSearch.label;"/>
+            </hbox> 
+            <hbox align="center" flex="0">
+              <checkbox 
+                preference="pref_enableDnD" 
+                id="fessGBE-prefs-enableDnD-Ctrl" 
+                label="&prefWindow.enableDnD.label;"/>
             </hbox>  
             <groupbox>
               <caption label="&prefWindow.LabelHiding.groupbox.caption;" />

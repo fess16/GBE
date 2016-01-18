@@ -1535,15 +1535,16 @@ var fessGoogleBookmarks = {
 		this.setFavicon(value, item); 
 		item.setAttribute("context", "GBE-contextMenu");
 
-		item.setAttribute("ondragstart", "fessGoogleBookmarks.onMenuItemDragStart(event);");
-		item.setAttribute("ondrag", "fessGoogleBookmarks.onMenuItemDrag(event);");
-		item.setAttribute("ondragend", "fessGoogleBookmarks.onMenuItemDragend(event);");
-
-		item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
-		item.setAttribute("ondragenter", "fessGoogleBookmarks.onMenuItemlDragEnter(event);");
-		item.setAttribute("ondragexit", "fessGoogleBookmarks.onMenuItemlDragExit(event);");
-		item.setAttribute("ondrop", "fessGoogleBookmarks.onMenuItemDrop(event);");
-
+		if (this._M.enableDnD)
+		{
+			item.setAttribute("ondragstart", "fessGoogleBookmarks.onMenuItemDragStart(event);");
+			item.setAttribute("ondrag", "fessGoogleBookmarks.onMenuItemDrag(event);");
+			item.setAttribute("ondragend", "fessGoogleBookmarks.onMenuItemDragend(event);");
+			item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
+			item.setAttribute("ondragenter", "fessGoogleBookmarks.onMenuItemlDragEnter(event);");
+			item.setAttribute("ondragexit", "fessGoogleBookmarks.onMenuItemlDragExit(event);");
+			item.setAttribute("ondrop", "fessGoogleBookmarks.onMenuItemDrop(event);");
+		}
 
 		if (parent.nodeName == "menuseparator")
 		{
@@ -1577,36 +1578,40 @@ var fessGoogleBookmarks = {
 	// завершение перемещения
 	onMenuItemDragend : function (event)
 	{
-		var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-		
-		//this._M.ErrorLog(event.dataTransfer.dropEffect, JSON.stringify(data), this._DropTarget);
-		
-		// параметры перемещаемой закладки
-		let params = {name : "", id : data.id, url : "", labels : "",	notes : "",	sig : this._M.m_signature};
-		this._M.getBookmark(params);
+		try
+		{
+			var data = JSON.parse(event.dataTransfer.getData("text/plain"));
 
-		// признак успешного перемещения
-		let isdrop = false;
-		// перемещали закладку - перезаписываем метки
-		if (event.dataTransfer.dropEffect == "move")
-		{
-			params.labels = this._DropTarget;
-			isdrop = true;
-		}
-		// копировали закладку - добавляем новую метку к исходным
-		if (event.dataTransfer.dropEffect == "copy")
-		{
-			params.labels += "," + this._DropTarget;
-			isdrop = true;
-		}
+			// параметры перемещаемой закладки
+			let params = {name : "", id : data.id, url : "", labels : "",	notes : "",	sig : this._M.m_signature};
+			this._M.getBookmark(params);
 
-		if (isdrop)
-		{
-			//this._M.ErrorLog(JSON.stringify(params));
-			this._M.doChangeBookmark(params, this); 
+			// признак успешного перемещения
+			let isdrop = false;
+			// перемещали закладку - перезаписываем метки
+			if (event.dataTransfer.dropEffect == "move")
+			{
+				params.labels = this._DropTarget;
+				isdrop = true;
+			}
+			// копировали закладку - добавляем новую метку к исходным
+			if (event.dataTransfer.dropEffect == "copy")
+			{
+				params.labels += "," + this._DropTarget;
+				isdrop = true;
+			}
+
+			if (isdrop)
+			{
+				this._M.doChangeBookmark(params, this); 
+				this.needRefresh = true;
+			}
+			event.target.style.color = "";
+			this.GBE_menupopup.hidePopup();
 		}
-		event.target.style.color = "";
-		this.GBE_menupopup.hidePopup();
+		catch (e) {
+			this._M.ErrorLog("GBE:onMenuItemDragend", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 		this._currentDropTarget = null;
 		event.preventDefault();
 	},
@@ -1638,18 +1643,21 @@ var fessGoogleBookmarks = {
 		if (root)
 		{
 			// реально = this.GBE_menupopup
+			// находим все элементы menu
 			let menuList = root.querySelectorAll('menu');
 			let curId = curentMenu.getAttribute("id") + this._M.nestedLabelSep;
 			for (let i=0; i < menuList.length; i++)
 			{
 				let menu = menuList[i];
+				// пропускаем menu, которые выше в иерархии
+				if (curId.indexOf(menu.getAttribute("id") + this._M.nestedLabelSep) == 0)
+				{
+					continue;
+				}
+				// вложенный menupopup
 				let menupopup = menu.lastChild;
 				if (menupopup)
 				{
-					if (curId.indexOf(menu.getAttribute("id") + this._M.nestedLabelSep) == 0)
-					{
-						continue;
-					}
 					menupopup.removeAttribute("autoopened");
 					if (menupopup.state == "open" || menupopup.state == "showing") menupopup.hidePopup();	
 				}
@@ -1657,104 +1665,151 @@ var fessGoogleBookmarks = {
 		}
 	},
 
-	// перемещаемый элемент покидает элемент-назначения MenuItem
+	// перемещаемый элемент покидает элемент-назначения 
 	onMenuItemlDragExit : function(event)
 	{
-		// удаляем индикаторы перемещения в данном menupopup
-		this.doClearList(event.target.parentNode.parentNode.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
-		if (this._loadTimer) {
-	    this._loadTimer.cancel();
-	    this._loadTimer = null;
-	  }
+		try
+		{
+			// удаляем индикаторы перемещения в данном menupopup
+			this.doClearList(event.target.parentNode.parentNode.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+			// останавливаем таймер открытия menupopup
+			if (this._loadTimer) {
+		    this._loadTimer.cancel();
+		    this._loadTimer = null;
+		  }
+		}
+		catch (e) {
+			this._M.ErrorLog("GBE:onMenuItemlDragExit", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
 	
+	// перемещаемый элемент покидает элемент-назначения menu
 	onLabelDragExit : function(event)
 	{
-		if (event.target.localName !== "menu") return;
-		event.target.setAttribute("_moz-menuactive", false);
-		var data = event.dataTransfer.getData("text/plain");
-
-	  if (this._loadTimer) {
-	    this._loadTimer.cancel();
-	    this._loadTimer = null;
-	  }
+		try
+		{
+			if (event.target.localName !== "menu") return;
+			event.target.setAttribute("_moz-menuactive", false);
+		  if (this._loadTimer) {
+		    this._loadTimer.cancel();
+		    this._loadTimer = null;
+		  }
+		}
+		catch (e) {
+			this._M.ErrorLog("GBE:onLabelDragExit", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
 
-
+	// перемещаемый элемент заходит в элемент-назначения MenuItem
 	onMenuItemlDragEnter : function(event)
 	{
-		var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-	  if (data.id.length > 0)
-	  {
-			this._currentDropTarget = event.target.parentNode.parentNode;
-	  	this.closePopups(this.GBE_menupopup, this._currentDropTarget);
-			this.doClearList(this._currentDropTarget.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+		try
+		{
+			let data = JSON.parse(event.dataTransfer.getData("text/plain"));
+		  if (data.id.length > 0)
+		  {
+				this._currentDropTarget = event.target.parentNode.parentNode;
+				// закрываем все остальные menupopup
+		  	this.closePopups(this.GBE_menupopup, this._currentDropTarget);
+		  	// убираем индикаторы перемещения в текущем меню
+				this.doClearList(this._currentDropTarget.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+				// в пределах одного меню (метки) не перемещаем
+				if (data.parentId == this._currentDropTarget.getAttribute("id")) return;
 
-			if (data.parentId == this._currentDropTarget.getAttribute("id")) return;
-			let _indClone = this._indicatorBar.cloneNode(true);
-			_indClone.setAttribute("hidden", false);
-			_indClone.setAttribute("class", "GBE-menupopup-drop-indicator-bar");
-			_indClone.setAttribute("id", event.target.getAttribute("id")+"_indicatorBar");
-			event.target.parentNode.insertBefore(_indClone, event.target.nextSibling);
+				// делаем копию индикатора перемещения, вставляем ее после текущего MenuItem
+				let _indClone = this._indicatorBar.cloneNode(true);
+				_indClone.setAttribute("hidden", false);
+				_indClone.setAttribute("class", "GBE-menupopup-drop-indicator-bar");
+				_indClone.setAttribute("id", event.target.getAttribute("id")+"_indicatorBar");
+				event.target.parentNode.insertBefore(_indClone, event.target.nextSibling);
+
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		}
+		catch (e) {
+			this._M.ErrorLog("GBE:onMenuItemlDragEnter", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+	// перемещаемый элемент заходит в элемент-назначения Menu
+	onLabelDragenter : function(event)
+	{
+		try
+		{
+			if (event.target.localName !== "menu") return;
+			this._currentDropTarget = event.target;
+			event.target.setAttribute("_moz-menuactive", true);
+			// вложенный menupopup
+			let popup = event.target.lastChild;
+			// таймер открытия menupopup
+			this._loadTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
+			this._loadTimer.initWithCallback(() => {
+			  this._loadTimer = null;
+			  popup.setAttribute("autoopened", "true");
+			  // закрываем все остальные menupopup
+				this.closePopups(this.GBE_menupopup, event.target);
+			  popup.showPopup(popup);
+			}, this._springLoadDelay, Ci.nsITimer.TYPE_ONE_SHOT);
 
 			event.preventDefault();
 			event.stopPropagation();
 		}
+		catch (e) {
+			this._M.ErrorLog("GBE:onLabelDragenter", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
 
-	onLabelDragenter : function(event)
-	{
-		if (event.target.localName !== "menu") return;
-		this._currentDropTarget = event.target;
-		event.target.setAttribute("_moz-menuactive", true);
-		var data = event.dataTransfer.getData("text/plain");
-		let popup = event.target.lastChild;
-
-		this._loadTimer = Cc["@mozilla.org/timer;1"].createInstance(Ci.nsITimer);
-		this._loadTimer.initWithCallback(() => {
-		  this._loadTimer = null;
-		  popup.setAttribute("autoopened", "true");
-			this.closePopups(this.GBE_menupopup, event.target);
-		  popup.showPopup(popup);
-		}, this._springLoadDelay, Ci.nsITimer.TYPE_ONE_SHOT);
-
-		event.preventDefault();
-		event.stopPropagation();
-
-	},
-
+	// выполнено перемещение на элемент-назначения menupopup
 	onMenuItemDrop : function(event)
 	{
-		var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-	  if (data.id.length > 0)
-	  {
-	  	if (data.parentId == event.target.parentNode.parentNode.getAttribute("id")) return;
-	  	let parent = event.target.parentNode.parentNode;
-	  	this._DropTarget = parent.getAttribute("fullName");
-	  	if (event.target.parentNode.getAttribute("id") == this.GBE_menupopup.getAttribute("id"))
-	  	{
-				parent = event.target.parentNode;
-				this._DropTarget = ""
-	  	}
-	  	this.closePopups(this.GBE_menupopup, this.GBE_menupopup);
-			this.doClearList(parent.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+		try
+		{
+			var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+		  if (data.id.length > 0)
+		  {
+		  	if (data.parentId == event.target.parentNode.parentNode.getAttribute("id")) return;
+		  	let parent = event.target.parentNode.parentNode;
+		  	this._DropTarget = parent.getAttribute("fullName");
+		  	// если переместили на menuitem, расположенный в this.GBE_menupopup - новая метка пустая
+		  	if (event.target.parentNode.getAttribute("id") == this.GBE_menupopup.getAttribute("id"))
+		  	{
+					parent = event.target.parentNode;
+					this._DropTarget = ""
+		  	}
+		  	// закрываем ВСЕ menupopup
+		  	this.closePopups(this.GBE_menupopup, this.GBE_menupopup);
+		  	// удаляем все индикаторы перемещения
+				this.doClearList(parent.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+			}
+			event.preventDefault();
+			event.stopPropagation();
 		}
-		event.preventDefault();
-		event.stopPropagation();
+		catch (e) {
+			this._M.ErrorLog("GBE:onMenuItemDrop", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
 
+	// выполнено перемещение на элемент-назначения menu
 	onLabelDrop : function(event)
 	{
-	  event.target.setAttribute("_moz-menuactive", false);
-	  var data = JSON.parse(event.dataTransfer.getData("text/plain"));
-	  if (data.id.length > 0)
+	  try
 	  {
-			this.closePopups(this.GBE_menupopup, this.GBE_menupopup);
-			this.doClearList(event.target.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
-			this._DropTarget = event.target.getAttribute("fullName");
+		  event.target.setAttribute("_moz-menuactive", false);
+		  var data = JSON.parse(event.dataTransfer.getData("text/plain"));
+		  if (data.id.length > 0)
+		  {
+				this.closePopups(this.GBE_menupopup, this.GBE_menupopup);
+				this.doClearList(event.target.getAttribute("id"), "GBE-menupopup-drop-indicator-bar");
+				// новая метка = меню.fullName
+				this._DropTarget = event.target.getAttribute("fullName");
+			}
+		  event.preventDefault();
+		  event.stopPropagation();
 		}
-	  event.preventDefault();
-	  event.stopPropagation();
+		catch (e) {
+			this._M.ErrorLog("GBE:onLabelDrop", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
 	},
 
 
@@ -1790,11 +1845,13 @@ var fessGoogleBookmarks = {
 		}
 		else
 		{
-			
-			item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
-			item.setAttribute("ondragenter", "fessGoogleBookmarks.onLabelDragenter(event);");
-			item.setAttribute("ondragexit", "fessGoogleBookmarks.onLabelDragExit(event);");
-			item.setAttribute("ondrop", "fessGoogleBookmarks.onLabelDrop(event);");
+			if (this._M.enableDnD)
+			{
+				item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
+				item.setAttribute("ondragenter", "fessGoogleBookmarks.onLabelDragenter(event);");
+				item.setAttribute("ondragexit", "fessGoogleBookmarks.onLabelDragExit(event);");
+				item.setAttribute("ondrop", "fessGoogleBookmarks.onLabelDrop(event);");
+			}
 
 			if (parent.nodeName == "menuseparator")
 			{
@@ -2457,21 +2514,7 @@ var fessGoogleBookmarks = {
 					{
 						let errorFlag = '';
 
-							// {"title":{"#text":"Get Involved: Volunteer Opportunities at Mozilla — Mozilla"},
-							// "link":{"#text":"https://www.mozilla.org/en-US/contribute/"},
-							// "pubDate":{"#text":"Mon, 20 Jan 2014 14:15:15 GMT"},
-							// "category":{"#text":"bookmark result"},
-							// "description":{},
-							// "guid":{"@attributes":{"isPermaLink":"false"},"#text":"cy_dUpuRHYaAgLAPAA"},
-							// "smh:bkmk":{"#text":"yes"}
-							// "smh:bkmk_id":{"#text":"7806345127572656434"},
-							// "smh:bkmk_title":{"#text":"Get Involved: Volunteer Opportunities at Mozilla — Mozilla"},
-							// "smh:bkmk_label":{"#text":"Mozilla"}} 
-							// 
 						let bookmark = this._M.xmlToJson(bookmarks[i]);
-						//this._M.ErrorLog(JSON.stringify(bookmark));
-						//this._M.ErrorLog(bookmark[bkmkFieldNames[oType].id]["#text"]);
-
 						// read id field
 						if (bookmark[bkmkFieldNames[oType].id]["#text"].length) 
 						{

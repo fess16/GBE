@@ -142,7 +142,8 @@ var fessGoogleBookmarksDialogs = {
 			this._M.prefs.setBoolPref("enableGBautocomplite", document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked);
 			this._M.prefs.setBoolPref("enableNotes", document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked);
 
-			if (document.getElementById("fessGBE-prefs-useMenuBar-Ctrl").value == "on")
+			// if (document.getElementById("fessGBE-prefs-useMenuBar-Ctrl").value == "on")
+			if (document.getElementById("fessGBE-prefs-useMenuBar-Ctrl").selectedIndex == 0)
 			{
 				this._M.prefs.setBoolPref("useMenuBar", true);
 			}
@@ -176,6 +177,7 @@ var fessGoogleBookmarksDialogs = {
 			this._M.prefs.setBoolPref("enableFilterByUrl", document.getElementById("fessGBE-prefs-enableFilterByUrl-Ctrl").checked);
 			this._M.prefs.setBoolPref("enableCtrlD", document.getElementById("fessGBE-prefs-enableCtrlD-Ctrl").checked);
 			this._M.prefs.setBoolPref("enableQuickSearch", document.getElementById("fessGBE-prefs-enableQuickSearch-Ctrl").checked);
+			this._M.prefs.setBoolPref("enableDnD", document.getElementById("fessGBE-prefs-enableDnD-Ctrl").checked);
 
 
 			this._M.needRefresh = true;
@@ -188,6 +190,7 @@ var fessGoogleBookmarksDialogs = {
 			var oldValGBautocomplite = this._M.enableGBautocomplite;
 			this._M.enableGBautocomplite = document.getElementById("fessGBE-prefs-enableGBautocomplite-Ctrl").checked;
 			this._M.enableNotes = document.getElementById("fessGBE-prefs-enableNotes-Ctrl").checked;
+
 			if (this._M.useMenuBar !== this._M.prefs.getBoolPref("useMenuBar"))
 			{
 				this._M.useMenuBar = this._M.prefs.getBoolPref("useMenuBar");
@@ -206,6 +209,7 @@ var fessGoogleBookmarksDialogs = {
 			this._M.enableFilterByUrl = document.getElementById("fessGBE-prefs-enableFilterByUrl-Ctrl").checked;
 			this._M.enableCtrlD = document.getElementById("fessGBE-prefs-enableCtrlD-Ctrl").checked;
 			this._M.enableQuickSearch = document.getElementById("fessGBE-prefs-enableQuickSearch-Ctrl").checked;
+			this._M.enableDnD = document.getElementById("fessGBE-prefs-enableDnD-Ctrl").checked;
 
 			this._M.darkThemeIcon = this._M.prefs.getBoolPref("darkThemeIcon");
 

@@ -23,3 +23,4 @@ pref("extensions.fessGBE.enableFilterByUrl", false);
 pref("extensions.fessGBE.enableCtrlD", false);
 pref("extensions.fessGBE.enableQuickSearch", false);
 pref("extensions.fessGBE.darkThemeIcon", false);
+pref("extensions.fessGBE.enableDnD", false);
