@@ -3,6 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
+Version 0.2.3
++ Drag and Drop закладок
+! исправлен выбор useMenuBar в настройках
+! изменено чтение полей вида smh:... в списке закладок (в ответе сервера)
+
 Version 0.2.2
 + фокус на поле фильтра при открытии списка закладок (по просьбе Elad Shaked) 
 + при экспорте из Google Bookmarks к закладкам Firefox теперь добавляются метки
