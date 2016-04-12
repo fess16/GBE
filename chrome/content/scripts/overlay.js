@@ -7,6 +7,11 @@ Version 0.2.3
 + Drag and Drop закладок
 ! исправлен выбор useMenuBar в настройках
 ! изменено чтение полей вида smh:... в списке закладок (в ответе сервера)
++ возможность искать по значению метки с помощью - label:xxxxx
+	допускается только одна такая конструкция в строке поиска,
+	если их будет несколько - игнорируются все 
+	xxxxx - значение регистрозависимо
+	(в about:config установить enableLableFilter)
 
 Version 0.2.2
 + фокус на поле фильтра при открытии списка закладок (по просьбе Elad Shaked) 
@@ -1289,7 +1294,9 @@ var fessGoogleBookmarks = {
 			this._M.DebugLog("showPrefWindow");
 			if (null == this._M._preferencesWindow || this._M._preferencesWindow.closed) 
 			{
-		    let instantApply = Application.prefs.get("browser.preferences.instantApply");
+		    // let instantApply = Application.prefs.get("browser.preferences.instantApply");
+		    let instantApply = Components.classes["@mozilla.org/preferences-service;1"]
+		    	.getService(Components.interfaces.nsIPrefService).getBranch("browser.preferences.").getBoolPref("instantApply");
 		    let features = "chrome,titlebar,toolbar,centerscreen" + (instantApply.value ? ",dialog=no" : ",modal");
 				let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
 			           .getService(Components.interfaces.nsIWindowMediator)
@@ -1409,7 +1416,7 @@ var fessGoogleBookmarks = {
 	{
 		// var GBE_GBlist = document.getElementById("GBE-GBlist");
 		var GBE_searchResultList = document.getElementById("GBE-searchResultList");
-		var search = searchValue.value;
+		var search = searchValue.value.trim();
 		// копия массива предыдущих отфильтрованных закладок
 		var tempArray = this._M.tempFilterArray.slice(); 
 		GBE_searchResultList.setAttribute("hidden", true);
@@ -1475,12 +1482,34 @@ var fessGoogleBookmarks = {
 				}
 				else*/
 				{
-					var words = search.trim().split(/\s+/);
+					var labelFilter = "";
+					// разрешен фильтр по метке
+					if (this._M.enableLableFilter)
+					{
+							//label:Programming/jQuery
+							var re = new RegExp(/(label:(\S+))(?=\s|$)/ig);
+							var reMatch = search.match(re);
+							// если нашли только одно совпадение
+							if ( reMatch && Array.isArray(reMatch) && reMatch.length == 1)
+							{
+								// запоминаем его (без начального label:)
+								labelFilter = reMatch[0].replace("label:","");
+							}
+							// удаляем совпадения из строки поиска
+							search = search.replace(re,"").trim();
+					}
+					var words = search.split(/\s+/);
+					// var words = search.trim().split(/\s+/);
+
 					var wordsCount = words.length;
 					// иначе - поиск по всем закладкам
 					for (var i = 0; i < this._M.m_bookmarkList.length; i++)
 					{
 						var hit = false;
+						// значение фильтра по метке установлено и таких меток у закладки нет - пропускаем ее
+						if (labelFilter != "" && this._M.m_bookmarkList[i].labels.indexOf(labelFilter) == -1)
+							continue;
+
 						if (checkBookmark(this._M.m_bookmarkList[i], search))
 						{
 							hit = true;							

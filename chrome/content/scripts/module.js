@@ -99,6 +99,8 @@ var fGoogleBookmarksModule =
 	'enableDnD' : false,
 
 	'darkThemeIcon' : false,
+	// возможность ограничить поиск по отдельной метке
+	'enableLableFilter' : false,
 
  	/* --------------------*/
 
@@ -181,7 +183,10 @@ var fGoogleBookmarksModule =
 			var cookie = iter.getNext();
 			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
 			{
-				this.cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
+				if ((versionChecker.compare(appInfo.version, "37") >= 0))
+					this.cookieManager.remove(cookie.host, cookie.name, cookie.path, cookie.originAttributes, false);
+				else
+					this.cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
 			}
 		}
 	},
@@ -273,6 +278,8 @@ var fGoogleBookmarksModule =
     this.readPrefValue("enableDnD", this.prefs.PREF_BOOL, false);
     
     this.readPrefValue("darkThemeIcon", this.prefs.PREF_BOOL, false);
+
+    this.readPrefValue("enableLableFilter", this.prefs.PREF_BOOL, false);
     
     if (this.above29)
     {
