@@ -1487,13 +1487,14 @@ var fessGoogleBookmarks = {
 					if (this._M.enableLableFilter)
 					{
 							//label:Programming/jQuery
-							var re = new RegExp(/(label:(\S+))(?=\s|$)/ig);
+							// var re = new RegExp(/(label:(\S+))(?=\s|$)/ig);
+							var re = new RegExp(/((?:^|\s+)(?:label:"(.*?)"))(?=\s|$)|(?:^|\s+)(?:label:([^"]\S+))(?=\s|$)/ig);
 							var reMatch = search.match(re);
 							// если нашли только одно совпадение
 							if ( reMatch && Array.isArray(reMatch) && reMatch.length == 1)
 							{
 								// запоминаем его (без начального label:)
-								labelFilter = reMatch[0].replace("label:","");
+								labelFilter = reMatch[0].trim().replace("label:","").replace(/"/g,"");
 							}
 							// удаляем совпадения из строки поиска
 							search = search.replace(re,"").trim();
