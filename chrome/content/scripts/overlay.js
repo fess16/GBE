@@ -1541,56 +1541,6 @@ var fessGoogleBookmarks = {
 		tempArray.length = 0;
 	},
 
-	/**
-	 * задает атрибуты элемента меню закладок
-	 * @param  {menu} parent
-	 * @param  {menuitem} item
-	 * @param  {array} value
-	 */
-	appendMenuItem : function(parent, item, value)
-	{
-		item.setAttribute("label", value.title);
-		item.setAttribute("id", value.id);
-		item.setAttribute("url", value.url);
-		let tooltiptext = value.url;
-		if (this._M.enableNotes && value.notes != "") 
-		{
-			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel") +
-			"\n" + value.notes; 
-		}
-		if (this._M.showTagsInTooltip && value.labels != "")
-		{
-			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipTagsLabel") +
-			"\n" + value.labels;
-		}
-	
-		item.setAttribute("tooltiptext", tooltiptext);
-		item.setAttribute("class", "menuitem-iconic google-bookmarks");
-		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
-		this.setFavicon(value, item); 
-		item.setAttribute("context", "GBE-contextMenu");
-
-		if (this._M.enableDnD)
-		{
-			item.setAttribute("ondragstart", "fessGoogleBookmarks.onMenuItemDragStart(event);");
-			item.setAttribute("ondrag", "fessGoogleBookmarks.onMenuItemDrag(event);");
-			item.setAttribute("ondragend", "fessGoogleBookmarks.onMenuItemDragend(event);");
-			item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
-			item.setAttribute("ondragenter", "fessGoogleBookmarks.onMenuItemlDragEnter(event);");
-			item.setAttribute("ondragexit", "fessGoogleBookmarks.onMenuItemlDragExit(event);");
-			item.setAttribute("ondrop", "fessGoogleBookmarks.onMenuItemDrop(event);");
-		}
-
-		if (parent.nodeName == "menuseparator")
-		{
-			parent.parentNode.insertBefore(item, parent);
-		}
-		else
-		{
-			parent.appendChild(item);
-		}
-	},
-
 	// начало перемещения
 	onMenuItemDragStart : function (event)
 	{
@@ -1847,6 +1797,56 @@ var fessGoogleBookmarks = {
 		}
 	},
 
+	/**
+	 * задает атрибуты элемента меню закладок
+	 * @param  {menu} parent
+	 * @param  {menuitem} item
+	 * @param  {array} value
+	 */
+	appendMenuItem : function(parent, item, value)
+	{
+		item.setAttribute("label", value.title);
+		item.setAttribute("id", value.id);
+		item.setAttribute("url", value.url);
+		let tooltiptext = value.url;
+		if (this._M.enableNotes && value.notes != "") 
+		{
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipNotesLabel") +
+			"\n" + value.notes; 
+		}
+		if (this._M.showTagsInTooltip && value.labels != "")
+		{
+			tooltiptext += "\n" + document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.TooltipTagsLabel") +
+			"\n" + value.labels;
+		}
+	
+		item.setAttribute("tooltiptext", tooltiptext);
+		item.setAttribute("class", "menuitem-iconic google-bookmarks");
+		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
+		this.setFavicon(value, item); 
+		item.setAttribute("context", "GBE-contextMenu");
+
+		if (this._M.enableDnD)
+		{
+			item.setAttribute("ondragstart", "fessGoogleBookmarks.onMenuItemDragStart(event);");
+			item.setAttribute("ondrag", "fessGoogleBookmarks.onMenuItemDrag(event);");
+			item.setAttribute("ondragend", "fessGoogleBookmarks.onMenuItemDragend(event);");
+			item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
+			item.setAttribute("ondragenter", "fessGoogleBookmarks.onMenuItemlDragEnter(event);");
+			item.setAttribute("ondragexit", "fessGoogleBookmarks.onMenuItemlDragExit(event);");
+			item.setAttribute("ondrop", "fessGoogleBookmarks.onMenuItemDrop(event);");
+		}
+
+		if (parent.nodeName == "menuseparator")
+		{
+			parent.parentNode.insertBefore(item, parent);
+		}
+		else
+		{
+			parent.appendChild(item);
+		}
+	},
+
 
 	appendLabelItem : function(parent, item, id, label, fullName = "")
 	{
@@ -1902,6 +1902,7 @@ var fessGoogleBookmarks = {
 	appendSearchMenuItem : function(parent, item, value)
 	{
 		item.setAttribute("label", value.title);
+		item.setAttribute("id", "f_"+value.id);
 		item.setAttribute("url", value.url);
 		let tooltiptext = value.url;
 		if (this._M.enableNotes && value.notes != "") 
@@ -1918,6 +1919,7 @@ var fessGoogleBookmarks = {
 		item.setAttribute("class", "menuitem-iconic google-bookmarks-filter");
 		item.setAttribute("style", "max-width: " + this._M.maxMenuWidth + "px;min-width: " + this._M.minMenuWidth + "px;");
 		item.setAttribute("image", value.favicon);
+		item.setAttribute("context", "GBE-contextMenu");
 		parent.appendChild(item);
 	},
 
@@ -1930,7 +1932,7 @@ var fessGoogleBookmarks = {
 		{
 			this._M.DebugLog("onShowContextMenu");
 			// запоминаем код закладки
-			this._M.currentContextId = event.target.triggerNode.getAttribute("id").replace("GBE_","");
+			this._M.currentContextId = event.target.triggerNode.getAttribute("id").replace(/^f_/,"");
 		}
 		catch (e) {
 			this._M.ErrorLog("GBE:onBookmarkContextMenu", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
