@@ -32,6 +32,22 @@
 				image="chrome://GBE/content/images/qr-code-icon.gif"
 				label="&overlay.contextMenuShowQR.label;"
 				oncommand="fessGoogleBookmarks.contextShowQR(event);"/>
+			<menuseparator/>
+			<menuitem id="GBE-contextMenuEmailBookmark" 
+				class="menuitem-iconic" 
+				image="chrome://GBE/content/images/bookmark_email.png"
+				label="&overlay.contextMenuEmailBookmark.label;"
+				oncommand="fessGoogleBookmarks.contextMenuShareBookmark(event,'email');"/>
+			<menuitem id="GBE-contextMenuFbShareBookmark" 
+				class="menuitem-iconic" 
+				image="chrome://GBE/content/images/bookmark_fbshare.png"
+				label="&overlay.contextMenuFbShareBookmark.label;"
+				oncommand="fessGoogleBookmarks.contextMenuShareBookmark(event,'fb');"/>
+			<menuitem id="GBE-contextMenuTwShareBookmark" 
+				class="menuitem-iconic" 
+				image="chrome://GBE/content/images/bookmark_twshare.png"
+				label="&overlay.contextMenuTwShareBookmark.label;"
+				oncommand="fessGoogleBookmarks.contextMenuShareBookmark(event,'tw');"/>
 		</menupopup>
 
 		<!-- folder context menu -->

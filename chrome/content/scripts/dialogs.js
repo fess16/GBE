@@ -592,10 +592,28 @@ var fessGoogleBookmarksDialogs = {
 
 	onLoadQrDialog : function()
 	{
+		if (window !== null && window.arguments !== undefined && window.arguments[0] !== undefined ) 
+		{
+			this.overlay = window.arguments[0];
+		}
 		if (this._M.windowsParams.url != null && this._M.windowsParams.url.length)
 		{
 			document.getElementById("GBE-qr.dialog.image").src = "https://chart.googleapis.com/chart?cht=qr&chl=" +
 				this._M.windowsParams.url + "&choe=UTF-8&chs=200x200";
+		}
+		//https://chart.googleapis.com/chart?cht=qr&chl=http://kater83.blogspot.com/&choe=UTF-8&chs=200x200
+		//https://www.facebook.com/sharer/sharer.php?u=kater83.blogspot.com
+		//https://www.facebook.com/sharer/sharer.php?u=http://miniqr.com/api/create.php?api=http&content=http://kater83.blogspot.com/&size=150&rtype=imageredirect
+		//https://www.facebook.com/sharer/sharer.php?u=chart.googleapis.com/chart?cht=qr&chl=test&choe=UTF-8&chs=200x200
+		//https://twitter.com/intent/tweet?text=http%3A%2F%2Fminiqr.com%2Fb4ad3%20&source=webclient
+		//http://miniqr.com/api/create.php?api=http&content=http://kater83.blogspot.com/&size=150&rtype=imageredirect
+	},
+
+	QRClick : function()
+	{
+		if (this._M.windowsParams.url != null && this._M.windowsParams.url.length)
+		{
+			this.overlay.showURL(document.getElementById("GBE-qr.dialog.image").src,false);
 		}
 	},
 

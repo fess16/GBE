@@ -14,6 +14,6 @@
  >
  <script src="chrome://GBE/content/scripts/dialogs.js" type="application/javascript"/>
   <groupbox>
-    <image id="GBE-qr.dialog.image" src='' width='200' height='200'/>
+    <image id="GBE-qr.dialog.image" src='' width='200' height='200' onclick="fessGoogleBookmarksDialogs.QRClick();"/>
   </groupbox>
 </dialog>

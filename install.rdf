@@ -4,7 +4,7 @@
     <Description about="urn:mozilla:install-manifest">
         <em:type>2</em:type> <!-- 2 : Extension -->
         <em:id>GBE@fess16.blogspot.com</em:id>
-        <em:version>0.2.3b4</em:version>
+        <em:version>0.2.3b5</em:version>
         <em:name>Fess Google Bookmark Extension</em:name>
         <em:description>Allows you to access and manage your Google Bookmarks.</em:description>
         <em:creator>Fess</em:creator>

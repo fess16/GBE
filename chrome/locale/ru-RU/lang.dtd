@@ -21,6 +21,9 @@
 <!ENTITY overlay.contextMenuEdit.label "Редактировать">
 <!ENTITY overlay.contextMenuRemove.label "Удалить">
 <!ENTITY overlay.contextMenuShowQR.label "Получить QR-код">
+<!ENTITY overlay.contextMenuEmailBookmark.label "E-mail...">
+<!ENTITY overlay.contextMenuFbShareBookmark.label "Facebook...">
+<!ENTITY overlay.contextMenuTwShareBookmark.label "Twitter...">
 
 <!ENTITY overlay.folderMenuEdit.label "Редактировать">
 <!ENTITY overlay.folderMenuRemove.label "Удалить">

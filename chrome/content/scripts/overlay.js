@@ -1432,9 +1432,21 @@ var fessGoogleBookmarks = {
 			let self = this;
 			let checkBookmark = function (bookmark, search) 
 			{
-				if (bookmark.title.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
-				if (bookmark.notes.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
-				if (self._M.enableFilterByUrl && bookmark.url.toLowerCase().indexOf(search) !== -1) return true;
+				// self._M.ErrorLog(search, "|", re1);
+				let re1 = search.match(/^"\S+"$/ig);
+				if (re1 && Array.isArray(re1) && re1.length == 1)
+				{
+					re2 = new RegExp('(?:^|\\s)(' + search.trim().replace(/"/g,"") + ')(?:\\s|$|[,.:;])',"ig");
+					if (re2.test(bookmark.title))  return true;
+					if (re2.test(bookmark.notes))  return true;
+					if (self._M.enableFilterByUrl && re2.test(bookmark.notes))  return true;
+				}
+				else
+				{
+					if (bookmark.title.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
+					if (bookmark.notes.toLowerCase().indexOf(search.toLowerCase()) !== -1) return true;
+					if (self._M.enableFilterByUrl && bookmark.url.toLowerCase().indexOf(search) !== -1) return true;
+				}
 				return false;
 			};
 
@@ -2015,13 +2027,49 @@ var fessGoogleBookmarks = {
 				let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
 			           .getService(Components.interfaces.nsIWindowMediator)
 			           .getMostRecentWindow("navigator:browser");
-				win.openDialog("chrome://GBE/content/overlays/qr.xul", "","chrome,centerscreen,modal");
+				win.openDialog("chrome://GBE/content/overlays/qr.xul", "","chrome,centerscreen,modal",this);
 			}
 		}
 		catch (e) {
 			this._M.ErrorLog("GBE:contextShowQR", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}	
 	},
+
+	contextMenuShareBookmark : function(event, mode)
+	{
+		try
+		{
+			this._M.windowsParams = {
+				name : "", id : this._M.currentContextId,	url : "", labels : "", notes : "", sig : this._M.m_signature
+			};
+			this._M.getBookmark(this._M.windowsParams);
+			if (this._M.windowsParams.id)
+			{
+				var link = "";
+				if (mode == "fb")
+				{
+					link = "https://www.facebook.com/sharer/sharer.php?u=" + this._M.windowsParams.url;
+					this.showURL(link,false);
+				}
+				if (mode == "tw")
+				{
+					link = "https://twitter.com/intent/tweet?text=" + this._M.windowsParams.url + "&source=webclient";
+					this.showURL(link,false);
+				}
+				if (mode == "email")
+				{
+					link = "mailto:test@example.com?"
+             + "&subject=" + this._M.windowsParams.name
+             + "&body=" + this._M.windowsParams.name + "%0D%0A" + escape(this._M.windowsParams.url);
+          window.location.href = link;
+				}
+			}
+		}
+		catch (e) {
+			this._M.ErrorLog("GBE:contextMenuShareBookmark", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}	
+	},
+
 
 	/**
 	 * при показе контекстного меню метки
