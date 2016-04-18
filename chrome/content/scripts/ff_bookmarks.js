@@ -48,7 +48,7 @@ var fessGoogleBookmarksFFbookmarks = {
 		  this.selectedFFbookmarkFolderId = historyResultNode.itemId;
 		}
 	},
-
+/*
 	FileManager : {
 		Write:
 	    function (File, Text)
@@ -90,7 +90,7 @@ var fessGoogleBookmarksFFbookmarks = {
 
         return data;
 	    },
-	},
+	},*/
 
 	parseJsonFile : function(jsonString)
 	{
@@ -132,7 +132,7 @@ var fessGoogleBookmarksFFbookmarks = {
 		  	recent10bkmrk : this._M.m_recent10bkmrk
 		  });
 		  let fileName = fp.fileURL.spec + ".json";
-			var x = this.FileManager.Write(fp.file, jsonString);
+			var x = this._M.FileManager.Write(fp.file, jsonString);
 		}
 	},
 
@@ -151,7 +151,7 @@ var fessGoogleBookmarksFFbookmarks = {
 
 		if (res != nsIFilePicker.returnCancel)
 		{
-			let x = this.FileManager.Read(fp.file);
+			let x = this._M.FileManager.Read(fp.file);
 			let parseFlag = this.parseJsonFile(x);
 			var txtLog = document.getElementById("GBE-ffBookmark.textbox.log");
 			if (parseFlag)

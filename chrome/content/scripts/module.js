@@ -184,9 +184,13 @@ var fGoogleBookmarksModule =
 			if (cookie instanceof Components.interfaces.nsICookie && domainRegexp.test(cookie.host) && cookie.name === "SID")
 			{
 				if ((versionChecker.compare(appInfo.version, "37") >= 0))
+				{
 					this.cookieManager.remove(cookie.host, cookie.name, cookie.path, cookie.originAttributes, false);
+				}
 				else
+				{
 					this.cookieManager.remove(cookie.host, cookie.name, cookie.path, false);
+				}
 			}
 		}
 	},
@@ -325,6 +329,8 @@ var fGoogleBookmarksModule =
 		  			params.url = this.m_bookmarkList[i].url;
 		  			params.labels = this.m_bookmarkList[i].labels;
 		  			params.notes = this.m_bookmarkList[i].notes;
+		  			if ('timestamp' in params) params.timestamp = this.m_bookmarkList[i].timestamp;
+		  			// params.timestamp = this.m_bookmarkList[i].timestamp;
 		  			params.index = i;
 		  			return;
 		  		}
@@ -774,6 +780,51 @@ xmlToJson : function(xml) {
 	}
 	return obj;
 },
+
+	FileManager : {
+		Write:
+	    function (File, Text, withBOM = false)
+	    {
+        if (!File) return;
+        const unicodeConverter = Components.classes["@mozilla.org/intl/scriptableunicodeconverter"]
+            .createInstance(Components.interfaces.nsIScriptableUnicodeConverter);
+
+        unicodeConverter.charset = "UTF-8";
+        if (!withBOM)
+        	Text = unicodeConverter.ConvertFromUnicode(Text);
+        else
+        	Text = "\xEF\xBB\xBF" + unicodeConverter.ConvertFromUnicode(Text);
+        const os = Components.classes["@mozilla.org/network/file-output-stream;1"]
+          .createInstance(Components.interfaces.nsIFileOutputStream);
+        os.init(File, 0x02 | 0x08 | 0x20, 0700, 0);
+        os.write(Text, Text.length);
+        os.close();
+	    },
+
+		Read:
+	    function (File)
+	    {
+        if (!File) return;
+        let res;
+
+        const is = Components.classes["@mozilla.org/network/file-input-stream;1"]
+            .createInstance(Components.interfaces.nsIFileInputStream);
+        const sis = Components.classes["@mozilla.org/scriptableinputstream;1"]
+            .createInstance(Components.interfaces.nsIScriptableInputStream);
+        is.init(File, 0x01, 0400, null);
+        sis.init(is);
+
+        res = sis.read(sis.available());
+
+        let utf8Converter = Components.classes["@mozilla.org/intl/utf8converterservice;1"].
+            getService(Components.interfaces.nsIUTF8ConverterService);
+        let data = utf8Converter.convertURISpecToUTF8 (res, "UTF-8"); 
+
+        is.close();
+
+        return data;
+	    },
+	},
 
 
 	"googleDomains" : ["google.ad", "google.ae", "google.al", "google.am", "google.as", "google.at", "google.az", "google.ba", "google.be", "google.bf", "google.bg", "google.bi", "google.bj", "google.bs", "google.bt", "google.by", "google.ca", "google.cat", "google.cd", "google.cf", "google.cg", "google.ch", "google.ci", "google.cl", "google.cm", "google.cn", "google.co.ao", "google.co.bw", "google.co.ck", "google.co.cr", "google.co.id", "google.co.il", "google.co.in", "google.co.jp", "google.co.ke", "google.co.kr", "google.co.ls", "google.co.ma", "google.co.mz", "google.co.nz", "google.co.th", "google.co.tz", "google.co.ug", "google.co.uk", "google.co.uz", "google.co.ve", "google.co.vi", "google.co.za", "google.co.zm", "google.co.zw", "google.com", "google.cv", "google.cz", "google.de", "google.dj", "google.dk", "google.dm", "google.dz", "google.ee", "google.es", "google.fi", "google.fm", "google.fr", "google.ga", "google.ge", "google.gg", "google.gl", "google.gm", "google.gp", "google.gr", "google.gy", "google.hn", "google.hr", "google.ht", "google.hu", "google.ie", "google.im", "google.iq", "google.is", "google.it", "google.je", "google.jo", "google.kg", "google.ki", "google.kz", "google.la", "google.li", "google.lk", "google.lt", "google.lu", "google.lv", "google.md", "google.me", "google.mg", "google.mk", "google.ml", "google.mn", "google.ms", "google.mu", "google.mv", "google.mw", "google.ne", "google.nl", "google.no", "google.nr", "google.nu", "google.pl", "google.pn", "google.ps", "google.pt", "google.ro", "google.rs", "google.ru", "google.rw", "google.sc", "google.se", "google.sh", "google.si", "google.sk", "google.sm", "google.sn", "google.so", "google.st", "google.td", "google.tg", "google.tk", "google.tl", "google.tm", "google.tn", "google.to", "google.tt", "google.vg", "google.vu", "google.ws"]

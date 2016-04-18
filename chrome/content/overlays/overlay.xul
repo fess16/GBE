@@ -98,6 +98,11 @@
 				label="&overlay.folderMenuUnhideAll.label;"
 				hidden="true"
 				oncommand="fessGoogleBookmarks.folderMenuUnhideAll();"/>	
+			<menuseparator/>
+			<menuitem id="GBE-folderMenuExport"
+				class="menuitem-iconic"
+				label="&overlay.folderMenuExport.label;"
+				oncommand="fessGoogleBookmarks.folderMenuExport();"/>	
 		</menupopup>
 	</popupset>	
 

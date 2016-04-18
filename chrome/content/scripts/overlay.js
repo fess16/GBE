@@ -2049,20 +2049,18 @@ var fessGoogleBookmarks = {
 				if (mode == "fb")
 				{
 					link = "https://www.facebook.com/sharer/sharer.php?u=" + this._M.windowsParams.url;
-					this.showURL(link,false);
 				}
 				if (mode == "tw")
 				{
 					link = "https://twitter.com/intent/tweet?text=" + this._M.windowsParams.url + "&source=webclient";
-					this.showURL(link,false);
 				}
 				if (mode == "email")
 				{
 					link = "mailto:test@example.com?"
              + "&subject=" + this._M.windowsParams.name
              + "&body=" + this._M.windowsParams.name + "%0D%0A" + escape(this._M.windowsParams.url);
-          window.location.href = link;
 				}
+				this.showURL(link, false);
 			}
 		}
 		catch (e) {
@@ -2323,6 +2321,73 @@ var fessGoogleBookmarks = {
 		catch (e)
 		{
 			this._M.ErrorLog("GBE:folderMenuUnhideAll", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		}
+	},
+
+	folderMenuExport: function()
+	{
+		try
+		{
+			if (this._M.m_bookmarkList && this._M.m_bookmarkList.length)
+			{
+				// название метки
+				var label = document.getElementById(this._M.currentFolderId).getAttribute("fullName");
+				var html = "<!DOCTYPE NETSCAPE-Bookmark-file-1>\n";
+				html += "<META HTTP-EQUIV='Content-Type' CONTENT=text/html; charset=UTF-8'>\n";
+				html += "<TITLE>Bookmarks</TITLE>\n";
+				html += "<H1>Bookmarks</H1>\n";
+				html += "<DL><p>\n";
+				var self = this;
+
+				var export_folder = function(node)
+				{
+					html += "<DT><H3>" + node.getAttribute("fullName") + "</H3>\n";
+					html += "<DL><p>\n";
+					var menuPopup = node.firstChild;
+					var children = menuPopup.children;
+					var ch_length = children.length;
+					for (var i = 0; i < ch_length; i++)
+					{
+						if (children[i].nodeName == "menuitem")
+						{
+							let params = {name : "", id : children[i].getAttribute("id"),	url : "", timestamp : "", labels : "", notes : "", sig : self._M.m_signature};
+							self._M.getBookmark(params);
+							html += "\t<DT><A HREF=" + '"' + params.url + ' "ADD_DATE="' 
+								+ (self._M.enableNotes ? Date.parse(params.timestamp)/1000 : params.timestamp) 
+								+ '">' + params.name 
+								+ "</A>\n";
+							if (params.length)
+								html += "\t<DD>" + params.notes + "\n";
+						}
+						if (children[i].nodeName == "menu")
+						{
+							export_folder(children[i]);
+						}
+					}
+					html += "</DL><p>\n";
+				};	
+
+				var exportLabel = document.getElementById(this._M.currentFolderId);
+				export_folder(exportLabel);
+
+				let nsIFilePicker = Ci.nsIFilePicker;
+				let fp = Cc["@mozilla.org/filepicker;1"].createInstance(nsIFilePicker);
+				fp.init(window, document.getElementById("fGoogleBookmarksExtension.strings").getString("fessGBE.SaveFileDialog.Title"), nsIFilePicker.modeSave);
+				fp.defaultExtension = "html";
+				fp.appendFilter("html","*.html");
+				let res = fp.show();
+
+				if (res != nsIFilePicker.returnCancel)
+				{
+				  let fileName = fp.fileURL.spec + ".html";
+					var x = this._M.FileManager.Write(fp.file, html, true);
+				}
+		  	this._M.currentFolderId = "";
+			}
+		}
+		catch (e)
+		{
+			this._M.ErrorLog("GBE:folderMenuExport", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
 	},
 

@@ -33,6 +33,7 @@
 <!ENTITY overlay.folderMenuHideFolder.label "Добавить в скрытые">
 <!ENTITY overlay.folderMenuUnhideFolder.label "Убрать из скрытых">
 <!ENTITY overlay.folderMenuUnhideAll.label "Убрать из скрытых все">
+<!ENTITY overlay.folderMenuExport.label "Экспорт в HTML">
 
 <!ENTITY overlay.contextMenuAddBookmark.label "Добавить страницу в Google Bookmarks">
 <!ENTITY overlay.contextMenuAddLinkToBookmark.label "Добавить ссылку в Google Bookmarks">
