@@ -3174,7 +3174,7 @@ var fessGoogleBookmarks = {
 		{
 			this._M.ErrorLog("GBE:showAddAllTabsDialog", " " + e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 		}
-	},
+	}
 
 
 };
@@ -3184,11 +3184,12 @@ window.addEventListener("load", function() {
 }, false);
 window.addEventListener("unload", function() { fessGoogleBookmarks.uninit() }, false);
  
+/*
 if (Application.extensions)
 {
   fessGoogleBookmarks.firstRun(Application.extensions);
 }
 else
 {
-  Application.getExtensions(fessGoogleBookmarks.firstRun);
-}
+   Application.getExtensions(fessGoogleBookmarks.firstRun);
+}*/
