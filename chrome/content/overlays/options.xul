@@ -41,6 +41,7 @@
       <preference id="pref_enableQuickSearch" name="extensions.fessGBE.enableQuickSearch" type="bool"/>
       <preference id="pref_darkThemeIcon" name="extensions.fessGBE.darkThemeIcon" type="bool"/>
       <preference id="pref_enableDnD" name="extensions.fessGBE.enableDnD" type="bool"/>
+      <preference id="pref_enableLableFilter" name="extensions.fessGBE.enableLableFilter" type="bool"/>
     </preferences>
     <vbox flex="1">
       <tabbox selectedIndex="0">
@@ -194,6 +195,12 @@
                 id="fessGBE-prefs-enableFilterByUrl-Ctrl"
                 label="&prefWindow.enableFilterByUrl.label;"/>
             </hbox>
+            <hbox align="center" flex="0">
+              <checkbox 
+                preference="pref_enableLableFilter" 
+                id="fessGBE-prefs-enableLableFilter-Ctrl" 
+                label="&prefWindow.enableLableFilter.label;"/>
+            </hbox>  
             <hbox align="center" flex="0">
               <checkbox 
                 preference="pref_enableGBautocomplite" 

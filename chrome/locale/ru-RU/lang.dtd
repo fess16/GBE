@@ -114,6 +114,7 @@
 <!ENTITY prefWindow.enableQuickSearch.label "Включить быстрый поиск (Home+Home) - требуется перезапуск">
 
 <!ENTITY prefWindow.enableDnD.label "Включить Drag и Drop закладок">
+<!ENTITY prefWindow.enableLableFilter.label 'Включить фильтр по метке (label:название_метки или label:"название метки")'>
 
 <!ENTITY ffBookmark.form.title "Импорт/экспорт Google Bookmarks">
 <!ENTITY ffBookmark.FFgroupbox.caption.label "Папка в закладках Firefox для импорта/экспорта:">

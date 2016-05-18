@@ -139,7 +139,6 @@ var fGoogleBookmarksModule =
 			str += arguments[i] + " ";
 		}
 		this.GBLTut_ConsoleService.logStringMessage(str);
-		//Application.console.log(s1 + " " + s2);
 	},
 
 	DebugLog : function(message)

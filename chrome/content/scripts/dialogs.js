@@ -178,6 +178,7 @@ var fessGoogleBookmarksDialogs = {
 			this._M.prefs.setBoolPref("enableCtrlD", document.getElementById("fessGBE-prefs-enableCtrlD-Ctrl").checked);
 			this._M.prefs.setBoolPref("enableQuickSearch", document.getElementById("fessGBE-prefs-enableQuickSearch-Ctrl").checked);
 			this._M.prefs.setBoolPref("enableDnD", document.getElementById("fessGBE-prefs-enableDnD-Ctrl").checked);
+			this._M.prefs.setBoolPref("enableLableFilter", document.getElementById("fessGBE-prefs-enableLableFilter-Ctrl").checked);
 
 
 			this._M.needRefresh = true;
@@ -210,6 +211,7 @@ var fessGoogleBookmarksDialogs = {
 			this._M.enableCtrlD = document.getElementById("fessGBE-prefs-enableCtrlD-Ctrl").checked;
 			this._M.enableQuickSearch = document.getElementById("fessGBE-prefs-enableQuickSearch-Ctrl").checked;
 			this._M.enableDnD = document.getElementById("fessGBE-prefs-enableDnD-Ctrl").checked;
+			this._M.enableLableFilter = document.getElementById("fessGBE-prefs-enableLableFilter-Ctrl").checked;
 
 			this._M.darkThemeIcon = this._M.prefs.getBoolPref("darkThemeIcon");
 
@@ -272,7 +274,7 @@ var fessGoogleBookmarksDialogs = {
 	onUseMenuBarRadioCommand : function(event)
 	{
 		var value = event.target.value;
-		if (Application.prefs.get("browser.preferences.instantApply"))
+		if (Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch).getBoolPref("browser.preferences.instantApply"))
 		{
 			if (value == "on")
 			{
@@ -289,7 +291,7 @@ var fessGoogleBookmarksDialogs = {
 	onDarkThemeIconRadioCommand : function(event)
 	{
 		var value = event.target.value;
-		if (Application.prefs.get("browser.preferences.instantApply"))
+		if (Components.classes["@mozilla.org/preferences-service;1"].getService(Components.interfaces.nsIPrefBranch).getBoolPref("browser.preferences.instantApply"))
 		{
 			if (value === "on")
 			{

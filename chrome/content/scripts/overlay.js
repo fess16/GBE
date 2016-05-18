@@ -1,4 +1,4 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
+ /*This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
@@ -12,6 +12,17 @@ Version 0.2.3
 	если их будет несколько - игнорируются все 
 	xxxxx - значение регистрозависимо
 	(в about:config установить enableLableFilter)
+! фильтр теперь работает и для меток с пробелами. Название меток указывать в кавычках, например:
+	label:"Programming/google bookmark" 
++ добавлено контекстное меню для закладок в результате поиска 
++ в окне с QR-кодом при клике на картинке, она открывается в новой вкладке 
++ в контекстное меню закладки добавлены пункты для отправки по почте, facebook, twitter
++ Поиск: если слово заключено в кавычки, то оно ищется целиком (вхождения внутри других игнорируются). 
+	Например,
+	vb - результат поиска будет включать не только vb, но и vba, vbscript и др.
+	"vb" - только vb
++ Контекстное меню меток - добавлен "Экспорт в HTML" 
+! исправления 
 
 Version 0.2.2
 + фокус на поле фильтра при открытии списка закладок (по просьбе Elad Shaked) 
@@ -505,7 +516,8 @@ var fessGoogleBookmarks = {
 	  			try
 	  			{
 	  				var AddBookmarkAs = document.getElementById("Browser:AddBookmarkAs");
-	  				AddBookmarkAs.setAttribute("oncommand", "fessGoogleBookmarks.showBookmarkDialog(false);");
+	  				// AddBookmarkAs.setAttribute("oncommand", "fessGoogleBookmarks.showBookmarkDialog(false);");
+	  				AddBookmarkAs.addEventListener("command", function(){fessGoogleBookmarks.showBookmarkDialog(false);}, false);
 	  			}
 	  			catch (error)
 	  			{
@@ -1294,9 +1306,10 @@ var fessGoogleBookmarks = {
 			this._M.DebugLog("showPrefWindow");
 			if (null == this._M._preferencesWindow || this._M._preferencesWindow.closed) 
 			{
-		    // let instantApply = Application.prefs.get("browser.preferences.instantApply");
+		    // let instantApply = Components.classes["@mozilla.org/preferences-service;1"]
+		    // 	.getService(Components.interfaces.nsIPrefService).getBranch("browser.preferences.").getBoolPref("instantApply");
 		    let instantApply = Components.classes["@mozilla.org/preferences-service;1"]
-		    	.getService(Components.interfaces.nsIPrefService).getBranch("browser.preferences.").getBoolPref("instantApply");
+		    	.getService(Ci.nsIPrefBranch).getBoolPref("browser.preferences.instantApply");
 		    let features = "chrome,titlebar,toolbar,centerscreen" + (instantApply.value ? ",dialog=no" : ",modal");
 				let win = Components.classes["@mozilla.org/appshell/window-mediator;1"]
 			           .getService(Components.interfaces.nsIWindowMediator)
@@ -1840,13 +1853,13 @@ var fessGoogleBookmarks = {
 
 		if (this._M.enableDnD)
 		{
-			item.setAttribute("ondragstart", "fessGoogleBookmarks.onMenuItemDragStart(event);");
-			item.setAttribute("ondrag", "fessGoogleBookmarks.onMenuItemDrag(event);");
-			item.setAttribute("ondragend", "fessGoogleBookmarks.onMenuItemDragend(event);");
-			item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
-			item.setAttribute("ondragenter", "fessGoogleBookmarks.onMenuItemlDragEnter(event);");
-			item.setAttribute("ondragexit", "fessGoogleBookmarks.onMenuItemlDragExit(event);");
-			item.setAttribute("ondrop", "fessGoogleBookmarks.onMenuItemDrop(event);");
+			item.addEventListener("dragstart", fessGoogleBookmarks.onMenuItemDragStart.bind(this), false);
+			item.addEventListener("drag", fessGoogleBookmarks.onMenuItemDrag.bind(this), false);
+			item.addEventListener("dragend", fessGoogleBookmarks.onMenuItemDragend.bind(this), false);
+			item.addEventListener("dragover", fessGoogleBookmarks.onDragover.bind(this), false);
+			item.addEventListener("dragenter", fessGoogleBookmarks.onMenuItemlDragEnter.bind(this), false);
+			item.addEventListener("dragexit", fessGoogleBookmarks.onMenuItemlDragExit.bind(this), false);
+			item.addEventListener("drop", fessGoogleBookmarks.onMenuItemDrop.bind(this), false);
 		}
 
 		if (parent.nodeName == "menuseparator")
@@ -1894,10 +1907,10 @@ var fessGoogleBookmarks = {
 		{
 			if (this._M.enableDnD)
 			{
-				item.setAttribute("ondragover", "fessGoogleBookmarks.onDragover(event);");
-				item.setAttribute("ondragenter", "fessGoogleBookmarks.onLabelDragenter(event);");
-				item.setAttribute("ondragexit", "fessGoogleBookmarks.onLabelDragExit(event);");
-				item.setAttribute("ondrop", "fessGoogleBookmarks.onLabelDrop(event);");
+				item.addEventListener("dragover", fessGoogleBookmarks.onDragover.bind(this), false);
+				item.addEventListener("dragenter", fessGoogleBookmarks.onLabelDragenter.bind(this), false);
+				item.addEventListener("dragexit", fessGoogleBookmarks.onLabelDragExit.bind(this), false);
+				item.addEventListener("drop", fessGoogleBookmarks.onLabelDrop.bind(this), false);
 			}
 
 			if (parent.nodeName == "menuseparator")
@@ -3192,4 +3205,5 @@ if (Application.extensions)
 else
 {
    Application.getExtensions(fessGoogleBookmarks.firstRun);
-}*/
+}
+*/
