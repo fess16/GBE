@@ -367,6 +367,10 @@ doRequestSignature : function(asyncMode = true)
 		this.DebugLog("doRequestSignature");
 		this.m_signature = null;
 		let self = this;
+
+// self.m_signature = "signaturetextContent";
+// self.m_time_signature = new Date();
+// return ;      		
 		let hwindow = this.getHwindow();
 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
 		// let data = 	"?output=rss&num=1";

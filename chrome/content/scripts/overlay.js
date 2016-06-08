@@ -2678,8 +2678,12 @@ var fessGoogleBookmarks = {
 						let errorFlag = '';
 
 						let bookmark = this._M.xmlToJson(bookmarks[i]);
+						//this._M.ErrorLog(bookmark);
+
 						// read id field
-						if (bookmark[bkmkFieldNames[oType].id]["#text"].length) 
+						if (bookmark.hasOwnProperty(bkmkFieldNames[oType].id) 
+							&& bookmark[bkmkFieldNames[oType].id].hasOwnProperty("#text")
+							&& bookmark[bkmkFieldNames[oType].id]["#text"].length) 
 						{
 							this._M.m_bookmarkList[i].id = bookmark[bkmkFieldNames[oType].id]["#text"];
 						}
@@ -2690,7 +2694,9 @@ var fessGoogleBookmarks = {
 						}
 
 						// read title field
-						if (bookmark[bkmkFieldNames[oType].title]["#text"].length) 
+						if (bookmark.hasOwnProperty(bkmkFieldNames[oType].title) 
+							&& bookmark[bkmkFieldNames[oType].title].hasOwnProperty("#text")
+							&& bookmark[bkmkFieldNames[oType].title]["#text"].length) 
 						{
 							this._M.m_bookmarkList[i].title = bookmark[bkmkFieldNames[oType].title]["#text"];
 						}
@@ -2701,8 +2707,9 @@ var fessGoogleBookmarks = {
 						}
 
 						// read url field
-						if (bookmark[bkmkFieldNames[oType].url].hasOwnProperty("#text") &&
-							bookmark[bkmkFieldNames[oType].url]["#text"].length) 
+						if (bookmark.hasOwnProperty(bkmkFieldNames[oType].url) 
+							&& bookmark[bkmkFieldNames[oType].url].hasOwnProperty("#text") 
+							&& bookmark[bkmkFieldNames[oType].url]["#text"].length) 
 						{
 		    			this._M.m_bookmarkList[i].url = bookmark[bkmkFieldNames[oType].url]["#text"];
 						}
@@ -2713,7 +2720,9 @@ var fessGoogleBookmarks = {
 						}
 
 						// read timestamp field
-						if (bookmark[bkmkFieldNames[oType].date]["#text"].length)
+						if (bookmark.hasOwnProperty(bkmkFieldNames[oType].date) 
+							&& bookmark[bkmkFieldNames[oType].date].hasOwnProperty("#text")
+							&& bookmark[bkmkFieldNames[oType].date]["#text"].length)
 						{
 							this._M.m_bookmarkList[i].timestamp = bookmark[bkmkFieldNames[oType].date]["#text"];
 						}
