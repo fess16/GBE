@@ -1,6 +1,7 @@
 content	GBE								chrome/content/
 skin		GBE classic/1.0		chrome/skin28/
 skin		GBE classic/1.0		chrome/skin/		appversion>=29
+skin		GBE classic/1.0		chrome/skin48/		appversion>=48
 
 
 locale	GBE en-US					chrome/locale/en-US/

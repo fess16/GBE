@@ -2993,8 +2993,20 @@ var fessGoogleBookmarks = {
 			{
 				if (this._M.m_bookmarkList[i].url == "")
 				{
-					this._M.doRequestBookmarkURL(this._M.m_bookmarkList[i].id, this._M.m_bookmarkList[i].title, i, this.GBE_menupopup, true);
-				}
+					// this._M.doRequestBookmarkURL(this._M.m_bookmarkList[i].id, this._M.m_bookmarkList[i].title, i, this.GBE_menupopup, true);
+					let bkmkU = this._M.m_bookmarkList[i];
+					this._M.doRequestBookmarkURL_P(bkmkU.id, bkmkU.title, i).then(
+						function (urlReturn) 
+						{
+							self.GBE_menupopup.getElementsByAttribute('id', bkmkU.id)[0].setAttribute("url", urlReturn);
+							self.GBE_menupopup.getElementsByAttribute('id', bkmkU.id)[0].setAttribute(
+								"tooltiptext", urlReturn + self.GBE_menupopup.getElementsByAttribute('id', bkmkU.id)[0].getAttribute("tooltiptext"));
+							self._M.ErrorLog("Obtained URL for ", bkmkU.title, "is", urlReturn);
+						}, function (error) 
+						{
+					  	self._M.ErrorLog("GBE:doRequestBookmarkURL_P (from doBuildMenu) error -", error);
+						});
+					}
 				var parentContainer,
 						tempMenuitem;
 				// если у закладки есть метки

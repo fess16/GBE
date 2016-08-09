@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<bindings xmlns="http://www.mozilla.org/xbl"
+          xmlns:html="http://www.w3.org/1999/xhtml"
+          xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          xmlns:xbl="http://www.mozilla.org/xbl">
+
+  <binding id="autocomplete-richlistitem" extends="chrome://global/content/bindings/autocomplete.xml#autocomplete-richlistitem">
+    <content align="center" onoverflow="this._onOverflow();" onunderflow="this._onUnderflow();">
+      <xul:image anonid="type-icon" class="ac-type-icon" xbl:inherits="selected,current,type" hidden="true"/>
+      <xul:image anonid="site-icon" class="ac-site-icon" xbl:inherits="src=image,selected,type" hidden="true"/>
+      <xul:hbox class="ac-title" align="center" xbl:inherits="selected">
+        <xul:description class="ac-text-overflow-container">
+          <xul:description anonid="title-text" class="ac-title-text" xbl:inherits="selected"/>
+        </xul:description>
+      </xul:hbox>
+      <xul:hbox anonid="tags" class="ac-tags" align="center" xbl:inherits="selected" hidden="true">
+        <xul:description class="ac-text-overflow-container">
+          <xul:description anonid="tags-text" class="ac-tags-text" xbl:inherits="selected"/>
+        </xul:description>
+      </xul:hbox>
+      <xul:hbox anonid="separator" class="ac-separator" align="center" xbl:inherits="selected,actiontype,type" hidden="true">
+        <xul:description class="ac-separator-text">—</xul:description>
+      </xul:hbox>
+      <xul:hbox class="ac-url" align="center" xbl:inherits="selected,actiontype" hidden="true">
+        <xul:description class="ac-text-overflow-container">
+          <xul:description anonid="url-text" class="ac-url-text" xbl:inherits="selected"/>
+        </xul:description>
+      </xul:hbox>
+      <xul:hbox class="ac-action" align="center" xbl:inherits="selected,actiontype" hidden="true">
+        <xul:description class="ac-text-overflow-container">
+          <xul:description anonid="action-text" class="ac-action-text" xbl:inherits="selected"/>
+        </xul:description>
+      </xul:hbox>
+    </content>
+  </binding>
+</bindings>          

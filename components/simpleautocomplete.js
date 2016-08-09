@@ -159,7 +159,7 @@ SimpleAutoCompleteSearch.prototype = {
     if (searchParam.length > 0) 
     {
       //var nativeJSON = Components.classes["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);
-      // var searchResults = nativeJSON.decode(searchParam);
+      //var searchResults = nativeJSON.decode(searchParam);
       var searchResults = JSON.parse(searchParam);
       var results = [];
       var comments = [];
@@ -235,6 +235,14 @@ var SimpleAutoCompleteSearchModule = {
 
 // Module initialization
 function NSGetModule(aCompMgr, aFileSpec) { return SimpleAutoCompleteSearchModule; }
+
+function NSGetFactory(cid) {
+  if (cid.toString().toUpperCase() != CLASS_ID.toString().toUpperCase()) {
+    throw Components.results.NS_ERROR_FACTORY_NOT_REGISTERED;
+  }
+
+  return SimpleAutoCompleteSearchFactory;
+}
 
 if (XPCOMUtils.generateNSGetFactory){
     var NSGetFactory = XPCOMUtils.generateNSGetFactory([SimpleAutoCompleteSearch]);

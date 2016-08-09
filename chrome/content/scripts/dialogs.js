@@ -336,7 +336,13 @@ var fessGoogleBookmarksDialogs = {
 			}
 			if (this.windowsParams.url == "")
 			{
-				document.getElementById("GBE-bookmark-dialog-url").value = this._M.doRequestBookmarkURL(this.windowsParams.id, this.windowsParams.name, this.windowsParams.index);
+				//document.getElementById("GBE-bookmark-dialog-url").value = this._M.doRequestBookmarkURL(this.windowsParams.id, this.windowsParams.name, this.windowsParams.index);
+				this._M.doRequestBookmarkURL_P(this.windowsParams.id, this.windowsParams.name, this.windowsParams.index).then(
+					function (urlReturn) {
+				  document.getElementById("GBE-bookmark-dialog-url").value = urlReturn;
+				}, function (error) {
+				  document.getElementById("GBE-bookmark-dialog-url").value = error;
+				});
 			}
 
 			this.windowsParams.oldUrl = this.windowsParams.url;

@@ -1,7 +1,6 @@
 /*
 https://addons.mozilla.org/ru/firefox/addon/fess-google-bookmark-extens/
 
-//TODO: добавление ссылок через контекстрое меню (как в YAGBE)
 //TODO: выделение набранное части в списке автодополнения
 
 [06:26:11.393] GBE:getBookmark  TypeError: this.m_bookmarkList[i] is

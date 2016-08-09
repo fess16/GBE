@@ -428,19 +428,19 @@ var fessGoogleBookmarksFFbookmarks = {
 				if (params.url == "")
 				{
 					txtLog.value +=	"***Warning: bookmark " + params.name + " has empty (or local) URL!!!\n";
-					txtLog.value +=	"***Warning: Trying obtain its value!!!\n";
-					let url = self._M.doRequestBookmarkURL(params.id, params.name, params.index);
-					if (url !== "")
-					{
-						params.url = url;
-						txtLog.value +=	"***Warning: Obtained URL is " + url + "\n";
-					}
-					else
-					{	
+					// txtLog.value +=	"***Warning: Trying obtain its value!!!\n";
+					// let url = self._M.doRequestBookmarkURL(params.id, params.name, params.index);
+					// if (url !== "")
+					// {
+					// 	params.url = url;
+					// 	txtLog.value +=	"***Warning: Obtained URL is " + url + "\n";
+					// }
+					// else
+					// {	
 						txtLog.value +=	"\n!!!Error: bookmark " + params.name + 
 														" with URL (" + params.url + ") can't be added!!!\n\n";
 						return;
-					}
+					// }
 				}
 				var uri = NetUtil.newURI(params.url);
 				if (!historyService.canAddURI(uri))

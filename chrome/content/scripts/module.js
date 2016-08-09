@@ -489,55 +489,116 @@ doRequestBookmarkNote : function(id, name, noteCtrl)
 	}
 },
 
-doRequestBookmarkURL : function (id, name, index, GBE_menupopup = null, asyncMode = false)
+
+doRequestBookmarkURL_P : function (id, name, index/*,GBE_menupopup = null*/)
 {
 	try
 	{
-		this.DebugLog("doRequestBookmarkURL");
 		let urlReturn = "";
 		let self = this;
-		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
-		let data = 	"?zx="+((new Date()).getTime()) + "&output=xml&q=" + '"' + encodeURIComponent(name) + '"';
-		request.open("GET", this.baseUrl + "find" + data, asyncMode);
-		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
-		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
-		
-		request.onreadystatechange = function()
-		{
-	  	if (request.readyState != 4) return;
-  		if (request.status == 200) 
-  		{
-  			let ids = request.responseXML.getElementsByTagName("id");
-				let urls = request.responseXML.getElementsByTagName("url");
-				if (ids.length && urls.length)
-				{
-					for (let i = 0; i < ids.length; i++)
-					{
-						if (id == ids[i].childNodes[0].nodeValue)
-						{
-							urlReturn = urls[i].childNodes[0].nodeValue;
-							self.m_bookmarkList[index].url = urlReturn;
-							if (GBE_menupopup !== null)
-							{
-								GBE_menupopup.getElementsByAttribute('id', id)[0].setAttribute("url", urlReturn);
-							}
-							self.ErrorLog("Obtained URL for ", name, "is", urlReturn);
-							return urlReturn;
-						}
-					}
-				}
-  		} 
-  	}
-		request.send(null);
-		return urlReturn;
+		// Создание нового объекта Promise
+	  return new Promise(function (resolve, reject) {
+	    var request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+	    var data = 	"?zx="+((new Date()).getTime()) + "&output=xml&q=" + '"' + encodeURIComponent(name) + '"';
+			request.open("GET", self.baseUrl + "find" + data, true);
+			request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+			request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+	    request.onreadystatechange = function () 
+	    {
+	    	if (request.readyState != 4) return;
+		    if (request.status == 200) 
+		    {
+    			let ids = request.responseXML.getElementsByTagName("id");
+  				let urls = request.responseXML.getElementsByTagName("url");
+  				if (ids.length && urls.length)
+  				{
+  					for (let i = 0; i < ids.length; i++)
+  					{
+  						if (id == ids[i].childNodes[0].nodeValue)
+  						{
+  							urlReturn = urls[i].childNodes[0].nodeValue;
+  							self.m_bookmarkList[index].url = urlReturn;
+				        // перевод Promise в состояние fulfilled.
+				        // request.response - данные доступные в функции-обработчике
+				        // перехода состояния
+			        	resolve(urlReturn);
+  						}
+  					}
+  				}
+  				// else
+  				// {
+  				 	// перевод Promise в состояние rejected
+  					reject(Error(request.statusText));
+  				// }
+		    }
+	    };
+	    // Обработка сетевых ошибок
+	    request.onerror = function () {
+	      // перевод Promise в состояние rejected
+	      reject(Error("GBE:doRequestBookmarkURL_P Network Error"));
+	    };
+	    // отправка запроса на сервер
+	    request.send(null);
+	  });
 	}
 	catch (e)
 	{
-		this.ErrorLog("GBE:doRequestBookmarkURL", "Obtain bookmark URL (", name, ") - error!");
-		this.ErrorLog("GBE:doRequestBookmarkURL", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+		this.ErrorLog("GBE:doRequestBookmarkURL_P", "Obtain bookmark URL (", name, ") - error!");
+		this.ErrorLog("GBE:doRequestBookmarkURL_P", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
 	}
+
 },
+
+// doRequestBookmarkURL : function (id, name, index, GBE_menupopup = null, asyncMode = false)
+// {
+// 	try
+// 	{
+// 		this.DebugLog("doRequestBookmarkURL");
+// 		let urlReturn = "";
+// 		let self = this;
+// 		let request = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].createInstance(Ci.nsIXMLHttpRequest);
+// 		let data = 	"?zx="+((new Date()).getTime()) + "&output=xml&q=" + '"' + encodeURIComponent(name) + '"';
+// 		request.open("GET", this.baseUrl + "find" + data, asyncMode);
+// 		request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+// 		request.setRequestHeader('User-Agent', "Mozilla/5.0 (Windows NT 6.1; rv:26.0) Gecko/20100101 Firefox/26.0");
+// 		request.setRequestHeader('Accept','	text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8');
+		
+// 		request.onreadystatechange = function()
+// 		{
+// 	  	if (request.readyState != 4) return;
+//   		if (request.status == 200) 
+//   		{
+//   			let ids = request.responseXML.getElementsByTagName("id");
+// 				let urls = request.responseXML.getElementsByTagName("url");
+// 				if (ids.length && urls.length)
+// 				{
+// 					for (let i = 0; i < ids.length; i++)
+// 					{
+// 						if (id == ids[i].childNodes[0].nodeValue)
+// 						{
+// 							urlReturn = urls[i].childNodes[0].nodeValue;
+// 							self.m_bookmarkList[index].url = urlReturn;
+// 							if (GBE_menupopup !== null)
+// 							{
+// 								GBE_menupopup.getElementsByAttribute('id', id)[0].setAttribute("url", urlReturn);
+// 							}
+// 							self.ErrorLog("Obtained URL for ", name, "is", urlReturn);
+// 							return urlReturn;
+// 						}
+// 					}
+// 				}
+//   		} 
+//   	}
+// 		request.send(null);
+// 		return urlReturn;
+// 	}
+// 	catch (e)
+// 	{
+// 		this.ErrorLog("GBE:doRequestBookmarkURL", "Obtain bookmark URL (", name, ") - error!");
+// 		this.ErrorLog("GBE:doRequestBookmarkURL", e + '(line = ' + e.lineNumber + ", col = " + e.columnNumber + ", file = " +  e.fileName);
+// 	}
+// },
 
 doDeleteFolder : function(label, signature)
 {
