@@ -320,7 +320,14 @@ var fessGoogleBookmarksDialogs = {
 		// заполняем поля диалога редактирования
 		document.getElementById("GBE-bookmark.dialog.name").value = this.windowsParams.name;
 		document.getElementById("GBE-bookmark-dialog-url").value = this.windowsParams.url;
-		document.getElementById("GBE-bookmark.dialog.labels").value = this.windowsParams.labels;
+		if (this.windowsParams.labels.length>0)
+		{
+			document.getElementById("GBE-bookmark.dialog.labels").value = this.windowsParams.labels + ',';
+		}
+		else
+		{
+			document.getElementById("GBE-bookmark.dialog.labels").value = this.windowsParams.labels;
+		}
 		document.getElementById("GBE-bookmark.dialog.notes").value = this.windowsParams.notes;
 		// при редактировании поле адреса делаем только для чтения
 		if (this.windowsParams.id)
@@ -437,9 +444,10 @@ var fessGoogleBookmarksDialogs = {
 		if (this.oldSearchValue.length)
 		{
 			// объединяем старое значение и значение из списка
-			e.value = this.oldSearchValue + ', ' + (e.value);
+			e.value = this.oldSearchValue + ',' + (e.value);
 			this.oldSearchValue = "";
 		}
+		e.value += ', ';
 	},
 
 		/**

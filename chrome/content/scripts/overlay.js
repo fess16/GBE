@@ -3,6 +3,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /*
+Version 0.2.4
++ запятая после выбора метки из списка
++doRequestBookmarkURL_P - асинхронный запрос 
+!fix simpleautocomplete for Firefox >= 48 - label autocomplete
+
 Version 0.2.3
 + Drag and Drop закладок
 ! исправлен выбор useMenuBar в настройках
